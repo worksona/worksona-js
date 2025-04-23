@@ -1,0 +1,1151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Worksona.js Use Cases</title>
+    <style>
+        /* Main styles */
+        :root {
+            --primary-color: #2563eb;
+            --primary-hover: #1d4ed8;
+            --secondary-color: #059669;
+            --text-color: #1e293b;
+            --light-bg: #f8fafc;
+            --border-color: #e2e8f0;
+            --code-bg: #1e293b;
+            --code-color: #f8fafc;
+            --card-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            --sidebar-width: 250px;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            margin: 0;
+            padding: 0;
+            color: var(--text-color);
+            background-color: var(--light-bg);
+            line-height: 1.6;
+            display: flex;
+            min-height: 100vh;
+        }
+
+        a {
+            color: var(--primary-color);
+            text-decoration: none;
+        }
+
+        a:hover {
+            text-decoration: underline;
+            color: var(--primary-hover);
+        }
+
+        /* Sidebar styles */
+        .sidebar {
+            width: var(--sidebar-width);
+            background-color: white;
+            border-right: 1px solid var(--border-color);
+            padding: 30px 0;
+            position: fixed;
+            height: 100vh;
+            overflow-y: auto;
+        }
+
+        .sidebar-logo {
+            padding: 0 20px 20px;
+            margin-bottom: 20px;
+            border-bottom: 1px solid var(--border-color);
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--primary-color);
+        }
+
+        .sidebar-logo span {
+            color: var(--secondary-color);
+        }
+
+        .sidebar-nav {
+            padding: 0 20px;
+        }
+
+        .sidebar-nav h3 {
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #64748b;
+            margin: 25px 0 10px;
+        }
+
+        .sidebar-nav ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .sidebar-nav li {
+            margin-bottom: 5px;
+        }
+
+        .sidebar-nav a {
+            display: block;
+            padding: 8px 10px;
+            border-radius: 4px;
+            color: var(--text-color);
+            font-size: 0.95rem;
+            transition: background-color 0.2s;
+        }
+
+        .sidebar-nav a:hover {
+            background-color: var(--light-bg);
+            text-decoration: none;
+        }
+
+        .sidebar-nav a.active {
+            background-color: #eff6ff;
+            color: var(--primary-color);
+            font-weight: 500;
+        }
+
+        /* Main content styles */
+        .content {
+            flex: 1;
+            margin-left: var(--sidebar-width);
+            padding: 30px 40px 60px;
+            max-width: 900px;
+        }
+
+        .content h1 {
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+            color: var(--text-color);
+        }
+
+        .content h2 {
+            font-size: 1.8rem;
+            margin-top: 40px;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid var(--border-color);
+            color: var(--text-color);
+        }
+
+        .content h3 {
+            font-size: 1.4rem;
+            margin-top: 30px;
+            margin-bottom: 15px;
+            color: var(--text-color);
+        }
+
+        .content p {
+            margin-bottom: 20px;
+        }
+
+        .content pre {
+            background-color: var(--code-bg);
+            color: var(--code-color);
+            border-radius: 6px;
+            padding: 20px;
+            overflow-x: auto;
+            margin: 20px 0;
+            font-family: monospace;
+            line-height: 1.5;
+        }
+
+        .content code {
+            font-family: monospace;
+            background-color: #e2e8f0;
+            padding: 2px 5px;
+            border-radius: 3px;
+            font-size: 0.9em;
+        }
+
+        .content pre code {
+            background-color: transparent;
+            padding: 0;
+            color: var(--code-color);
+            display: block;
+        }
+
+        /* Use case card */
+        .use-case-card {
+            background-color: white;
+            border-radius: 8px;
+            padding: 25px;
+            margin-bottom: 30px;
+            box-shadow: var(--card-shadow);
+        }
+
+        .use-case-card h3 {
+            margin-top: 0;
+            color: var(--primary-color);
+        }
+
+        /* Prompt block styles */
+        .prompt-block {
+            background-color: #1e293b;
+            border-radius: 6px;
+            margin: 20px 0;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .prompt-block pre {
+            margin: 0;
+            padding: 20px;
+            background-color: #1e293b;
+            border: none;
+            border-radius: 0;
+            color: #f8fafc;
+            font-family: 'Fira Code', monospace;
+            font-size: 0.9em;
+            line-height: 1.5;
+            overflow-x: auto;
+        }
+
+        .prompt-block code {
+            font-family: inherit;
+            font-size: inherit;
+            line-height: inherit;
+            color: inherit;
+            background-color: transparent;
+            padding: 0;
+        }
+
+        .prompt-block h4 {
+            margin: 0;
+            padding: 15px 20px;
+            background-color: #0f172a;
+            border-bottom: 1px solid #334155;
+            font-size: 1.1em;
+            color: #f8fafc;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .copy-button {
+            background: none;
+            border: none;
+            color: #94a3b8;
+            cursor: pointer;
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-size: 0.9em;
+            transition: all 0.2s;
+        }
+
+        .copy-button:hover {
+            background-color: #334155;
+            color: #f8fafc;
+        }
+
+        .copy-button.copied {
+            color: #22c55e;
+        }
+
+        /* Code highlighting for prompts */
+        .prompt-block .comment {
+            color: #94a3b8;
+        }
+
+        .prompt-block .string {
+            color: #4ade80;
+        }
+
+        .prompt-block .keyword {
+            color: #7dd3fc;
+        }
+
+        .prompt-block .property {
+            color: #f472b6;
+        }
+
+        .prompt-block .number {
+            color: #fbbf24;
+        }
+
+        .prompt-block .boolean {
+            color: #f472b6;
+        }
+
+        .prompt-block .null {
+            color: #f472b6;
+        }
+
+        .prompt-block .yaml-key {
+            color: #7dd3fc;
+        }
+
+        .prompt-block .yaml-value {
+            color: #4ade80;
+        }
+
+        .prompt-block .yaml-comment {
+            color: #94a3b8;
+        }
+
+        /* Top nav for mobile */
+        .mobile-nav {
+            display: none;
+            background-color: white;
+            padding: 15px 20px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        .mobile-nav-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: var(--primary-color);
+        }
+
+        .menu-button {
+            position: absolute;
+            right: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            color: var(--text-color);
+            cursor: pointer;
+            display: none;
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 1024px) {
+            :root {
+                --sidebar-width: 220px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            body {
+                flex-direction: column;
+            }
+
+            .sidebar {
+                width: 100%;
+                position: static;
+                height: auto;
+                display: none;
+                padding: 20px 0;
+            }
+
+            .sidebar.active {
+                display: block;
+            }
+
+            .content {
+                margin-left: 0;
+                padding: 20px;
+            }
+
+            .mobile-nav {
+                display: flex;
+                align-items: center;
+            }
+
+            .menu-button {
+                display: block;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="mobile-nav">
+        <div class="mobile-nav-title">Worksona.js Documentation</div>
+        <button class="menu-button" onclick="toggleSidebar()">☰</button>
+    </div>
+
+    <div class="sidebar" id="sidebar">
+        <div class="sidebar-logo">Work<span>sona</span>.js</div>
+        <nav class="sidebar-nav">
+            <h3>Documentation</h3>
+            <ul>
+                <li><a href="getting-started.html">Getting Started</a></li>
+                <li><a href="api-reference.html">API Reference</a></li>
+                <li><a href="use-cases.html" class="active">Use Cases</a></li>
+            </ul>
+            
+            <h3>Use Cases</h3>
+            <ul>
+                <li><a href="#customer-support">Customer Support</a></li>
+                <li><a href="#content-generation">Content Generation</a></li>
+                <li><a href="#document-processing">Document Processing</a></li>
+                <li><a href="#multi-agent-systems">Multi-Agent Systems</a></li>
+            </ul>
+            
+            <h3>Resources</h3>
+            <ul>
+                <li><a href="../index.html">Home</a></li>
+                <li><a href="../worksona-chatbot-example.html">Chatbot Demo</a></li>
+                <li><a href="../worksona-document-processor.html">Document Processor Demo</a></li>
+                <li><a href="https://github.com/worksona/worksona-js">GitHub</a></li>
+            </ul>
+        </nav>
+    </div>
+
+    <main class="content">
+        <h1>Use Cases</h1>
+        
+        <p>
+            This page showcases common use cases and implementation patterns for Worksona.js.
+            Each example includes code snippets and best practices for implementation.
+        </p>
+
+        <div class="use-case-card" id="customer-support">
+            <h3>Customer Support Chatbot</h3>
+            
+            <p>
+                Create a customer support chatbot that can handle common inquiries, provide product information,
+                and assist with basic troubleshooting.
+            </p>
+            
+            <h4>Implementation</h4>
+            
+            <pre><code><span class="comment">// Define the customer support agent</span>
+<span class="keyword">const</span> supportAgent = {
+  <span class="property">id</span>: <span class="string">'customer-support'</span>,
+  <span class="property">name</span>: <span class="string">'Sarah'</span>,
+  <span class="property">description</span>: <span class="string">'Friendly customer support specialist'</span>,
+  <span class="property">traits</span>: {
+    <span class="property">personality</span>: [<span class="string">'empathetic'</span>, <span class="string">'patient'</span>, <span class="string">'solution-oriented'</span>],
+    <span class="property">knowledge</span>: [<span class="string">'product catalog'</span>, <span class="string">'return policies'</span>, <span class="string">'shipping information'</span>],
+    <span class="property">tone</span>: <span class="string">'warm and professional'</span>
+  },
+  <span class="property">config</span>: {
+    <span class="property">provider</span>: <span class="string">'openai'</span>,
+    <span class="property">model</span>: <span class="string">'gpt-3.5-turbo'</span>,
+    <span class="property">temperature</span>: <span class="keyword">0.7</span>,
+    <span class="property">systemPrompt</span>: <span class="string">'You are Sarah, a friendly customer service rep...'</span>
+  }
+};
+
+<span class="comment">// Load the agent</span>
+<span class="keyword">await</span> worksona.loadAgent(supportAgent);
+
+<span class="comment">// Handle user messages</span>
+<span class="keyword">async function</span> handleUserMessage(message) {
+  <span class="keyword">try</span> {
+    <span class="keyword">const</span> response = <span class="keyword">await</span> worksona.chat(<span class="string">'customer-support'</span>, message);
+    displayResponse(response);
+  } <span class="keyword">catch</span> (error) {
+    handleError(error);
+  }
+}</code></pre>
+            
+            <h4>Best Practices</h4>
+            
+            <ul>
+                <li>Define clear personality traits and knowledge domains for consistent responses</li>
+                <li>Include example conversations in the system prompt</li>
+                <li>Implement error handling and fallback responses</li>
+                <li>Use the conversation history for context-aware responses</li>
+            </ul>
+
+            <h4>Implementation Prompt</h4>
+            <div class="prompt-block">
+                <pre><code># Customer Support Chatbot Implementation Prompt
+
+## Overview
+Create a customer support chatbot application using Worksona.js that provides automated customer service capabilities. The application should leverage AI agents to handle customer inquiries, provide product information, and assist with basic troubleshooting.
+
+## Technical Requirements
+- Framework: Worksona.js for AI agent management and interaction
+- Agent Configuration: Customer support agent with empathetic personality and product knowledge
+- UI: Clean, responsive chat interface
+- Features: Real-time chat, conversation history, typing indicators
+
+## Worksona.js Configuration
+```yaml
+# worksona-config.yaml
+version: 1.0.0
+
+core:
+  debug: true
+  controlPanel: true
+  defaultProvider: "openai"
+  maxHistoryLength: 10
+  eventHandling: true
+  errorReporting: true
+
+providers:
+  openai:
+    models:
+      - name: "gpt-3.5-turbo"
+        maxTokens: 4096
+        temperature: 0.7
+    rateLimits:
+      requestsPerMinute: 60
+      tokensPerMinute: 90000
+
+events:
+  chat:
+    - name: "chat-start"
+      data:
+        agentId: string
+        message: string
+    - name: "chat-complete"
+      data:
+        agentId: string
+        response: string
+    - name: "chat-error"
+      data:
+        agentId: string
+        error: object
+```
+
+## Agent Configuration
+```json
+{
+  "id": "customer-support",
+  "name": "Sarah",
+  "description": "Friendly customer support specialist with expertise in e-commerce and product support",
+  "traits": {
+    "personality": ["empathetic", "patient", "solution-oriented", "professional", "detail-oriented"],
+    "knowledge": [
+      "product catalog",
+      "return policies",
+      "shipping information",
+      "payment processing",
+      "order tracking",
+      "technical support",
+      "warranty information"
+    ],
+    "tone": "warm and professional",
+    "background": "Senior customer support specialist with 5 years of experience in e-commerce, specializing in product support and order management"
+  },
+  "config": {
+    "provider": "openai",
+    "model": "gpt-4",
+    "temperature": 0.7,
+    "maxTokens": 2000,
+    "systemPrompt": "You are Sarah, a senior customer support specialist with 5 years of experience in e-commerce. Your role is to provide exceptional customer service by: 1) Understanding customer needs and concerns, 2) Providing accurate product and policy information, 3) Guiding customers through order processes, 4) Resolving issues efficiently, 5) Maintaining a positive and professional tone. Always begin by acknowledging the customer's concern and showing empathy. Use your knowledge of products, policies, and procedures to provide accurate information. When handling complaints, focus on finding solutions while maintaining a calm and professional demeanor. For technical issues, guide customers through troubleshooting steps clearly and patiently.",
+    "examples": [
+      {
+        "user": "I received the wrong item in my order",
+        "assistant": "I'm so sorry to hear that you received the wrong item. This must be frustrating, and I'll help resolve this right away. Could you please provide your order number and let me know which item you received instead of what you ordered? This will help me process the correction quickly."
+      },
+      {
+        "user": "How do I return an item?",
+        "assistant": "I'd be happy to guide you through our return process. First, I'll need to know if the item is within our 30-day return window. Could you please provide your order number? Once I verify that, I can explain the specific steps for your return, including whether you'll need a return shipping label or if you can use our prepaid return service."
+      },
+      {
+        "user": "My order hasn't arrived yet",
+        "assistant": "I understand your concern about the delayed delivery. Let me help track down your order. Could you please provide your order number? I'll check the current status and shipping information. If there's a delay, I can explain what's happening and what options we have to resolve it."
+      },
+      {
+        "user": "The product isn't working as expected",
+        "assistant": "I'm sorry to hear you're having issues with the product. To help you effectively, I'll need some specific information: 1) What exactly isn't working as expected? 2) Have you tried the basic troubleshooting steps from the manual? 3) Are you seeing any error messages? Once you provide these details, I can guide you through the appropriate solution or arrange for a replacement if needed."
+      }
+    ]
+  }
+}
+```
+
+## Implementation Details
+1. Initialize Worksona.js with API keys
+2. Configure the customer support agent with predefined traits and knowledge
+3. Implement chat interface with message history
+4. Add typing indicators and response animations
+5. Include error handling and fallback responses
+6. Implement conversation context management
+
+## User Experience Requirements
+- Clear chat interface with message bubbles
+- Real-time response indicators
+- Easy access to conversation history
+- Ability to start new conversations
+- Clear error messages and recovery options
+
+## Example Interaction Flow
+1. User initiates chat
+2. Agent greets with personalized welcome
+3. User asks about product/issue
+4. Agent provides relevant information
+5. Follow-up questions handled with context
+6. Conversation history maintained for continuity
+
+## Success Metrics
+- Response accuracy
+- User satisfaction
+- Resolution rate
+- Average response time
+- Conversation completion rate
+
+## Testing Requirements
+- Unit tests for agent configuration
+- Integration tests for chat functionality
+- User acceptance testing
+- Performance testing under load
+- Error handling validation
+
+## Documentation Requirements
+- API documentation
+- User guide
+- Implementation guide
+- Troubleshooting guide</code></pre>
+            </div>
+        </div>
+
+        <div class="use-case-card" id="content-generation">
+            <h3>Content Generation</h3>
+            
+            <p>
+                Create an agent that can generate various types of content, such as blog posts, social media updates,
+                or product descriptions.
+            </p>
+            
+            <h4>Implementation</h4>
+            
+            <pre><code><span class="comment">// Define the content generation agent</span>
+<span class="keyword">const</span> contentAgent = {
+  <span class="property">id</span>: <span class="string">'content-writer'</span>,
+  <span class="property">name</span>: <span class="string">'Alex'</span>,
+  <span class="property">description</span>: <span class="string">'Creative content writer'</span>,
+  <span class="property">traits</span>: {
+    <span class="property">personality</span>: [<span class="string">'creative'</span>, <span class="string">'concise'</span>, <span class="string">'engaging'</span>],
+    <span class="property">knowledge</span>: [<span class="string">'SEO best practices'</span>, <span class="string">'content marketing'</span>],
+    <span class="property">tone</span>: <span class="string">'professional and engaging'</span>
+  },
+  <span class="property">config</span>: {
+    <span class="property">provider</span>: <span class="string">'anthropic'</span>,
+    <span class="property">model</span>: <span class="string">'claude-2'</span>,
+    <span class="property">temperature</span>: <span class="keyword">0.8</span>,
+    <span class="property">maxTokens</span>: <span class="keyword">1000</span>
+  }
+};
+
+<span class="comment">// Load the agent</span>
+<span class="keyword">await</span> worksona.loadAgent(contentAgent);
+
+<span class="comment">// Generate content</span>
+<span class="keyword">async function</span> generateContent(prompt, type) {
+  <span class="keyword">const</span> message = <span class="string">`Generate a ${type} about: ${prompt}`</span>;
+  <span class="keyword">const</span> content = <span class="keyword">await</span> worksona.chat(<span class="string">'content-writer'</span>, message);
+  <span class="keyword">return</span> content;
+}</code></pre>
+            
+            <h4>Best Practices</h4>
+            
+            <ul>
+                <li>Use a higher temperature for more creative content</li>
+                <li>Include specific guidelines in the system prompt</li>
+                <li>Implement content validation and editing workflows</li>
+                <li>Consider using different agents for different content types</li>
+            </ul>
+
+            <h4>Implementation Prompt</h4>
+            <div class="prompt-block">
+                <pre><code># Content Generation Application Prompt
+
+## Overview
+Create a content generation application using Worksona.js that can produce various types of content including blog posts, social media updates, and product descriptions. The application should leverage AI agents to generate high-quality, engaging content based on user inputs and requirements.
+
+## Technical Requirements
+- Framework: Worksona.js for AI agent management
+- Agent Configuration: Content generation agent with creative capabilities
+- UI: Clean, form-based interface for content parameters
+- Features: Content type selection, parameter customization, preview
+
+## Agent Configuration
+```json
+{
+  "id": "content-writer",
+  "name": "Alex",
+  "description": "Creative content writer specializing in digital marketing and brand storytelling",
+  "traits": {
+    "personality": ["creative", "concise", "engaging", "strategic", "adaptable"],
+    "knowledge": [
+      "SEO best practices",
+      "content marketing",
+      "brand storytelling",
+      "social media trends",
+      "digital marketing",
+      "copywriting techniques",
+      "content strategy"
+    ],
+    "tone": "professional and engaging",
+    "background": "Senior content strategist with 8 years of experience in digital marketing and brand development"
+  },
+  "config": {
+    "provider": "anthropic",
+    "model": "claude-2",
+    "temperature": 0.8,
+    "maxTokens": 2000,
+    "systemPrompt": "You are Alex, a senior content strategist specializing in digital marketing and brand storytelling. Your role is to create compelling content by: 1) Understanding the target audience and their needs, 2) Incorporating SEO best practices, 3) Maintaining brand voice and messaging, 4) Creating engaging and shareable content, 5) Optimizing for different platforms and formats. Always begin by analyzing the content requirements and target audience. Use your knowledge of SEO, content marketing, and brand storytelling to create content that resonates with the audience while achieving business objectives. Adapt your writing style based on the platform and content type while maintaining consistency in brand voice.",
+    "examples": [
+      {
+        "user": "Write a blog post about sustainable fashion",
+        "assistant": "I'll create a comprehensive blog post about sustainable fashion. First, let me outline the key points I'll cover: 1) Introduction to sustainable fashion and its importance, 2) Current trends in eco-friendly clothing, 3) How consumers can make sustainable choices, 4) Impact of fast fashion on the environment, 5) Future of sustainable fashion. Would you like me to proceed with writing the post? I'll ensure it's optimized for SEO and includes relevant keywords."
+      },
+      {
+        "user": "Create a social media post for our new product launch",
+        "assistant": "I'll craft an engaging social media post for your product launch. To make it effective, I'll need to know: 1) Which social media platform is this for? 2) What are the key features of the product? 3) What's the target audience? 4) Are there any specific hashtags or mentions to include? Once you provide these details, I can create a post that captures attention and drives engagement."
+      },
+      {
+        "user": "Write a product description for our new smartphone",
+        "assistant": "I'll create a compelling product description for your smartphone. To make it effective, I'll need: 1) Key specifications and features, 2) Target audience, 3) Unique selling points, 4) Price point, 5) Any special offers or promotions. I'll structure the description to highlight benefits while incorporating SEO-friendly keywords and maintaining a professional yet engaging tone."
+      }
+    ]
+  }
+}
+```
+
+## Implementation Details
+1. Initialize Worksona.js with API keys
+2. Configure content generation agent
+3. Create content parameter input forms
+4. Implement content preview and editing
+5. Add content validation and quality checks
+6. Include export functionality
+
+## User Experience Requirements
+- Intuitive content type selection
+- Clear parameter input forms
+- Real-time content preview
+- Edit and refine capabilities
+- Export options (HTML, Markdown, Plain Text)
+
+## Content Generation Flow
+1. User selects content type
+2. Inputs required parameters
+3. Agent generates initial content
+4. User reviews and edits
+5. Final content export
+
+## Success Metrics
+- Content quality score
+- Generation speed
+- User satisfaction
+- Edit frequency
+- Export success rate
+
+## Testing Requirements
+- Content quality validation
+- Parameter handling tests
+- Export functionality tests
+- Performance testing
+- Error handling validation
+
+## Documentation Requirements
+- Content type specifications
+- Parameter documentation
+- Best practices guide
+- API documentation
+- Troubleshooting guide</code></pre>
+            </div>
+        </div>
+
+        <div class="use-case-card" id="document-processing">
+            <h3>Document Processing</h3>
+            
+            <p>
+                Create an agent that can analyze, summarize, and extract information from documents.
+            </p>
+            
+            <h4>Implementation</h4>
+            
+            <pre><code><span class="comment">// Define the document processing agent</span>
+<span class="keyword">const</span> docAgent = {
+  <span class="property">id</span>: <span class="string">'document-processor'</span>,
+  <span class="property">name</span>: <span class="string">'Doc'</span>,
+  <span class="property">description</span>: <span class="string">'Document analysis specialist'</span>,
+  <span class="property">traits</span>: {
+    <span class="property">personality</span>: [<span class="string">'analytical'</span>, <span class="string">'precise'</span>, <span class="string">'thorough'</span>],
+    <span class="property">knowledge</span>: [<span class="string">'document analysis'</span>, <span class="string">'information extraction'</span>],
+    <span class="property">tone</span>: <span class="string">'formal and precise'</span>
+  },
+  <span class="property">config</span>: {
+    <span class="property">provider</span>: <span class="string">'openai'</span>,
+    <span class="property">model</span>: <span class="string">'gpt-4'</span>,
+    <span class="property">temperature</span>: <span class="keyword">0.3</span>,
+    <span class="property">maxTokens</span>: <span class="keyword">2000</span>
+  }
+};
+
+<span class="comment">// Load the agent</span>
+<span class="keyword">await</span> worksona.loadAgent(docAgent);
+
+<span class="comment">// Process a document</span>
+<span class="keyword">async function</span> processDocument(documentText, task) {
+  <span class="keyword">const</span> message = <span class="string">`Please ${task} the following document:\n\n${documentText}`</span>;
+  <span class="keyword">const</span> result = <span class="keyword">await</span> worksona.chat(<span class="string">'document-processor'</span>, message);
+  <span class="keyword">return</span> result;
+}</code></pre>
+            
+            <h4>Best Practices</h4>
+            
+            <ul>
+                <li>Use a lower temperature for more consistent results</li>
+                <li>Break down complex documents into smaller chunks</li>
+                <li>Implement validation and verification steps</li>
+                <li>Consider using different models for different document types</li>
+            </ul>
+
+            <h4>Implementation Prompt</h4>
+            <div class="prompt-block">
+                <pre><code># Document Processing Application Prompt
+
+## Overview
+Create a document processing application using Worksona.js that can analyze, summarize, and extract information from various document types. The application should leverage AI agents to process documents efficiently and provide accurate insights and summaries.
+
+## Technical Requirements
+- Framework: Worksona.js for AI agent management
+- Agent Configuration: Document processing agent with analytical capabilities
+- UI: Document upload and processing interface
+- Features: Document analysis, summarization, information extraction
+
+## Agent Configuration
+```json
+{
+  "id": "document-processor",
+  "name": "Doc",
+  "description": "Document analysis specialist with expertise in information extraction and summarization",
+  "traits": {
+    "personality": ["analytical", "precise", "thorough", "methodical", "detail-oriented"],
+    "knowledge": [
+      "document analysis",
+      "information extraction",
+      "text summarization",
+      "data validation",
+      "format recognition",
+      "content classification",
+      "metadata extraction"
+    ],
+    "tone": "formal and precise",
+    "background": "Senior document analysis specialist with 10 years of experience in information extraction and processing"
+  },
+  "config": {
+    "provider": "openai",
+    "model": "gpt-4",
+    "temperature": 0.3,
+    "maxTokens": 2000,
+    "systemPrompt": "You are Doc, a senior document analysis specialist. Your role is to process and analyze documents by: 1) Identifying document type and structure, 2) Extracting key information and metadata, 3) Summarizing content accurately, 4) Validating extracted information, 5) Organizing findings in a clear format. Always begin by analyzing the document's structure and content type. Use your knowledge of document analysis and information extraction to identify and extract relevant information. Maintain high accuracy in your analysis and provide clear, structured output. For complex documents, break down the analysis into logical sections and provide detailed explanations of your findings.",
+    "examples": [
+      {
+        "user": "Analyze this legal contract",
+        "assistant": "I'll analyze the legal contract systematically. First, I'll identify the key sections: 1) Parties involved, 2) Terms and conditions, 3) Obligations and responsibilities, 4) Payment terms, 5) Termination clauses. I'll extract the essential information from each section and provide a structured summary. Would you like me to proceed with the analysis? I'll ensure to highlight any critical points or potential concerns."
+      },
+      {
+        "user": "Summarize this research paper",
+        "assistant": "I'll create a comprehensive summary of the research paper. I'll structure it to include: 1) Research objectives and methodology, 2) Key findings and results, 3) Conclusions and implications, 4) Limitations and future research directions. I'll maintain academic rigor while making the content accessible. Would you like me to proceed with the summary?"
+      },
+      {
+        "user": "Extract key information from this financial report",
+        "assistant": "I'll extract the key financial information from the report. I'll focus on: 1) Financial performance metrics, 2) Revenue and expense analysis, 3) Key financial ratios, 4) Market position and trends, 5) Risk factors and mitigation strategies. I'll present the information in a clear, structured format with relevant context and explanations."
+      }
+    ]
+  }
+}
+```
+
+## Implementation Details
+1. Initialize Worksona.js with API keys
+2. Configure document processing agent
+3. Implement document upload and parsing
+4. Create analysis and extraction functions
+5. Add result visualization
+6. Include export capabilities
+
+## User Experience Requirements
+- Drag-and-drop document upload
+- Processing status indicators
+- Clear result presentation
+- Export options
+- Batch processing capability
+
+## Processing Flow
+1. Document upload
+2. Content extraction
+3. Analysis processing
+4. Result generation
+5. Export/visualization
+
+## Success Metrics
+- Processing accuracy
+- Extraction precision
+- Processing speed
+- User satisfaction
+- Error rate
+
+## Testing Requirements
+- Document processing accuracy
+- Format handling tests
+- Performance testing
+- Error handling validation
+- Export functionality tests
+
+## Documentation Requirements
+- Supported document types
+- Processing capabilities
+- API documentation
+- Best practices guide
+- Troubleshooting guide</code></pre>
+            </div>
+        </div>
+
+        <div class="use-case-card" id="multi-agent-systems">
+            <h3>Multi-Agent Systems</h3>
+            
+            <p>
+                Create a system of multiple agents that can work together to solve complex tasks.
+            </p>
+            
+            <h4>Implementation</h4>
+            
+            <pre><code><span class="comment">// Define multiple agents</span>
+<span class="keyword">const</span> agents = [
+  {
+    <span class="property">id</span>: <span class="string">'researcher'</span>,
+    <span class="property">name</span>: <span class="string">'Research'</span>,
+    <span class="property">description</span>: <span class="string">'Information gathering specialist'</span>,
+    <span class="property">config</span>: {
+      <span class="property">provider</span>: <span class="string">'openai'</span>,
+      <span class="property">model</span>: <span class="string">'gpt-4'</span>
+    }
+  },
+  {
+    <span class="property">id</span>: <span class="string">'analyst'</span>,
+    <span class="property">name</span>: <span class="string">'Analysis'</span>,
+    <span class="property">description</span>: <span class="string">'Data analysis specialist'</span>,
+    <span class="property">config</span>: {
+      <span class="property">provider</span>: <span class="string">'anthropic'</span>,
+      <span class="property">model</span>: <span class="string">'claude-2'</span>
+    }
+  },
+  {
+    <span class="property">id</span>: <span class="string">'writer'</span>,
+    <span class="property">name</span>: <span class="string">'Writer'</span>,
+    <span class="property">description</span>: <span class="string">'Content creation specialist'</span>,
+    <span class="property">config</span>: {
+      <span class="property">provider</span>: <span class="string">'openai'</span>,
+      <span class="property">model</span>: <span class="string">'gpt-3.5-turbo'</span>
+    }
+  }
+];
+
+<span class="comment">// Load all agents</span>
+<span class="keyword">for</span> (<span class="keyword">const</span> agent <span class="keyword">of</span> agents) {
+  <span class="keyword">await</span> worksona.loadAgent(agent);
+}
+
+<span class="comment">// Coordinate multiple agents</span>
+<span class="keyword">async function</span> coordinateAgents(task) {
+  <span class="comment">// Research phase</span>
+  <span class="keyword">const</span> research = <span class="keyword">await</span> worksona.chat(<span class="string">'researcher'</span>, task);
+  
+  <span class="comment">// Analysis phase</span>
+  <span class="keyword">const</span> analysis = <span class="keyword">await</span> worksona.chat(<span class="string">'analyst'</span>, research);
+  
+  <span class="comment">// Writing phase</span>
+  <span class="keyword">const</span> finalContent = <span class="keyword">await</span> worksona.chat(<span class="string">'writer'</span>, analysis);
+  
+  <span class="keyword">return</span> finalContent;
+}</code></pre>
+            
+            <h4>Best Practices</h4>
+            
+            <ul>
+                <li>Define clear roles and responsibilities for each agent</li>
+                <li>Implement proper error handling and fallback mechanisms</li>
+                <li>Use different providers/models for different tasks</li>
+                <li>Consider implementing a coordinator agent</li>
+            </ul>
+
+            <h4>Implementation Prompt</h4>
+            <div class="prompt-block">
+                <pre><code># Multi-Agent System Application Prompt
+
+## Overview
+Create a multi-agent system application using Worksona.js that coordinates multiple AI agents to solve complex tasks through collaboration. The system should leverage different agents with specialized capabilities working together to achieve comprehensive solutions.
+
+## Technical Requirements
+- Framework: Worksona.js for AI agent management
+- Agent Configuration: Multiple specialized agents
+- UI: Task input and result visualization interface
+- Features: Agent coordination, task distribution, result aggregation
+
+## Agent Configuration
+```json
+{
+  "agents": [
+    {
+      "id": "researcher",
+      "name": "Research",
+      "description": "Information gathering specialist with expertise in data collection and analysis",
+      "traits": {
+        "personality": ["thorough", "analytical", "curious", "methodical", "detail-oriented"],
+        "knowledge": [
+          "data collection",
+          "information gathering",
+          "source validation",
+          "research methodologies",
+          "data analysis",
+          "fact-checking",
+          "trend analysis"
+        ],
+        "tone": "professional and precise",
+        "background": "Senior research specialist with 8 years of experience in data collection and analysis"
+      },
+      "config": {
+        "provider": "openai",
+        "model": "gpt-4",
+        "temperature": 0.3,
+        "maxTokens": 2000,
+        "systemPrompt": "You are Research, a senior information gathering specialist. Your role is to collect and analyze information by: 1) Identifying relevant sources and data points, 2) Validating information accuracy, 3) Organizing findings systematically, 4) Identifying patterns and trends, 5) Preparing comprehensive research reports. Always begin by understanding the research objectives and scope. Use your knowledge of data collection and analysis to gather accurate and relevant information. Maintain high standards of accuracy and provide well-documented findings.",
+        "examples": [
+          {
+            "user": "Research the latest trends in AI technology",
+            "assistant": "I'll conduct a comprehensive research on AI technology trends. I'll focus on: 1) Recent developments and breakthroughs, 2) Industry applications and use cases, 3) Market trends and predictions, 4) Key players and innovations, 5) Ethical considerations and challenges. I'll gather information from reliable sources and provide a structured analysis of the findings."
+          }
+        ]
+      }
+    },
+    {
+      "id": "analyst",
+      "name": "Analysis",
+      "description": "Data analysis specialist with expertise in pattern recognition and insight generation",
+      "traits": {
+        "personality": ["analytical", "strategic", "insightful", "logical", "detail-oriented"],
+        "knowledge": [
+          "data analysis",
+          "pattern recognition",
+          "statistical analysis",
+          "trend analysis",
+          "insight generation",
+          "data visualization",
+          "predictive modeling"
+        ],
+        "tone": "professional and analytical",
+        "background": "Senior data analyst with 10 years of experience in pattern recognition and insight generation"
+      },
+      "config": {
+        "provider": "anthropic",
+        "model": "claude-2",
+        "temperature": 0.4,
+        "maxTokens": 2000,
+        "systemPrompt": "You are Analysis, a senior data analysis specialist. Your role is to analyze data and generate insights by: 1) Identifying patterns and trends, 2) Conducting statistical analysis, 3) Generating actionable insights, 4) Creating data visualizations, 5) Making data-driven recommendations. Always begin by understanding the analysis objectives and data context. Use your knowledge of data analysis and pattern recognition to identify meaningful insights. Present findings in a clear, structured format with supporting evidence.",
+        "examples": [
+          {
+            "user": "Analyze this market research data",
+            "assistant": "I'll analyze the market research data systematically. I'll focus on: 1) Key market trends and patterns, 2) Customer behavior analysis, 3) Competitive landscape assessment, 4) Growth opportunities and risks, 5) Strategic recommendations. I'll provide detailed analysis with supporting data and visualizations where appropriate."
+          }
+        ]
+      }
+    },
+    {
+      "id": "writer",
+      "name": "Writer",
+      "description": "Content creation specialist with expertise in technical and business writing",
+      "traits": {
+        "personality": ["creative", "precise", "adaptable", "strategic", "detail-oriented"],
+        "knowledge": [
+          "technical writing",
+          "business communication",
+          "content strategy",
+          "documentation",
+          "report writing",
+          "presentation development",
+          "editing and proofreading"
+        ],
+        "tone": "professional and clear",
+        "background": "Senior technical writer with 7 years of experience in business and technical documentation"
+      },
+      "config": {
+        "provider": "openai",
+        "model": "gpt-3.5-turbo",
+        "temperature": 0.7,
+        "maxTokens": 2000,
+        "systemPrompt": "You are Writer, a senior content creation specialist. Your role is to create clear and effective content by: 1) Understanding audience needs, 2) Organizing information logically, 3) Writing clear and concise content, 4) Maintaining consistent style and tone, 5) Ensuring accuracy and completeness. Always begin by understanding the content requirements and target audience. Use your knowledge of technical and business writing to create effective content. Adapt your writing style based on the content type while maintaining clarity and professionalism.",
+        "examples": [
+          {
+            "user": "Write a technical report based on this analysis",
+            "assistant": "I'll create a comprehensive technical report based on the analysis. I'll structure it to include: 1) Executive summary, 2) Methodology and approach, 3) Key findings and analysis, 4) Recommendations and next steps, 5) Supporting data and visualizations. I'll ensure the report is clear, well-organized, and accessible to the target audience."
+          }
+        ]
+      }
+    }
+  ]
+}
+```
+
+## Implementation Details
+1. Initialize Worksona.js with API keys
+2. Configure multiple specialized agents
+3. Implement agent coordination system
+4. Create task distribution logic
+5. Add result aggregation
+6. Include progress tracking
+
+## User Experience Requirements
+- Clear task input interface
+- Progress visualization
+- Result presentation
+- Agent status indicators
+- Error handling and recovery
+
+## System Flow
+1. Task input and analysis
+2. Agent task distribution
+3. Parallel processing
+4. Result aggregation
+5. Final output generation
+
+## Success Metrics
+- Task completion rate
+- Processing efficiency
+- Result quality
+- System reliability
+- User satisfaction
+
+## Testing Requirements
+- Agent coordination tests
+- Task distribution validation
+- Performance testing
+- Error handling validation
+- System integration tests
+
+## Documentation Requirements
+- Agent capabilities
+- System architecture
+- API documentation
+- Best practices guide
+- Troubleshooting guide</code></pre>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            sidebar.classList.toggle('active');
+        }
+
+        // Copy functionality for prompt blocks
+        document.querySelectorAll('.prompt-block').forEach(block => {
+            const header = block.querySelector('h4');
+            const copyButton = document.createElement('button');
+            copyButton.className = 'copy-button';
+            copyButton.textContent = 'Copy';
+            header.appendChild(copyButton);
+
+            copyButton.addEventListener('click', async () => {
+                const code = block.querySelector('code').textContent;
+                await navigator.clipboard.writeText(code);
+                
+                copyButton.textContent = 'Copied!';
+                copyButton.classList.add('copied');
+                
+                setTimeout(() => {
+                    copyButton.textContent = 'Copy';
+                    copyButton.classList.remove('copied');
+                }, 2000);
+            });
+        });
+    </script>
+</body>
+</html> 

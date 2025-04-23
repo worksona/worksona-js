@@ -1,0 +1,633 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Getting Started with Worksona.js</title>
+    <style>
+        /* Main styles */
+        :root {
+            --primary-color: #2563eb;
+            --primary-hover: #1d4ed8;
+            --secondary-color: #059669;
+            --text-color: #1e293b;
+            --light-bg: #f8fafc;
+            --border-color: #e2e8f0;
+            --code-bg: #1e293b;
+            --code-color: #f8fafc;
+            --card-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            --sidebar-width: 250px;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            margin: 0;
+            padding: 0;
+            color: var(--text-color);
+            background-color: var(--light-bg);
+            line-height: 1.6;
+            display: flex;
+            min-height: 100vh;
+        }
+
+        a {
+            color: var(--primary-color);
+            text-decoration: none;
+        }
+
+        a:hover {
+            text-decoration: underline;
+            color: var(--primary-hover);
+        }
+
+        /* Sidebar styles */
+        .sidebar {
+            width: var(--sidebar-width);
+            background-color: white;
+            border-right: 1px solid var(--border-color);
+            padding: 30px 0;
+            position: fixed;
+            height: 100vh;
+            overflow-y: auto;
+        }
+
+        .sidebar-logo {
+            padding: 0 20px 20px;
+            margin-bottom: 20px;
+            border-bottom: 1px solid var(--border-color);
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--primary-color);
+        }
+
+        .sidebar-logo span {
+            color: var(--secondary-color);
+        }
+
+        .sidebar-nav {
+            padding: 0 20px;
+        }
+
+        .sidebar-nav h3 {
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #64748b;
+            margin: 25px 0 10px;
+        }
+
+        .sidebar-nav ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .sidebar-nav li {
+            margin-bottom: 5px;
+        }
+
+        .sidebar-nav a {
+            display: block;
+            padding: 8px 10px;
+            border-radius: 4px;
+            color: var(--text-color);
+            font-size: 0.95rem;
+            transition: background-color 0.2s;
+        }
+
+        .sidebar-nav a:hover {
+            background-color: var(--light-bg);
+            text-decoration: none;
+        }
+
+        .sidebar-nav a.active {
+            background-color: #eff6ff;
+            color: var(--primary-color);
+            font-weight: 500;
+        }
+
+        /* Main content styles */
+        .content {
+            flex: 1;
+            margin-left: var(--sidebar-width);
+            padding: 30px 40px 60px;
+            max-width: 900px;
+        }
+
+        .content h1 {
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+            color: var(--text-color);
+        }
+
+        .content h2 {
+            font-size: 1.8rem;
+            margin-top: 40px;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid var(--border-color);
+            color: var(--text-color);
+        }
+
+        .content h3 {
+            font-size: 1.4rem;
+            margin-top: 30px;
+            margin-bottom: 15px;
+            color: var(--text-color);
+        }
+
+        .content p {
+            margin-bottom: 20px;
+        }
+
+        .content ul, .content ol {
+            margin-bottom: 20px;
+            padding-left: 20px;
+        }
+
+        .content li {
+            margin-bottom: 10px;
+        }
+
+        .content pre {
+            background-color: var(--code-bg);
+            color: var(--code-color);
+            border-radius: 6px;
+            padding: 20px;
+            overflow-x: auto;
+            margin: 20px 0;
+            font-family: monospace;
+            line-height: 1.5;
+        }
+
+        .content code {
+            font-family: monospace;
+            background-color: #e2e8f0;
+            padding: 2px 5px;
+            border-radius: 3px;
+            font-size: 0.9em;
+        }
+
+        .content pre code {
+            background-color: transparent;
+            padding: 0;
+            color: var(--code-color);
+            display: block;
+        }
+
+        /* Code highlighting */
+        .comment {
+            color: #94a3b8;
+        }
+
+        .string {
+            color: #4ade80;
+        }
+
+        .keyword {
+            color: #7dd3fc;
+        }
+
+        .property {
+            color: #f472b6;
+        }
+
+        /* Info, warning, tips boxes */
+        .info-box, .warning-box, .tip-box {
+            padding: 15px 20px;
+            border-radius: 6px;
+            margin: 20px 0;
+            position: relative;
+            padding-left: 60px;
+        }
+
+        .info-box::before, .warning-box::before, .tip-box::before {
+            content: "i";
+            position: absolute;
+            left: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 25px;
+            height: 25px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-style: italic;
+        }
+
+        .info-box {
+            background-color: #eff6ff;
+            border-left: 5px solid #3b82f6;
+        }
+
+        .info-box::before {
+            background-color: #3b82f6;
+            color: white;
+        }
+
+        .warning-box {
+            background-color: #fff7ed;
+            border-left: 5px solid #f97316;
+        }
+
+        .warning-box::before {
+            content: "!";
+            background-color: #f97316;
+            color: white;
+        }
+
+        .tip-box {
+            background-color: #f0fdf4;
+            border-left: 5px solid #22c55e;
+        }
+
+        .tip-box::before {
+            content: "✓";
+            background-color: #22c55e;
+            color: white;
+        }
+
+        /* Tables */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+
+        th, td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        th {
+            background-color: var(--light-bg);
+            font-weight: 600;
+        }
+
+        /* Top nav for mobile */
+        .mobile-nav {
+            display: none;
+            background-color: white;
+            padding: 15px 20px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        .mobile-nav-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: var(--primary-color);
+        }
+
+        .menu-button {
+            position: absolute;
+            right: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            color: var(--text-color);
+            cursor: pointer;
+            display: none;
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 1024px) {
+            :root {
+                --sidebar-width: 220px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            body {
+                flex-direction: column;
+            }
+
+            .sidebar {
+                width: 100%;
+                position: static;
+                height: auto;
+                display: none;
+                padding: 20px 0;
+            }
+
+            .sidebar.active {
+                display: block;
+            }
+
+            .content {
+                margin-left: 0;
+                padding: 20px;
+            }
+
+            .mobile-nav {
+                display: flex;
+                align-items: center;
+            }
+
+            .menu-button {
+                display: block;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="mobile-nav">
+        <div class="mobile-nav-title">Worksona.js Documentation</div>
+        <button class="menu-button" onclick="toggleSidebar()">☰</button>
+    </div>
+
+    <div class="sidebar" id="sidebar">
+        <div class="sidebar-logo">Work<span>sona</span>.js</div>
+        <nav class="sidebar-nav">
+            <h3>Documentation</h3>
+            <ul>
+                <li><a href="getting-started.html" class="active">Getting Started</a></li>
+                <li><a href="api-reference.html">API Reference</a></li>
+                <li><a href="use-cases.html">Use Cases</a></li>
+            </ul>
+            
+            <h3>Resources</h3>
+            <ul>
+                <li><a href="../index.html">Home</a></li>
+                <li><a href="../worksona-chatbot-example.html">Chatbot Demo</a></li>
+                <li><a href="../worksona-document-processor.html">Document Processor Demo</a></li>
+                <li><a href="https://github.com/worksona/worksona-js">GitHub</a></li>
+            </ul>
+        </nav>
+    </div>
+
+    <main class="content">
+        <h1>Getting Started with Worksona.js</h1>
+        
+        <p>
+            Welcome to Worksona.js! This guide will walk you through everything you need to know to get started with
+            creating and managing AI agents in your applications.
+        </p>
+
+        <div class="info-box">
+            <strong>Note:</strong> Worksona.js requires API keys from supported AI providers (OpenAI, Anthropic, Google) to function.
+            Make sure you have at least one API key ready before starting.
+        </div>
+
+        <h2 id="installation">Installation</h2>
+        
+        <h3>Script Tag</h3>
+        <p>The simplest way to include Worksona.js in your project is by using a script tag:</p>
+        
+        <pre><code>&lt;<span class="keyword">script</span> <span class="property">src</span>=<span class="string">"worksona.js"</span>&gt;&lt;/<span class="keyword">script</span>&gt;</code></pre>
+        
+        <h3>Coming Soon: NPM Installation</h3>
+        <p>We're working on making Worksona.js available as an NPM package. Stay tuned for updates!</p>
+
+        <h2 id="initialization">Initialization</h2>
+        
+        <p>To start using Worksona.js, you need to create a new instance with your API keys:</p>
+        
+        <pre><code><span class="comment">// Create a new Worksona instance</span>
+<span class="keyword">const</span> worksona = <span class="keyword">new</span> Worksona({
+  <span class="property">apiKeys</span>: {
+    <span class="property">openai</span>: <span class="string">'your-openai-api-key'</span>,
+    <span class="property">anthropic</span>: <span class="string">'your-anthropic-api-key'</span>,
+    <span class="property">google</span>: <span class="string">'your-google-api-key'</span>
+  },
+  <span class="property">debug</span>: <span class="keyword">true</span>,    <span class="comment">// Optional: Enable debug logging</span>
+  <span class="property">controlPanel</span>: <span class="keyword">true</span>  <span class="comment">// Optional: Enable the built-in control panel</span>
+});</code></pre>
+
+        <div class="tip-box">
+            <strong>Tip:</strong> You don't need to provide all API keys at once. You can start with just one and add more later through the control panel or API calls.
+        </div>
+
+        <h3>Configuration Options</h3>
+        
+        <table>
+            <tr>
+                <th>Option</th>
+                <th>Type</th>
+                <th>Description</th>
+                <th>Default</th>
+            </tr>
+            <tr>
+                <td><code>apiKeys</code></td>
+                <td>Object</td>
+                <td>API keys for supported providers (openai, anthropic, google)</td>
+                <td><code>{}</code></td>
+            </tr>
+            <tr>
+                <td><code>debug</code></td>
+                <td>Boolean</td>
+                <td>Enable debug logging to console</td>
+                <td><code>false</code></td>
+            </tr>
+            <tr>
+                <td><code>controlPanel</code></td>
+                <td>Boolean</td>
+                <td>Enable built-in floating control panel</td>
+                <td><code>false</code></td>
+            </tr>
+            <tr>
+                <td><code>defaultProvider</code></td>
+                <td>String</td>
+                <td>Default provider to use when not specified</td>
+                <td><code>'openai'</code></td>
+            </tr>
+        </table>
+
+        <h2 id="creating-agents">Creating Agents</h2>
+        
+        <p>Agents are the core of Worksona.js. Each agent has a unique personality, knowledge base, and configuration.</p>
+        
+        <h3>Method 1: Define an Agent in Code</h3>
+        
+        <pre><code><span class="keyword">const</span> agent = {
+  <span class="property">id</span>: <span class="string">'customer-support'</span>,
+  <span class="property">name</span>: <span class="string">'Sarah'</span>,
+  <span class="property">description</span>: <span class="string">'Friendly customer support specialist'</span>,
+  <span class="property">traits</span>: {
+    <span class="property">personality</span>: [<span class="string">'empathetic'</span>, <span class="string">'patient'</span>, <span class="string">'solution-oriented'</span>],
+    <span class="property">knowledge</span>: [<span class="string">'product catalog'</span>, <span class="string">'return policies'</span>],
+    <span class="property">tone</span>: <span class="string">'warm and professional'</span>,
+    <span class="property">background</span>: <span class="string">'5 years of experience in e-commerce support'</span>
+  },
+  <span class="property">config</span>: {
+    <span class="property">provider</span>: <span class="string">'openai'</span>,
+    <span class="property">model</span>: <span class="string">'gpt-3.5-turbo'</span>,
+    <span class="property">temperature</span>: <span class="keyword">0.7</span>,
+    <span class="property">maxTokens</span>: <span class="keyword">500</span>,
+    <span class="property">systemPrompt</span>: <span class="string">'You are Sarah, a friendly customer service rep...'</span>,
+    <span class="property">examples</span>: [
+      {
+        <span class="property">user</span>: <span class="string">"I received the wrong item in my order"</span>,
+        <span class="property">assistant</span>: <span class="string">"I'm so sorry to hear that. Let me help resolve this..."</span>
+      }
+    ]
+  }
+};
+
+<span class="comment">// Load the agent into the Worksona instance</span>
+<span class="keyword">await</span> worksona.loadAgent(agent);</code></pre>
+
+        <h3>Method 2: Load from JSON File</h3>
+        
+        <p>You can also define your agents in JSON files and load them at runtime:</p>
+        
+        <pre><code><span class="comment">// Load an agent from a JSON file</span>
+<span class="keyword">const</span> response = <span class="keyword">await</span> fetch('agents/customer-support.json');
+<span class="keyword">const</span> agentConfig = <span class="keyword">await</span> response.json();
+<span class="keyword">await</span> worksona.loadAgent(agentConfig);</code></pre>
+
+        <h3>Agent Structure</h3>
+        
+        <table>
+            <tr>
+                <th>Property</th>
+                <th>Type</th>
+                <th>Description</th>
+                <th>Required</th>
+            </tr>
+            <tr>
+                <td><code>id</code></td>
+                <td>String</td>
+                <td>Unique identifier for the agent</td>
+                <td>Yes</td>
+            </tr>
+            <tr>
+                <td><code>name</code></td>
+                <td>String</td>
+                <td>Display name for the agent</td>
+                <td>Yes</td>
+            </tr>
+            <tr>
+                <td><code>description</code></td>
+                <td>String</td>
+                <td>Brief description of the agent's purpose</td>
+                <td>Yes</td>
+            </tr>
+            <tr>
+                <td><code>traits</code></td>
+                <td>Object</td>
+                <td>Personality traits and characteristics</td>
+                <td>No</td>
+            </tr>
+            <tr>
+                <td><code>config</code></td>
+                <td>Object</td>
+                <td>Provider and model configuration</td>
+                <td>Yes</td>
+            </tr>
+        </table>
+
+        <div class="info-box">
+            <strong>Note:</strong> All properties in the <code>traits</code> object are optional but recommended for creating more personalized and consistent agent behavior.
+        </div>
+
+        <h2 id="interacting-with-agents">Interacting with Agents</h2>
+        
+        <h3>Basic Chat Interaction</h3>
+        
+        <p>To chat with an agent, use the <code>chat()</code> method:</p>
+        
+        <pre><code><span class="comment">// Send a message to the agent and get a response</span>
+<span class="keyword">const</span> response = <span class="keyword">await</span> worksona.chat(<span class="string">'customer-support'</span>, <span class="string">'I need help with my recent order'</span>);
+console.log(response);</code></pre>
+
+        <h3>Handling Conversation History</h3>
+        
+        <p>Worksona.js automatically manages conversation history for you. Each subsequent call to <code>chat()</code> will include previous messages as context:</p>
+        
+        <pre><code><span class="comment">// First message</span>
+<span class="keyword">let</span> response1 = <span class="keyword">await</span> worksona.chat(<span class="string">'customer-support'</span>, <span class="string">'My order #12345 is late'</span>);
+console.log(response1);
+
+<span class="comment">// Follow-up message (includes context from previous exchange)</span>
+<span class="keyword">let</span> response2 = <span class="keyword">await</span> worksona.chat(<span class="string">'customer-support'</span>, <span class="string">'When can I expect it to arrive?'</span>);
+console.log(response2);</code></pre>
+
+        <h3>Clearing Conversation History</h3>
+        
+        <p>To start a fresh conversation, clear the chat history:</p>
+        
+        <pre><code><span class="comment">// Clear the conversation history for a specific agent</span>
+worksona.clearHistory(<span class="string">'customer-support'</span>);</code></pre>
+
+        <h2 id="event-handling">Event Handling</h2>
+        
+        <p>Worksona.js provides an event system to help you track and respond to various states:</p>
+        
+        <pre><code><span class="comment">// Listen for when a chat begins</span>
+worksona.on(<span class="string">'chat-start'</span>, (data) => {
+  console.log(`Chat started with agent: ${data.agentId}`);
+  <span class="comment">// Show loading indicator, etc.</span>
+});
+
+<span class="comment">// Listen for when a chat completes</span>
+worksona.on(<span class="string">'chat-complete'</span>, (data) => {
+  console.log(`Chat completed with agent: ${data.agentId}`);
+  <span class="comment">// Hide loading indicator, etc.</span>
+});
+
+<span class="comment">// Listen for errors</span>
+worksona.on(<span class="string">'error'</span>, (error) => {
+  console.error(`Error: ${error.message}`);
+  <span class="comment">// Show error message to user</span>
+});
+
+<span class="comment">// Listen for API key updates</span>
+worksona.on(<span class="string">'api-key-update'</span>, (data) => {
+  console.log(`API key updated for provider: ${data.provider}`);
+});</code></pre>
+
+        <h2 id="using-the-control-panel">Using the Control Panel</h2>
+        
+        <p>Worksona.js includes a built-in control panel for managing API keys, testing providers, and configuring agents:</p>
+        
+        <h3>Enabling the Control Panel</h3>
+        
+        <pre><code><span class="keyword">const</span> worksona = <span class="keyword">new</span> Worksona({
+  <span class="comment">// ... other config</span>
+  <span class="property">controlPanel</span>: <span class="keyword">true</span>
+});</code></pre>
+
+        <p>When enabled, a floating control panel button will appear in the bottom right corner of your application.</p>
+
+        <h3>Control Panel Features</h3>
+        
+        <ul>
+            <li><strong>API Key Management:</strong> Add, edit, and test API keys for different providers</li>
+            <li><strong>Provider Status:</strong> Check which providers are available and which models are active</li>
+            <li><strong>Agent Management:</strong> View and edit loaded agents</li>
+            <li><strong>Debug Logging:</strong> Toggle debug mode to see detailed logs in the console</li>
+        </ul>
+
+        <h2 id="next-steps">Next Steps</h2>
+        
+        <p>Now that you have a basic understanding of Worksona.js, you can:</p>
+        
+        <ul>
+            <li>Explore the <a href="api-reference.html">API Reference</a> for detailed information on all methods and properties</li>
+            <li>Check out the <a href="use-cases.html">Use Cases</a> for real-world examples and implementation patterns</li>
+            <li>Try the <a href="../worksona-chatbot-example.html">Chatbot Demo</a> to see a multi-agent chat interface in action</li>
+            <li>Experiment with the <a href="../worksona-document-processor.html">Document Processor Demo</a> to see how agents can analyze and process documents</li>
+        </ul>
+
+        <div class="tip-box">
+            <strong>Pro Tip:</strong> Start simple with one agent and basic functionality, then gradually add more agents and features as you get comfortable with the library.
+        </div>
+
+    </main>
+
+    <script>
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            sidebar.classList.toggle('active');
+        }
+    </script>
+</body>
+</html> 

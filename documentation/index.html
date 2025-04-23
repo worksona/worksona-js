@@ -1,0 +1,608 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Worksona.js - AI Agent Framework API</title>
+    <style>
+        /* Main styles */
+        :root {
+            --primary-color: #2563eb;
+            --primary-hover: #1d4ed8;
+            --secondary-color: #059669;
+            --text-color: #1e293b;
+            --light-bg: #f8fafc;
+            --border-color: #e2e8f0;
+            --card-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            margin: 0;
+            padding: 0;
+            color: var(--text-color);
+            background-color: var(--light-bg);
+            line-height: 1.6;
+        }
+
+        a {
+            color: var(--primary-color);
+            text-decoration: none;
+        }
+
+        a:hover {
+            text-decoration: underline;
+            color: var(--primary-hover);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* Header styles */
+        header {
+            background-color: white;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        .header-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--primary-color);
+            display: flex;
+            align-items: center;
+        }
+
+        .logo span {
+            color: var(--secondary-color);
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 30px;
+        }
+
+        .nav-links a {
+            color: var(--text-color);
+            font-weight: 500;
+        }
+
+        .nav-links a:hover {
+            color: var(--primary-color);
+        }
+
+        /* Hero section */
+        .hero {
+            padding: 80px 0;
+            background: linear-gradient(135deg, #eff6ff 0%, #f0fdf4 100%);
+            text-align: center;
+        }
+
+        .hero h1 {
+            font-size: 2.8rem;
+            margin-bottom: 20px;
+            color: var(--text-color);
+        }
+
+        .hero p {
+            font-size: 1.2rem;
+            max-width: 700px;
+            margin: 0 auto 40px;
+            color: #475569;
+        }
+
+        .button {
+            display: inline-block;
+            background-color: var(--primary-color);
+            color: white;
+            padding: 12px 25px;
+            border-radius: 6px;
+            font-weight: 500;
+            transition: background-color 0.2s;
+        }
+
+        .button:hover {
+            background-color: var(--primary-hover);
+            text-decoration: none;
+            color: white;
+        }
+
+        .button.secondary {
+            background-color: white;
+            color: var(--primary-color);
+            border: 1px solid var(--primary-color);
+            margin-left: 15px;
+        }
+
+        .button.secondary:hover {
+            background-color: #f8fafc;
+            color: var(--primary-hover);
+        }
+
+        /* Features section */
+        .features {
+            padding: 80px 0;
+        }
+
+        .section-title {
+            text-align: center;
+            margin-bottom: 60px;
+        }
+
+        .section-title h2 {
+            font-size: 2.2rem;
+            color: var(--text-color);
+            margin-bottom: 15px;
+        }
+
+        .section-title p {
+            font-size: 1.1rem;
+            color: #475569;
+            max-width: 700px;
+            margin: 0 auto;
+        }
+
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+        }
+
+        .feature-card {
+            background-color: white;
+            border-radius: 8px;
+            padding: 30px;
+            box-shadow: var(--card-shadow);
+        }
+
+        .feature-card h3 {
+            font-size: 1.5rem;
+            margin-top: 0;
+            margin-bottom: 15px;
+            color: var(--primary-color);
+        }
+
+        .feature-card p {
+            color: #475569;
+            margin: 0;
+        }
+
+        /* Demo section */
+        .demos {
+            padding: 80px 0;
+            background-color: var(--light-bg);
+        }
+
+        .demo-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 30px;
+        }
+
+        .demo-card {
+            background-color: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: var(--card-shadow);
+            transition: transform 0.3s;
+        }
+
+        .demo-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .demo-image {
+            height: 200px;
+            background-color: #e2e8f0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #94a3b8;
+            font-size: 1.2rem;
+        }
+
+        .demo-content {
+            padding: 25px;
+        }
+
+        .demo-content h3 {
+            margin-top: 0;
+            margin-bottom: 10px;
+            font-size: 1.4rem;
+        }
+
+        .demo-content p {
+            color: #475569;
+            margin-bottom: 20px;
+        }
+
+        /* Documentation section */
+        .documentation {
+            padding: 80px 0;
+        }
+
+        .doc-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+        }
+
+        .doc-card {
+            background-color: white;
+            border-radius: 8px;
+            padding: 30px;
+            box-shadow: var(--card-shadow);
+            transition: transform 0.3s;
+        }
+
+        .doc-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .doc-card h3 {
+            margin-top: 0;
+            margin-bottom: 15px;
+            font-size: 1.4rem;
+        }
+
+        .doc-card p {
+            color: #475569;
+            margin-bottom: 20px;
+        }
+
+        /* API quick start */
+        .quick-start {
+            padding: 80px 0;
+            background-color: var(--light-bg);
+        }
+
+        .code-block {
+            background-color: #1e293b;
+            color: #f8fafc;
+            border-radius: 8px;
+            padding: 25px;
+            font-family: monospace;
+            overflow-x: auto;
+            margin: 30px 0;
+        }
+
+        .code-block code {
+            display: block;
+            line-height: 1.6;
+        }
+
+        .comment {
+            color: #94a3b8;
+        }
+
+        .string {
+            color: #4ade80;
+        }
+
+        .keyword {
+            color: #7dd3fc;
+        }
+
+        .property {
+            color: #f472b6;
+        }
+
+        /* Footer */
+        footer {
+            background-color: #1e293b;
+            color: white;
+            padding: 50px 0;
+        }
+
+        .footer-container {
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 40px;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        .footer-section {
+            flex: 1;
+            min-width: 200px;
+        }
+
+        .footer-section h4 {
+            margin-top: 0;
+            margin-bottom: 20px;
+            font-size: 1.2rem;
+        }
+
+        .footer-section ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .footer-section ul li {
+            margin-bottom: 10px;
+        }
+
+        .footer-section a {
+            color: #cbd5e1;
+        }
+
+        .footer-section a:hover {
+            color: white;
+        }
+
+        .copyright {
+            text-align: center;
+            padding-top: 40px;
+            color: #94a3b8;
+            font-size: 0.9rem;
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .header-container {
+                flex-direction: column;
+                gap: 20px;
+            }
+
+            .nav-links {
+                width: 100%;
+                justify-content: center;
+            }
+
+            .hero h1 {
+                font-size: 2.3rem;
+            }
+
+            .hero p {
+                font-size: 1.1rem;
+            }
+
+            .feature-grid, .demo-grid, .doc-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="header-container">
+            <div class="logo">Work<span>sona</span>.js</div>
+            <nav class="nav-links">
+                <a href="#features">Features</a>
+                <a href="#demos">Demos</a>
+                <a href="#documentation">Documentation</a>
+                <a href="#quick-start">Quick Start</a>
+            </nav>
+        </div>
+    </header>
+
+    <section class="hero">
+        <div class="container">
+            <h1>Build AI Agents with <br>Worksona.js</h1>
+            <p>A lightweight, powerful framework for creating and managing AI agents across different providers. Simplify your AI implementation with a unified API.</p>
+            <div>
+                <a href="getting-started.html" class="button">Get Started</a>
+                <a href="https://github.com/worksona/worksona-js" class="button secondary">View on GitHub</a>
+            </div>
+        </div>
+    </section>
+
+    <section class="features" id="features">
+        <div class="container">
+            <div class="section-title">
+                <h2>Key Features</h2>
+                <p>Everything you need to create, manage, and scale AI agents in your applications</p>
+            </div>
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <h3>Multi-Provider Support</h3>
+                    <p>Connect to OpenAI, Anthropic, Google, and more with a single unified API. Switch providers easily without changing your application code.</p>
+                </div>
+                <div class="feature-card">
+                    <h3>Agent Management</h3>
+                    <p>Create and manage AI agents with unique personalities, knowledge domains, and behavior patterns. Load agents from JSON or define them in code.</p>
+                </div>
+                <div class="feature-card">
+                    <h3>Conversation History</h3>
+                    <p>Automatic conversation memory and context management. Agents remember past interactions for more coherent, contextual responses.</p>
+                </div>
+                <div class="feature-card">
+                    <h3>Extensible Architecture</h3>
+                    <p>Extend functionality with plugins and custom modules. Build complex AI workflows with a modular approach.</p>
+                </div>
+                <div class="feature-card">
+                    <h3>Built-in Control Panel</h3>
+                    <p>Configure API keys, test providers, and manage agents through an intuitive control panel that integrates directly into your application.</p>
+                </div>
+                <div class="feature-card">
+                    <h3>Developer-Friendly</h3>
+                    <p>Simple, consistent API with comprehensive documentation and examples. Get your AI agents up and running in minutes.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="demos" id="demos">
+        <div class="container">
+            <div class="section-title">
+                <h2>Interactive Demos</h2>
+                <p>See Worksona.js in action with these live examples</p>
+            </div>
+            <div class="demo-grid">
+                <div class="demo-card">
+                    <div class="demo-image">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" fill="#94a3b8" viewBox="0 0 16 16">
+                            <path d="M14 1a1 1 0 0 1 1 1v8a1 1 0 0 1-1 1H4.414A2 2 0 0 0 3 11.586l-2 2V2a1 1 0 0 1 1-1h12zM2 0a2 2 0 0 0-2 2v12.793a.5.5 0 0 0 .854.353l2.853-2.853A1 1 0 0 1 4.414 12H14a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H2z"/>
+                            <path d="M3 3.5a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 0 1h-9a.5.5 0 0 1-.5-.5zM3 6a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 0 1h-9A.5.5 0 0 1 3 6zm0 2.5a.5.5 0 0 1 .5-.5h5a.5.5 0 0 1 0 1h-5a.5.5 0 0 1-.5-.5z"/>
+                        </svg>
+                    </div>
+                    <div class="demo-content">
+                        <h3>Multi-Agent Chatbot</h3>
+                        <p>Interactive demo showcasing multiple AI agents with different personalities and expertise working in a chat interface.</p>
+                        <a href="../worksona-chatbot-example.html" class="button">View Demo</a>
+                    </div>
+                </div>
+                <div class="demo-card">
+                    <div class="demo-image">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" fill="#94a3b8" viewBox="0 0 16 16">
+                            <path d="M4 0h8a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2zm0 1a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H4z"/>
+                            <path d="M4.5 12.5A.5.5 0 0 1 5 12h6a.5.5 0 0 1 0 1H5a.5.5 0 0 1-.5-.5zm0-2A.5.5 0 0 1 5 10h6a.5.5 0 0 1 0 1H5a.5.5 0 0 1-.5-.5zm0-2A.5.5 0 0 1 5 8h6a.5.5 0 0 1 0 1H5a.5.5 0 0 1-.5-.5zm0-2A.5.5 0 0 1 5 6h6a.5.5 0 0 1 0 1H5a.5.5 0 0 1-.5-.5zm0-2A.5.5 0 0 1 5 4h6a.5.5 0 0 1 0 1H5a.5.5 0 0 1-.5-.5z"/>
+                        </svg>
+                    </div>
+                    <div class="demo-content">
+                        <h3>Document Processing Suite</h3>
+                        <p>See how Worksona.js can power document analysis, extraction, and processing with specialized AI agents.</p>
+                        <a href="../worksona-document-processor.html" class="button">View Demo</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="documentation" id="documentation">
+        <div class="container">
+            <div class="section-title">
+                <h2>Documentation</h2>
+                <p>Comprehensive guides to help you get the most out of Worksona.js</p>
+            </div>
+            <div class="doc-grid">
+                <div class="doc-card">
+                    <h3>Getting Started</h3>
+                    <p>Learn the basics of Worksona.js, from installation to creating your first AI agent.</p>
+                    <a href="getting-started.html" class="button">Read Guide</a>
+                </div>
+                <div class="doc-card">
+                    <h3>API Reference</h3>
+                    <p>Complete API documentation with methods, properties, events, and configuration options.</p>
+                    <a href="api-reference.html" class="button">View API</a>
+                </div>
+                <div class="doc-card">
+                    <h3>Use Cases</h3>
+                    <p>Explore common implementation patterns and real-world applications of Worksona.js.</p>
+                    <a href="use-cases.html" class="button">Explore Use Cases</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="quick-start" id="quick-start">
+        <div class="container">
+            <div class="section-title">
+                <h2>Quick Start Guide</h2>
+                <p>Get up and running with Worksona.js in minutes</p>
+            </div>
+            
+            <h3>1. Include the Library</h3>
+            <div class="code-block">
+                <code>&lt;<span class="keyword">script</span> <span class="property">src</span>=<span class="string">"worksona.js"</span>&gt;&lt;/<span class="keyword">script</span>&gt;</code>
+            </div>
+            
+            <h3>2. Initialize with API Keys</h3>
+            <div class="code-block">
+                <code><span class="comment">// Create a new Worksona instance</span></code>
+                <code><span class="keyword">const</span> worksona = <span class="keyword">new</span> Worksona({</code>
+                <code>  <span class="property">apiKeys</span>: {</code>
+                <code>    <span class="property">openai</span>: <span class="string">'your-openai-api-key'</span>,</code>
+                <code>    <span class="property">anthropic</span>: <span class="string">'your-anthropic-api-key'</span>,</code>
+                <code>    <span class="property">google</span>: <span class="string">'your-google-api-key'</span></code>
+                <code>  },</code>
+                <code>  <span class="property">debug</span>: <span class="keyword">true</span>,</code>
+                <code>  <span class="property">controlPanel</span>: <span class="keyword">true</span></code>
+                <code>});</code>
+            </div>
+            
+            <h3>3. Define an Agent</h3>
+            <div class="code-block">
+                <code><span class="keyword">const</span> agent = {</code>
+                <code>  <span class="property">id</span>: <span class="string">'customer-support'</span>,</code>
+                <code>  <span class="property">name</span>: <span class="string">'Sarah'</span>,</code>
+                <code>  <span class="property">description</span>: <span class="string">'Friendly customer support specialist'</span>,</code>
+                <code>  <span class="property">traits</span>: {</code>
+                <code>    <span class="property">personality</span>: [<span class="string">'empathetic'</span>, <span class="string">'patient'</span>, <span class="string">'solution-oriented'</span>],</code>
+                <code>    <span class="property">knowledge</span>: [<span class="string">'product catalog'</span>, <span class="string">'return policies'</span>],</code>
+                <code>    <span class="property">tone</span>: <span class="string">'warm and professional'</span></code>
+                <code>  },</code>
+                <code>  <span class="property">config</span>: {</code>
+                <code>    <span class="property">provider</span>: <span class="string">'openai'</span>,</code>
+                <code>    <span class="property">model</span>: <span class="string">'gpt-3.5-turbo'</span>,</code>
+                <code>    <span class="property">temperature</span>: <span class="keyword">0.7</span>,</code>
+                <code>    <span class="property">systemPrompt</span>: <span class="string">'You are Sarah, a friendly customer service rep...'</span></code>
+                <code>  }</code>
+                <code>};</code>
+                <code></code>
+                <code><span class="comment">// Load the agent</span></code>
+                <code><span class="keyword">await</span> worksona.loadAgent(agent);</code>
+            </div>
+            
+            <h3>4. Chat with Your Agent</h3>
+            <div class="code-block">
+                <code><span class="comment">// Send a message to the agent and get a response</span></code>
+                <code><span class="keyword">const</span> response = <span class="keyword">await</span> worksona.chat(<span class="string">'customer-support'</span>, <span class="string">'I need help with my recent order'</span>);</code>
+                <code>console.log(response);</code>
+            </div>
+            
+            <div class="text-center" style="margin-top: 40px;">
+                <a href="getting-started.html" class="button">Read the Full Guide</a>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <div class="footer-container">
+            <div class="footer-section">
+                <h4>Worksona.js</h4>
+                <ul>
+                    <li><a href="#features">Features</a></li>
+                    <li><a href="#demos">Demos</a></li>
+                    <li><a href="#documentation">Documentation</a></li>
+                    <li><a href="#quick-start">Quick Start</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h4>Documentation</h4>
+                <ul>
+                    <li><a href="getting-started.html">Getting Started</a></li>
+                    <li><a href="api-reference.html">API Reference</a></li>
+                    <li><a href="use-cases.html">Use Cases</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h4>Resources</h4>
+                <ul>
+                    <li><a href="https://github.com/yourusername/worksona-js">GitHub</a></li>
+                    <li><a href="#">Changelog</a></li>
+                    <li><a href="#">Community</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h4>Legal</h4>
+                <ul>
+                    <li><a href="#">Privacy Policy</a></li>
+                    <li><a href="#">Terms of Service</a></li>
+                    <li><a href="#">License</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="copyright">
+            &copy; 2023 Worksona.js. All rights reserved.
+        </div>
+    </footer>
+</body>
+</html> 

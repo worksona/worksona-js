@@ -1,0 +1,690 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Multi-Agent Chatbot with Worksona.js</title>
+    <!-- Add Marked library for markdown parsing -->
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <!-- Add highlight.js for code syntax highlighting -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+    <!-- Add Worksona.js -->
+    <script src="worksona.js"></script>
+    <style>
+        /* Main layout styles */
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f5f5f5;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        .app-container {
+            height: 100vh;
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 300px 1fr;
+            gap: 20px;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        /* Sidebar styles */
+        .sidebar {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            display: flex;
+            flex-direction: column;
+            height: calc(100vh - 40px);
+            max-height: calc(100vh - 40px);
+            overflow: hidden;
+        }
+
+        .sidebar h2 {
+            margin: 0 0 20px 0;
+            color: #1e40af;
+            font-size: 20px;
+            flex-shrink: 0;
+        }
+
+        .agent-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            overflow-y: auto;
+            padding-right: 5px;
+            flex: 1;
+        }
+
+        .agent-card {
+            padding: 15px;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+            flex-shrink: 0;
+        }
+
+        .agent-card:hover {
+            border-color: #2563eb;
+            background: #eff6ff;
+        }
+
+        .agent-card.active {
+            border-color: #2563eb;
+            background: #eff6ff;
+        }
+
+        .agent-card h3 {
+            margin: 0 0 5px 0;
+            color: #1e40af;
+            font-size: 16px;
+        }
+
+        .agent-card p {
+            margin: 0;
+            font-size: 14px;
+            color: #64748b;
+        }
+
+        /* Main content area styles */
+        .main-content {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            height: calc(100vh - 40px);
+            max-height: calc(100vh - 40px);
+        }
+
+        /* Chat area styles */
+        .chat-area {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            min-height: 0;
+        }
+
+        .message {
+            margin-bottom: 15px;
+            display: flex;
+            align-items: flex-start;
+            animation: messageAppear 0.3s ease-out;
+        }
+
+        @keyframes messageAppear {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .message-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: white;
+            margin-right: 10px;
+            flex-shrink: 0;
+        }
+
+        .message.user .message-avatar {
+            background: #2563eb;
+        }
+
+        .message.agent .message-avatar {
+            background: #059669;
+        }
+
+        .message-content {
+            flex: 1;
+            background: #f1f5f9;
+            padding: 12px 16px;
+            border-radius: 12px;
+            max-width: 80%;
+            font-size: 15px;
+            line-height: 1.5;
+        }
+
+        .message.user .message-content {
+            background: #2563eb;
+            color: white;
+            margin-left: auto;
+        }
+
+        /* Input area styles */
+        .input-area {
+            padding: 15px;
+            border-top: 1px solid #e2e8f0;
+            background: #ffffff;
+            flex-shrink: 0;
+        }
+
+        .input-container {
+            display: flex;
+            gap: 10px;
+        }
+
+        .input-container input {
+            flex: 1;
+            padding: 12px 16px;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 16px;
+        }
+
+        .input-container button {
+            padding: 12px 24px;
+            background: #2563eb;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background 0.2s;
+        }
+
+        .input-container button:hover {
+            background: #1d4ed8;
+        }
+
+        .input-container button:disabled {
+            background: #94a3b8;
+            cursor: not-allowed;
+        }
+
+        /* Status area styles */
+        .status-area {
+            padding: 10px 15px;
+            background: #f8fafc;
+            font-size: 14px;
+            color: #64748b;
+            border-top: 1px solid #e2e8f0;
+            border-radius: 0 0 12px 12px;
+            flex-shrink: 0;
+        }
+
+        /* Typing indicator */
+        .typing-indicator {
+            display: none;
+            padding: 10px 15px;
+            color: #64748b;
+            font-style: italic;
+            flex-shrink: 0;
+        }
+
+        .typing-indicator.active {
+            display: block;
+        }
+
+        /* Custom scrollbar */
+        .agent-list::-webkit-scrollbar,
+        .chat-area::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .agent-list::-webkit-scrollbar-track,
+        .chat-area::-webkit-scrollbar-track {
+            background: #f1f5f9;
+            border-radius: 3px;
+        }
+
+        .agent-list::-webkit-scrollbar-thumb,
+        .chat-area::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 3px;
+        }
+
+        .agent-list::-webkit-scrollbar-thumb:hover,
+        .chat-area::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+
+        /* Responsive adjustments */
+        @media (max-height: 700px) {
+            .app-container {
+                gap: 10px;
+                padding: 10px;
+            }
+            
+            .sidebar, .main-content {
+                height: calc(100vh - 20px);
+                max-height: calc(100vh - 20px);
+            }
+            
+            .chat-area {
+                padding: 15px;
+            }
+            
+            .input-area, .status-area {
+                padding: 10px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .app-container {
+                grid-template-columns: 1fr;
+                grid-template-rows: auto 1fr;
+            }
+            
+            .sidebar {
+                height: auto;
+                max-height: 30vh;
+            }
+            
+            .main-content {
+                height: auto;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <div class="sidebar">
+            <h2>Chat Agents</h2>
+            <div class="agent-list">
+                <div class="agent-card" data-agent-id="customer-service" onclick="selectAgent('customer-service')">
+                    <h3>Sarah - Customer Service</h3>
+                    <p>Friendly customer support specialist. Helps with orders, returns, and general inquiries.</p>
+                </div>
+                <div class="agent-card" data-agent-id="technical-support" onclick="selectAgent('technical-support')">
+                    <h3>Alex - Technical Support</h3>
+                    <p>Expert in troubleshooting technical issues. Specializes in software and hardware problems.</p>
+                </div>
+                <div class="agent-card" data-agent-id="marketing-agent" onclick="selectAgent('marketing-agent')">
+                    <h3>Emma - Marketing</h3>
+                    <p>Creative marketing strategist specializing in digital campaigns and brand development.</p>
+                </div>
+                <div class="agent-card" data-agent-id="legal-agent" onclick="selectAgent('legal-agent')">
+                    <h3>James - Legal</h3>
+                    <p>Experienced legal consultant specializing in business law and contract review.</p>
+                </div>
+                <div class="agent-card" data-agent-id="research-analyst" onclick="selectAgent('research-analyst')">
+                    <h3>Dr. Chen - Research</h3>
+                    <p>Senior research analyst specializing in comprehensive market research and data analysis.</p>
+                </div>
+                <div class="agent-card" data-agent-id="interviewer-agent" onclick="selectAgent('interviewer-agent')">
+                    <h3>Reporter Thompson - Political Journalist</h3>
+                    <p>Political journalist specializing in Canadian elections and current affairs research.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="main-content">
+        <div class="chat-area" id="chat-area"></div>
+        
+        <div class="typing-indicator" id="typing-indicator">
+            Agent is typing...
+        </div>
+
+        <div class="input-area">
+            <div class="input-container">
+                <input type="text" id="message-input" placeholder="Type your message..." onkeypress="handleKeyPress(event)">
+                <button id="send-button" onclick="sendMessage()">Send</button>
+            </div>
+        </div>
+
+        <div class="status-area" id="status-area">
+            Please select an agent to begin chatting
+            </div>
+        </div>
+    </div>
+
+    <!-- Worksona Control Panel Container removed -->
+    
+    <script>
+        // Global variables
+        let worksona = null;
+        let currentAgentId = null;
+        let isTyping = false;
+        let isInitialized = false;
+
+        // Initialize Worksona with API keys
+        async function initializeWorksona() {
+            try {
+                updateStatus('Initializing Worksona...');
+                
+                // Get API keys from environment or prompt user
+                const apiKeys = {
+                    openai: localStorage.getItem('openai_api_key') || '',
+                    anthropic: localStorage.getItem('anthropic_api_key') || '',
+                    google: localStorage.getItem('google_api_key') || ''
+                };
+
+                // Check if any API keys are available
+                const hasApiKeys = Object.values(apiKeys).some(key => key.trim() !== '');
+                
+                if (!hasApiKeys) {
+                    updateStatus('No API keys found. Please configure your API keys in the control panel.');
+                }
+                
+                // Create Worksona instance with control panel enabled
+                worksona = new Worksona({
+                    apiKeys: apiKeys,
+                    debug: true,
+                    controlPanel: true // Enable floating control panel
+                });
+
+                // Floating control panel is automatically created by the constructor
+
+                // Set up event listeners for API key updates
+                worksona.on('api-key-update', (data) => {
+                    if (data.provider && data.key) {
+                        localStorage.setItem(`${data.provider}_api_key`, data.key);
+                        apiKeys[data.provider] = data.key;
+                        updateStatus(`API key for ${data.provider} updated successfully`);
+                    }
+                });
+
+                // Set up event listeners for provider status changes
+                worksona.on('provider-status', (data) => {
+                    const statusElement = document.getElementById(`${data.provider}-status`);
+                    const modelElement = document.getElementById(`${data.provider}-model`);
+                    
+                    if (statusElement) {
+                        statusElement.style.background = data.available ? '#22c55e' : '#ef4444';
+                    }
+                    
+                    if (modelElement && data.model) {
+                        modelElement.textContent = data.model;
+                        modelElement.style.color = data.available ? '#22c55e' : '#ef4444';
+                    }
+                });
+
+                // Load in-code agents
+                const inCodeAgents = [
+                    // Customer service agent
+                    {
+                id: 'customer-service',
+                name: 'Sarah',
+                description: 'Friendly customer service representative with extensive product knowledge',
+                traits: {
+                    personality: ['empathetic', 'patient', 'solution-oriented', 'friendly'],
+                    knowledge: ['product catalog', 'return policies', 'shipping procedures', 'order tracking'],
+                    tone: 'warm and professional',
+                    background: '5 years of customer service experience in e-commerce'
+                },
+                config: {
+                    provider: 'openai',
+                            model: 'gpt-3.5-turbo',
+                    temperature: 0.7,
+                    maxTokens: 500,
+                    systemPrompt: `You are Sarah, a friendly customer service representative. 
+                        Your goal is to help customers with their inquiries in a warm and professional manner. 
+                        Always acknowledge their concerns, provide clear solutions, and ensure they feel valued. 
+                        If you don't know something, offer to find out or direct them to someone who can help.`,
+                    examples: [
+                        {
+                            user: "I received the wrong item in my order",
+                            assistant: "I'm so sorry to hear that you received the wrong item. I understand how frustrating that must be. Let me help you resolve this right away. Could you please provide me with your order number? I'll arrange for a return label and ensure the correct item is sent to you with expedited shipping at no extra cost."
+                        }
+                    ]
+                }
+                    },
+                    // Technical support agent
+                    {
+                id: 'technical-support',
+                name: 'Alex',
+                description: 'Expert technical support engineer specializing in troubleshooting',
+                traits: {
+                    personality: ['analytical', 'patient', 'detail-oriented', 'educational'],
+                    knowledge: ['software troubleshooting', 'hardware diagnostics', 'network configuration', 'system optimization'],
+                    tone: 'technical yet approachable',
+                    background: 'Computer Science degree with 8 years of IT support experience'
+                },
+                config: {
+                            provider: 'openai',
+                            model: 'gpt-3.5-turbo',
+                    temperature: 0.5,
+                    maxTokens: 800,
+                    systemPrompt: `You are Alex, an expert technical support engineer. 
+                        Your approach is to diagnose problems systematically while explaining things clearly to users of all technical levels. 
+                        Always ask clarifying questions when needed, provide step-by-step solutions, and educate users on preventing future issues.`,
+                    examples: [
+                        {
+                            user: "My computer is running very slowly",
+                            assistant: "I understand how frustrating a slow computer can be. Let's diagnose this systematically. First, could you tell me: 1) When did you first notice the slowdown? 2) Are specific applications running slowly, or is it system-wide? 3) Have you installed any new software recently? This information will help me identify the most likely causes and provide targeted solutions."
+                        }
+                    ]
+                }
+                    }
+                ];
+
+                // Load in-code agents
+                await Promise.all(inCodeAgents.map(agent => worksona.loadAgent(agent)));
+
+                // Load agents from JSON files
+                const loadAgentFromFile = async (filePath) => {
+                    try {
+                        const response = await fetch(filePath);
+                        if (!response.ok) {
+                            throw new Error(`Failed to load ${filePath}`);
+                        }
+                        const agentConfig = await response.json();
+                        await worksona.loadAgent(agentConfig);
+                    } catch (error) {
+                        console.error(`Error loading agent from ${filePath}:`, error);
+                        throw error;
+                    }
+                };
+
+                // Load external JSON agents
+                await Promise.all([
+                    loadAgentFromFile('agents/marketing-agent.json'),
+                    loadAgentFromFile('agents/legal-agent.json'),
+                    loadAgentFromFile('agents/research-analyst.json'),
+                    loadAgentFromFile('agents/interviewer-agent.json')
+                ]);
+
+            // Set up event listeners
+            worksona.on('chat-start', (data) => {
+                showTypingIndicator(true);
+                updateStatus(`${getAgentName(data.agentId)} is processing your message...`);
+            });
+
+            worksona.on('chat-complete', (data) => {
+                showTypingIndicator(false);
+                updateStatus(`Connected to ${getAgentName(data.agentId)}`);
+            });
+
+            worksona.on('error', (error) => {
+                showTypingIndicator(false);
+                
+                // Process the error to create a user-friendly message
+                let userMessage = 'Sorry, I encountered an error.';
+                let statusMessage = `Error: ${error.message}`;
+                
+                if (error.code === 'PROVIDER_ERROR') {
+                    if (error.message.includes('API key')) {
+                        userMessage = 'Sorry, there seems to be an issue with the API key. Please check the control panel.';
+                        statusMessage = 'Error: Invalid or missing API key. Please check the control panel.';
+                    } else if (error.message.includes('model')) {
+                        userMessage = 'Sorry, there was an issue with the AI model. Please try again or switch to a different model.';
+                        statusMessage = `Error: ${error.message}. Please check the control panel.`;
+                    } else {
+                        userMessage = 'Sorry, there was an issue connecting to the AI provider. Please check your API settings.';
+                        statusMessage = `Provider error: ${error.message}. Please check the control panel.`;
+                    }
+                } else if (error.code === 'AGENT_NOT_FOUND') {
+                    userMessage = 'Sorry, I couldn\'t find the selected agent. Please try a different one.';
+                    statusMessage = 'Error: Agent not found. Please select a different agent.';
+                }
+                
+                // Update status and add message to chat
+                updateStatus(statusMessage);
+                addMessage(userMessage, 'agent');
+            });
+
+            isInitialized = true;
+                updateStatus('All agents loaded successfully! Please select an agent to begin.');
+        } catch (error) {
+            console.error('Failed to initialize Worksona:', error);
+                updateStatus('Failed to initialize. Please check your API keys in the control panel.');
+        }
+    }
+
+        // Select an agent
+        function selectAgent(agentId) {
+            // Check if system is initialized
+            if (!isInitialized || !worksona) {
+                updateStatus('System is still initializing. Please wait...');
+                return;
+            }
+            
+            currentAgentId = agentId;
+            
+            // Update UI to show selected agent
+            document.querySelectorAll('.agent-card').forEach(card => {
+                card.classList.remove('active');
+            });
+            document.querySelector(`[data-agent-id="${agentId}"]`).classList.add('active');
+            
+            // Clear chat and add welcome message
+            clearChat();
+            const agent = worksona.getAgent(agentId);
+            if (agent) {
+                addMessage(`Hi! I'm ${agent.name}. ${agent.description} How can I help you today?`, 'agent');
+                updateStatus(`Connected to ${agent.name}`);
+            } else {
+                updateStatus(`Error: Agent ${agentId} not found`);
+            }
+        }
+
+        // Send a message
+        async function sendMessage() {
+            // Check if system is initialized
+            if (!isInitialized || !worksona) {
+                updateStatus('System is still initializing. Please wait...');
+                return;
+            }
+            
+            const input = document.getElementById('message-input');
+            const message = input.value.trim();
+            
+            if (!message || !currentAgentId || isTyping) return;
+            
+            // Add user message to chat
+            addMessage(message, 'user');
+            input.value = '';
+            
+            // Disable send button while processing
+            const sendButton = document.getElementById('send-button');
+            sendButton.disabled = true;
+            isTyping = true;
+            
+            try {
+                // Get response from the selected agent
+                const response = await worksona.chat(currentAgentId, message);
+                if (response) {
+                    addMessage(response, 'agent');
+                } else {
+                    addMessage('Sorry, I encountered an error while processing your request. Please check the API keys in the control panel.', 'agent');
+                    updateStatus('Error occurred. Please check API keys in the control panel.');
+                }
+            } catch (error) {
+                console.error('Chat error:', error);
+                let errorMessage = 'Sorry, I encountered an error. Please try again.';
+                if (error.code === 'PROVIDER_ERROR') {
+                    errorMessage = 'Sorry, there was an issue connecting to the AI provider. Please check your API keys in the control panel.';
+                } else if (error.code === 'AGENT_NOT_FOUND') {
+                    errorMessage = 'Sorry, the requested agent was not found. Please select a different agent.';
+                }
+                addMessage(errorMessage, 'agent');
+                updateStatus(`Error: ${error.message || 'Unknown error'}`);
+            } finally {
+                sendButton.disabled = false;
+                isTyping = false;
+            }
+        }
+
+        // Add a message to the chat
+        function addMessage(content, sender) {
+            const chatArea = document.getElementById('chat-area');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${sender}`;
+            
+            const avatarDiv = document.createElement('div');
+            avatarDiv.className = 'message-avatar';
+            avatarDiv.textContent = sender === 'user' ? 'U' : 'A';
+            
+            const contentDiv = document.createElement('div');
+            contentDiv.className = 'message-content';
+            
+            // Parse markdown and set innerHTML
+            const parsedContent = marked.parse(content, {
+                gfm: true,
+                breaks: true,
+                sanitize: true
+            });
+            contentDiv.innerHTML = parsedContent;
+            
+            // Add timestamp
+            const timestampDiv = document.createElement('div');
+            timestampDiv.className = 'message-timestamp';
+            timestampDiv.textContent = new Date().toLocaleTimeString();
+            contentDiv.appendChild(timestampDiv);
+            
+            // Apply syntax highlighting to code blocks
+            contentDiv.querySelectorAll('pre code').forEach((block) => {
+                hljs.highlightElement(block);
+            });
+            
+            messageDiv.appendChild(avatarDiv);
+            messageDiv.appendChild(contentDiv);
+            
+            chatArea.appendChild(messageDiv);
+            chatArea.scrollTop = chatArea.scrollHeight;
+        }
+
+        // Clear the chat
+        function clearChat() {
+            document.getElementById('chat-area').innerHTML = '';
+        }
+
+        // Show/hide typing indicator
+        function showTypingIndicator(show) {
+            const indicator = document.getElementById('typing-indicator');
+            if (show) {
+                indicator.classList.add('active');
+            } else {
+                indicator.classList.remove('active');
+            }
+        }
+
+        // Update status message
+        function updateStatus(message) {
+            document.getElementById('status-area').textContent = message;
+        }
+
+        // Get agent name by ID
+        function getAgentName(agentId) {
+            const agent = worksona.getAgent(agentId);
+            return agent ? agent.name : 'Agent';
+        }
+
+        // Handle Enter key press
+        function handleKeyPress(event) {
+            if (event.key === 'Enter') {
+                sendMessage();
+            }
+        }
+
+        // Initialize the application when the page loads
+        window.onload = initializeWorksona;
+    </script>
+</body>
+</html>

@@ -1,0 +1,404 @@
+openapi: 3.0.0
+info:
+  title: Worksona API
+  description: |
+    API documentation for Worksona - A multi-provider LLM integration platform.
+    
+    This API allows you to:
+    - Manage LLM providers and their configurations
+    - Create and manage AI agents
+    - Process chat messages and documents
+    - Handle API keys and authentication
+  version: 1.0.0
+  contact:
+    name: Worksona Support
+    url: https://worksona.ai/support
+    email: support@worksona.ai
+
+servers:
+  - url: https://api.worksona.ai/v1
+    description: Production server
+  - url: https://staging-api.worksona.ai/v1
+    description: Staging server
+
+components:
+  securitySchemes:
+    ApiKeyAuth:
+      type: apiKey
+      in: header
+      name: X-API-Key
+    ProviderApiKeys:
+      type: apiKey
+      in: header
+      name: X-Provider-Keys
+
+  schemas:
+    Agent:
+      type: object
+      required:
+        - id
+        - name
+        - description
+        - config
+      properties:
+        id:
+          type: string
+          description: Unique identifier for the agent
+        name:
+          type: string
+          description: Display name of the agent
+        description:
+          type: string
+          description: Brief description of the agent's purpose
+        traits:
+          type: object
+          properties:
+            personality:
+              type: array
+              items:
+                type: string
+            knowledge:
+              type: array
+              items:
+                type: string
+            tone:
+              type: string
+            background:
+              type: string
+        config:
+          type: object
+          required:
+            - provider
+            - model
+          properties:
+            provider:
+              type: string
+              enum: [openai, anthropic, google]
+            model:
+              type: string
+            temperature:
+              type: number
+              minimum: 0
+              maximum: 2
+            maxTokens:
+              type: integer
+              minimum: 1
+              maximum: 4000
+            systemPrompt:
+              type: string
+            examples:
+              type: array
+              items:
+                type: object
+                properties:
+                  user:
+                    type: string
+                  assistant:
+                    type: string
+
+    LLMConfig:
+      type: object
+      properties:
+        provider:
+          type: string
+          enum: [openai, anthropic, google]
+        model:
+          type: string
+        temperature:
+          type: number
+        maxTokens:
+          type: integer
+        
+    ChatMessage:
+      type: object
+      required:
+        - role
+        - content
+      properties:
+        role:
+          type: string
+          enum: [user, assistant, system]
+        content:
+          type: string
+        timestamp:
+          type: string
+          format: date-time
+
+    ProcessedDocument:
+      type: object
+      properties:
+        content:
+          type: string
+        metadata:
+          type: object
+        analysis:
+          type: object
+
+    Error:
+      type: object
+      properties:
+        code:
+          type: string
+        message:
+          type: string
+        details:
+          type: object
+
+paths:
+  /agents:
+    get:
+      summary: List all available agents
+      description: Returns a list of all configured agents
+      security:
+        - ApiKeyAuth: []
+      responses:
+        '200':
+          description: List of agents
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Agent'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+    post:
+      summary: Create a new agent
+      description: Creates a new agent with the specified configuration
+      security:
+        - ApiKeyAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Agent'
+      responses:
+        '201':
+          description: Agent created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Agent'
+        '400':
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /agents/{agentId}:
+    get:
+      summary: Get agent details
+      parameters:
+        - name: agentId
+          in: path
+          required: true
+          schema:
+            type: string
+      security:
+        - ApiKeyAuth: []
+      responses:
+        '200':
+          description: Agent details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Agent'
+        '404':
+          description: Agent not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+    put:
+      summary: Update agent configuration
+      parameters:
+        - name: agentId
+          in: path
+          required: true
+          schema:
+            type: string
+      security:
+        - ApiKeyAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Agent'
+      responses:
+        '200':
+          description: Agent updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Agent'
+        '404':
+          description: Agent not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /chat/{agentId}:
+    post:
+      summary: Send a message to an agent
+      parameters:
+        - name: agentId
+          in: path
+          required: true
+          schema:
+            type: string
+      security:
+        - ApiKeyAuth: []
+        - ProviderApiKeys: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - message
+              properties:
+                message:
+                  type: string
+                context:
+                  type: object
+      responses:
+        '200':
+          description: Agent response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ChatMessage'
+        '404':
+          description: Agent not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /documents/process:
+    post:
+      summary: Process a document
+      security:
+        - ApiKeyAuth: []
+        - ProviderApiKeys: []
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                file:
+                  type: string
+                  format: binary
+                agentId:
+                  type: string
+                options:
+                  type: object
+      responses:
+        '200':
+          description: Processed document
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProcessedDocument'
+        '400':
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /llm/config:
+    get:
+      summary: Get LLM configuration
+      security:
+        - ApiKeyAuth: []
+      responses:
+        '200':
+          description: Current LLM configuration
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  openai:
+                    $ref: '#/components/schemas/LLMConfig'
+                  anthropic:
+                    $ref: '#/components/schemas/LLMConfig'
+                  google:
+                    $ref: '#/components/schemas/LLMConfig'
+
+    put:
+      summary: Update LLM configuration
+      security:
+        - ApiKeyAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                provider:
+                  type: string
+                  enum: [openai, anthropic, google]
+                config:
+                  $ref: '#/components/schemas/LLMConfig'
+      responses:
+        '200':
+          description: Configuration updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LLMConfig'
+        '400':
+          description: Invalid configuration
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /llm/test:
+    post:
+      summary: Test LLM provider connection
+      security:
+        - ApiKeyAuth: []
+        - ProviderApiKeys: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - provider
+              properties:
+                provider:
+                  type: string
+                  enum: [openai, anthropic, google]
+      responses:
+        '200':
+          description: Connection test results
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  available:
+                    type: boolean
+                  model:
+                    type: string
+                  error:
+                    type: string 

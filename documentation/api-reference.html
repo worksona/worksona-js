@@ -1,0 +1,781 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Worksona.js API Reference</title>
+    <style>
+        /* Main styles */
+        :root {
+            --primary-color: #2563eb;
+            --primary-hover: #1d4ed8;
+            --secondary-color: #059669;
+            --text-color: #1e293b;
+            --light-bg: #f8fafc;
+            --border-color: #e2e8f0;
+            --code-bg: #1e293b;
+            --code-color: #f8fafc;
+            --card-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            --sidebar-width: 250px;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            margin: 0;
+            padding: 0;
+            color: var(--text-color);
+            background-color: var(--light-bg);
+            line-height: 1.6;
+            display: flex;
+            min-height: 100vh;
+        }
+
+        a {
+            color: var(--primary-color);
+            text-decoration: none;
+        }
+
+        a:hover {
+            text-decoration: underline;
+            color: var(--primary-hover);
+        }
+
+        /* Sidebar styles */
+        .sidebar {
+            width: var(--sidebar-width);
+            background-color: white;
+            border-right: 1px solid var(--border-color);
+            padding: 30px 0;
+            position: fixed;
+            height: 100vh;
+            overflow-y: auto;
+        }
+
+        .sidebar-logo {
+            padding: 0 20px 20px;
+            margin-bottom: 20px;
+            border-bottom: 1px solid var(--border-color);
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--primary-color);
+        }
+
+        .sidebar-logo span {
+            color: var(--secondary-color);
+        }
+
+        .sidebar-nav {
+            padding: 0 20px;
+        }
+
+        .sidebar-nav h3 {
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #64748b;
+            margin: 25px 0 10px;
+        }
+
+        .sidebar-nav ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .sidebar-nav li {
+            margin-bottom: 5px;
+        }
+
+        .sidebar-nav a {
+            display: block;
+            padding: 8px 10px;
+            border-radius: 4px;
+            color: var(--text-color);
+            font-size: 0.95rem;
+            transition: background-color 0.2s;
+        }
+
+        .sidebar-nav a:hover {
+            background-color: var(--light-bg);
+            text-decoration: none;
+        }
+
+        .sidebar-nav a.active {
+            background-color: #eff6ff;
+            color: var(--primary-color);
+            font-weight: 500;
+        }
+
+        /* Table of contents */
+        .toc {
+            background-color: white;
+            border-radius: 6px;
+            padding: 20px;
+            margin-bottom: 30px;
+            box-shadow: var(--card-shadow);
+        }
+
+        .toc h3 {
+            margin-top: 0;
+            margin-bottom: 15px;
+        }
+
+        .toc ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .toc li {
+            margin-bottom: 8px;
+        }
+
+        .toc a {
+            display: block;
+            padding: 5px 0;
+            color: var(--text-color);
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .toc a:hover {
+            color: var(--primary-color);
+            text-decoration: none;
+        }
+
+        /* Main content styles */
+        .content {
+            flex: 1;
+            margin-left: var(--sidebar-width);
+            padding: 30px 40px 60px;
+            max-width: 900px;
+        }
+
+        .content h1 {
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+            color: var(--text-color);
+        }
+
+        .content h2 {
+            font-size: 1.8rem;
+            margin-top: 40px;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid var(--border-color);
+            color: var(--text-color);
+        }
+
+        .content h3 {
+            font-size: 1.4rem;
+            margin-top: 30px;
+            margin-bottom: 15px;
+            color: var(--text-color);
+        }
+
+        .content p {
+            margin-bottom: 20px;
+        }
+
+        .content pre {
+            background-color: var(--code-bg);
+            color: var(--code-color);
+            border-radius: 6px;
+            padding: 20px;
+            overflow-x: auto;
+            margin: 20px 0;
+            font-family: monospace;
+            line-height: 1.5;
+        }
+
+        .content code {
+            font-family: monospace;
+            background-color: #e2e8f0;
+            padding: 2px 5px;
+            border-radius: 3px;
+            font-size: 0.9em;
+        }
+
+        .content pre code {
+            background-color: transparent;
+            padding: 0;
+            color: var(--code-color);
+            display: block;
+        }
+
+        /* Method signature */
+        .method-signature {
+            background-color: #f1f5f9;
+            padding: 15px;
+            border-radius: 6px;
+            border-left: 4px solid var(--primary-color);
+            font-family: monospace;
+            margin-bottom: 20px;
+            overflow-x: auto;
+        }
+
+        /* Tables */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+
+        th, td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        th {
+            background-color: var(--light-bg);
+            font-weight: 600;
+        }
+
+        /* Code highlighting */
+        .comment {
+            color: #94a3b8;
+        }
+
+        .string {
+            color: #4ade80;
+        }
+
+        .keyword {
+            color: #7dd3fc;
+        }
+
+        .property {
+            color: #f472b6;
+        }
+
+        /* Top nav for mobile */
+        .mobile-nav {
+            display: none;
+            background-color: white;
+            padding: 15px 20px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        .mobile-nav-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: var(--primary-color);
+        }
+
+        .menu-button {
+            position: absolute;
+            right: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            color: var(--text-color);
+            cursor: pointer;
+            display: none;
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 1024px) {
+            :root {
+                --sidebar-width: 220px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            body {
+                flex-direction: column;
+            }
+
+            .sidebar {
+                width: 100%;
+                position: static;
+                height: auto;
+                display: none;
+                padding: 20px 0;
+            }
+
+            .sidebar.active {
+                display: block;
+            }
+
+            .content {
+                margin-left: 0;
+                padding: 20px;
+            }
+
+            .mobile-nav {
+                display: flex;
+                align-items: center;
+            }
+
+            .menu-button {
+                display: block;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="mobile-nav">
+        <div class="mobile-nav-title">Worksona.js Documentation</div>
+        <button class="menu-button" onclick="toggleSidebar()">☰</button>
+    </div>
+
+    <div class="sidebar" id="sidebar">
+        <div class="sidebar-logo">Work<span>sona</span>.js</div>
+        <nav class="sidebar-nav">
+            <h3>Documentation</h3>
+            <ul>
+                <li><a href="getting-started.html">Getting Started</a></li>
+                <li><a href="api-reference.html" class="active">API Reference</a></li>
+                <li><a href="use-cases.html">Use Cases</a></li>
+            </ul>
+            
+            <h3>API Reference</h3>
+            <ul>
+                <li><a href="#core">Core</a></li>
+                <li><a href="#agents">Agents</a></li>
+                <li><a href="#chat">Chat</a></li>
+                <li><a href="#events">Events</a></li>
+                <li><a href="#config">Configuration</a></li>
+            </ul>
+            
+            <h3>Resources</h3>
+            <ul>
+                <li><a href="../index.html">Home</a></li>
+                <li><a href="../worksona-chatbot-example.html">Chatbot Demo</a></li>
+                <li><a href="../worksona-document-processor.html">Document Processor Demo</a></li>
+                <li><a href="https://github.com/worksona/worksona-js">GitHub</a></li>
+            </ul>
+        </nav>
+    </div>
+
+    <main class="content">
+        <h1>API Reference</h1>
+        
+        <p>
+            This reference document covers all public methods, properties, and events in the Worksona.js API.
+            For a more practical introduction, see the <a href="getting-started.html">Getting Started</a> guide.
+        </p>
+
+        <div class="toc">
+            <h3>Table of Contents</h3>
+            <ul>
+                <li><a href="#core">Core API</a></li>
+                <li><a href="#agents">Agent Management</a></li>
+                <li><a href="#chat">Chat Functionality</a></li>
+                <li><a href="#events">Event Handling</a></li>
+                <li><a href="#config">Configuration</a></li>
+            </ul>
+        </div>
+
+        <h2 id="core">Core API</h2>
+        
+        <h3 id="constructor">Constructor</h3>
+        
+        <div class="method-signature">new Worksona(options)</div>
+        
+        <p>Creates a new Worksona instance with the provided configuration options.</p>
+        
+        <h4>Parameters</h4>
+        
+        <table>
+            <tr>
+                <th>Name</th>
+                <th>Type</th>
+                <th>Description</th>
+                <th>Default</th>
+            </tr>
+            <tr>
+                <td><code>options</code></td>
+                <td>Object</td>
+                <td>Configuration options</td>
+                <td><code>{}</code></td>
+            </tr>
+        </table>
+        
+        <h4>Example</h4>
+        
+        <pre><code><span class="keyword">const</span> worksona = <span class="keyword">new</span> Worksona({
+  <span class="property">apiKeys</span>: {
+    <span class="property">openai</span>: <span class="string">'your-openai-api-key'</span>,
+    <span class="property">anthropic</span>: <span class="string">'your-anthropic-api-key'</span>,
+    <span class="property">google</span>: <span class="string">'your-google-api-key'</span>
+  },
+  <span class="property">debug</span>: <span class="keyword">true</span>,
+  <span class="property">controlPanel</span>: <span class="keyword">true</span>
+});</code></pre>
+
+        <h3 id="setapikey">setApiKey</h3>
+        
+        <div class="method-signature">worksona.setApiKey(provider, key)</div>
+        
+        <p>Sets an API key for the specified provider.</p>
+        
+        <h4>Parameters</h4>
+        
+        <table>
+            <tr>
+                <th>Name</th>
+                <th>Type</th>
+                <th>Description</th>
+            </tr>
+            <tr>
+                <td><code>provider</code></td>
+                <td>String</td>
+                <td>Provider name ('openai', 'anthropic', 'google')</td>
+            </tr>
+            <tr>
+                <td><code>key</code></td>
+                <td>String</td>
+                <td>API key to set</td>
+            </tr>
+        </table>
+        
+        <h4>Returns</h4>
+        
+        <p>Boolean - Success status</p>
+        
+        <h4>Example</h4>
+        
+        <pre><code><span class="keyword">const</span> success = <span class="keyword">await</span> worksona.setApiKey(<span class="string">'openai'</span>, <span class="string">'new-api-key-here'</span>);
+<span class="keyword">if</span> (success) {
+  console.log(<span class="string">'API key updated successfully'</span>);
+}</code></pre>
+
+        <h2 id="agents">Agent Management</h2>
+        
+        <h3 id="loadagent">loadAgent</h3>
+        
+        <div class="method-signature">worksona.loadAgent(agentConfig)</div>
+        
+        <p>Loads an agent with the specified configuration.</p>
+        
+        <h4>Parameters</h4>
+        
+        <table>
+            <tr>
+                <th>Name</th>
+                <th>Type</th>
+                <th>Description</th>
+            </tr>
+            <tr>
+                <td><code>agentConfig</code></td>
+                <td>Object</td>
+                <td>Agent configuration object</td>
+            </tr>
+        </table>
+        
+        <h4>Returns</h4>
+        
+        <p>Promise&lt;Object&gt; - The loaded agent object</p>
+        
+        <h4>Example</h4>
+        
+        <pre><code><span class="keyword">const</span> agent = <span class="keyword">await</span> worksona.loadAgent({
+  <span class="property">id</span>: <span class="string">'customer-support'</span>,
+  <span class="property">name</span>: <span class="string">'Sarah'</span>,
+  <span class="property">description</span>: <span class="string">'Customer support specialist'</span>,
+  <span class="property">traits</span>: {
+    <span class="property">personality</span>: [<span class="string">'friendly'</span>, <span class="string">'helpful'</span>]
+  },
+  <span class="property">config</span>: {
+    <span class="property">provider</span>: <span class="string">'openai'</span>,
+    <span class="property">model</span>: <span class="string">'gpt-3.5-turbo'</span>
+  }
+});</code></pre>
+
+        <h3 id="getagent">getAgent</h3>
+        
+        <div class="method-signature">worksona.getAgent(agentId)</div>
+        
+        <p>Gets an agent by its ID.</p>
+        
+        <h4>Parameters</h4>
+        
+        <table>
+            <tr>
+                <th>Name</th>
+                <th>Type</th>
+                <th>Description</th>
+            </tr>
+            <tr>
+                <td><code>agentId</code></td>
+                <td>String</td>
+                <td>Identifier of the agent to retrieve</td>
+            </tr>
+        </table>
+        
+        <h4>Returns</h4>
+        
+        <p>Object | null - The agent object or null if not found</p>
+        
+        <h4>Example</h4>
+        
+        <pre><code><span class="keyword">const</span> agent = worksona.getAgent(<span class="string">'customer-support'</span>);
+<span class="keyword">if</span> (agent) {
+  console.log(<span class="string">`Found agent: ${agent.name}`</span>);
+}</code></pre>
+
+        <h3 id="removeagent">removeAgent</h3>
+        
+        <div class="method-signature">worksona.removeAgent(agentId)</div>
+        
+        <p>Removes an agent by its ID.</p>
+        
+        <h4>Parameters</h4>
+        
+        <table>
+            <tr>
+                <th>Name</th>
+                <th>Type</th>
+                <th>Description</th>
+            </tr>
+            <tr>
+                <td><code>agentId</code></td>
+                <td>String</td>
+                <td>Identifier of the agent to remove</td>
+            </tr>
+        </table>
+        
+        <h4>Returns</h4>
+        
+        <p>Boolean - Success status</p>
+        
+        <h4>Example</h4>
+        
+        <pre><code><span class="keyword">const</span> removed = worksona.removeAgent(<span class="string">'customer-support'</span>);
+<span class="keyword">if</span> (removed) {
+  console.log(<span class="string">'Agent was removed'</span>);
+}</code></pre>
+
+        <h2 id="chat">Chat Functionality</h2>
+        
+        <h3 id="chat">chat</h3>
+        
+        <div class="method-signature">worksona.chat(agentId, message, options)</div>
+        
+        <p>Sends a message to an agent and gets a response.</p>
+        
+        <h4>Parameters</h4>
+        
+        <table>
+            <tr>
+                <th>Name</th>
+                <th>Type</th>
+                <th>Description</th>
+                <th>Default</th>
+            </tr>
+            <tr>
+                <td><code>agentId</code></td>
+                <td>String</td>
+                <td>Identifier of the agent to chat with</td>
+                <td>Required</td>
+            </tr>
+            <tr>
+                <td><code>message</code></td>
+                <td>String</td>
+                <td>Message to send to the agent</td>
+                <td>Required</td>
+            </tr>
+            <tr>
+                <td><code>options</code></td>
+                <td>Object</td>
+                <td>Additional options for this specific chat</td>
+                <td><code>{}</code></td>
+            </tr>
+        </table>
+        
+        <h4>Returns</h4>
+        
+        <p>Promise&lt;String&gt; - The agent's response</p>
+        
+        <h4>Example</h4>
+        
+        <pre><code><span class="keyword">const</span> response = <span class="keyword">await</span> worksona.chat(<span class="string">'customer-support'</span>, <span class="string">'How do I return an item?'</span>);
+console.log(response);</code></pre>
+
+        <h3 id="clearhistory">clearHistory</h3>
+        
+        <div class="method-signature">worksona.clearHistory(agentId)</div>
+        
+        <p>Clears the conversation history for an agent.</p>
+        
+        <h4>Parameters</h4>
+        
+        <table>
+            <tr>
+                <th>Name</th>
+                <th>Type</th>
+                <th>Description</th>
+            </tr>
+            <tr>
+                <td><code>agentId</code></td>
+                <td>String</td>
+                <td>Identifier of the agent whose history should be cleared</td>
+            </tr>
+        </table>
+        
+        <h4>Returns</h4>
+        
+        <p>Boolean - Success status</p>
+        
+        <h4>Example</h4>
+        
+        <pre><code>worksona.clearHistory(<span class="string">'customer-support'</span>);</code></pre>
+
+        <h2 id="events">Event Handling</h2>
+        
+        <h3 id="on">on</h3>
+        
+        <div class="method-signature">worksona.on(eventName, callback)</div>
+        
+        <p>Registers an event listener for the specified event.</p>
+        
+        <h4>Parameters</h4>
+        
+        <table>
+            <tr>
+                <th>Name</th>
+                <th>Type</th>
+                <th>Description</th>
+            </tr>
+            <tr>
+                <td><code>eventName</code></td>
+                <td>String</td>
+                <td>Name of the event to listen for</td>
+            </tr>
+            <tr>
+                <td><code>callback</code></td>
+                <td>Function</td>
+                <td>Function to call when the event occurs</td>
+            </tr>
+        </table>
+        
+        <h4>Example</h4>
+        
+        <pre><code>worksona.on(<span class="string">'chat-start'</span>, (data) => {
+  console.log(<span class="string">`Chat started with ${data.agentId}`</span>);
+});</code></pre>
+
+        <h3 id="off">off</h3>
+        
+        <div class="method-signature">worksona.off(eventName, callback)</div>
+        
+        <p>Removes an event listener for the specified event.</p>
+        
+        <h4>Parameters</h4>
+        
+        <table>
+            <tr>
+                <th>Name</th>
+                <th>Type</th>
+                <th>Description</th>
+            </tr>
+            <tr>
+                <td><code>eventName</code></td>
+                <td>String</td>
+                <td>Name of the event</td>
+            </tr>
+            <tr>
+                <td><code>callback</code></td>
+                <td>Function</td>
+                <td>Function to remove</td>
+            </tr>
+        </table>
+        
+        <h4>Example</h4>
+        
+        <pre><code><span class="keyword">function</span> handleChatStart(data) {
+  console.log(<span class="string">`Chat started with ${data.agentId}`</span>);
+}
+
+worksona.on(<span class="string">'chat-start'</span>, handleChatStart);
+
+<span class="comment">// Later, to remove the listener</span>
+worksona.off(<span class="string">'chat-start'</span>, handleChatStart);</code></pre>
+
+        <h2 id="config">Configuration</h2>
+        
+        <h3>Supported Events</h3>
+        
+        <table>
+            <tr>
+                <th>Event</th>
+                <th>Data</th>
+                <th>Description</th>
+            </tr>
+            <tr>
+                <td><code>chat-start</code></td>
+                <td><code>{ agentId, message }</code></td>
+                <td>Fired when a chat begins</td>
+            </tr>
+            <tr>
+                <td><code>chat-complete</code></td>
+                <td><code>{ agentId, response }</code></td>
+                <td>Fired when a chat completes</td>
+            </tr>
+            <tr>
+                <td><code>error</code></td>
+                <td><code>{ code, message }</code></td>
+                <td>Fired when an error occurs</td>
+            </tr>
+            <tr>
+                <td><code>api-key-update</code></td>
+                <td><code>{ provider, key }</code></td>
+                <td>Fired when an API key is updated</td>
+            </tr>
+            <tr>
+                <td><code>provider-status</code></td>
+                <td><code>{ provider, available, model }</code></td>
+                <td>Fired when provider status changes</td>
+            </tr>
+        </table>
+
+        <h3>Provider Support</h3>
+        
+        <table>
+            <tr>
+                <th>Provider</th>
+                <th>Supported Models</th>
+            </tr>
+            <tr>
+                <td><code>openai</code></td>
+                <td>gpt-3.5-turbo, gpt-4, gpt-4-turbo</td>
+            </tr>
+            <tr>
+                <td><code>anthropic</code></td>
+                <td>claude-1, claude-2, claude-instant</td>
+            </tr>
+            <tr>
+                <td><code>google</code></td>
+                <td>gemini-pro, palm-2</td>
+            </tr>
+        </table>
+
+        <h3>Configuration Schema</h3>
+        
+        <pre><code>{
+  <span class="property">apiKeys</span>: {
+    <span class="property">openai</span>: <span class="string">'...'</span>,
+    <span class="property">anthropic</span>: <span class="string">'...'</span>,
+    <span class="property">google</span>: <span class="string">'...'</span>
+  },
+  <span class="property">debug</span>: <span class="keyword">true</span>,
+  <span class="property">controlPanel</span>: <span class="keyword">true</span>,
+  <span class="property">defaultProvider</span>: <span class="string">'openai'</span>,
+  <span class="property">maxHistoryLength</span>: <span class="keyword">10</span>
+}</code></pre>
+    </main>
+
+    <script>
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            sidebar.classList.toggle('active');
+        }
+    </script>
+</body>
+</html> 
