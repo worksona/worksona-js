@@ -1,0 +1,893 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PRD Creator - Step by Step PRD Generation</title>
+    <!-- Add Marked library for markdown parsing -->
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <!-- Add highlight.js for code syntax highlighting -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+    <!-- Add Worksona.js -->
+    <script src="../worksona.js"></script>
+    <style>
+        /* Main layout styles */
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f5f5f5;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        .app-container {
+            height: 100vh;
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 300px 1fr;
+            gap: 20px;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        /* Sidebar styles */
+        .sidebar {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            display: flex;
+            flex-direction: column;
+            height: calc(100vh - 40px);
+            max-height: calc(100vh - 40px);
+            overflow: hidden;
+        }
+
+        .sidebar h2 {
+            margin: 0 0 20px 0;
+            color: #1e40af;
+            font-size: 20px;
+            flex-shrink: 0;
+        }
+
+        .step-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            overflow-y: auto;
+            padding-right: 5px;
+            flex: 1;
+        }
+
+        .step-item {
+            padding: 15px;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+            flex-shrink: 0;
+        }
+
+        .step-item:hover {
+            border-color: #2563eb;
+            background: #eff6ff;
+        }
+
+        .step-item.active {
+            border-color: #2563eb;
+            background: #eff6ff;
+        }
+
+        .step-item.completed {
+            border-color: #059669;
+            background: #ecfdf5;
+        }
+
+        .step-item h3 {
+            margin: 0 0 5px 0;
+            color: #1e40af;
+            font-size: 16px;
+        }
+
+        .step-item p {
+            margin: 0;
+            font-size: 14px;
+            color: #64748b;
+        }
+
+        /* Main content area styles */
+        .main-content {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            height: calc(100vh - 40px);
+            max-height: calc(100vh - 40px);
+        }
+
+        /* Step content styles */
+        .step-content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            min-height: 0;
+        }
+
+        .step-content h2 {
+            margin: 0 0 20px 0;
+            color: #1e40af;
+        }
+
+        .step-content p {
+            margin-bottom: 20px;
+            line-height: 1.6;
+        }
+
+        /* Input area styles */
+        .input-area {
+            padding: 15px;
+            border-top: 1px solid #e2e8f0;
+            background: #ffffff;
+            flex-shrink: 0;
+        }
+
+        .input-container {
+            display: flex;
+            gap: 10px;
+        }
+
+        .input-container textarea {
+            flex: 1;
+            padding: 12px 16px;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 16px;
+            min-height: 100px;
+            resize: vertical;
+        }
+
+        .input-container button {
+            padding: 12px 24px;
+            background: #2563eb;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background 0.2s;
+        }
+
+        .input-container button:hover {
+            background: #1d4ed8;
+        }
+
+        .input-container button:disabled {
+            background: #94a3b8;
+            cursor: not-allowed;
+        }
+
+        /* Status area styles */
+        .status-area {
+            padding: 10px 15px;
+            background: #f8fafc;
+            font-size: 14px;
+            color: #64748b;
+            border-top: 1px solid #e2e8f0;
+            border-radius: 0 0 12px 12px;
+            flex-shrink: 0;
+        }
+
+        /* Preview area styles */
+        .preview-area {
+            display: none;
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            min-height: 0;
+        }
+
+        .preview-area.active {
+            display: block;
+        }
+
+        .preview-area h2 {
+            margin: 0 0 20px 0;
+            color: #1e40af;
+        }
+
+        /* Export button */
+        .export-button {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            padding: 12px 24px;
+            background: #059669;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background 0.2s;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .export-button:hover {
+            background: #047857;
+        }
+
+        /* Loading overlay */
+        .loading-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+
+        .loading-spinner {
+            width: 50px;
+            height: 50px;
+            border: 5px solid #f3f3f3;
+            border-top: 5px solid #3498db;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Custom scrollbar */
+        .step-list::-webkit-scrollbar,
+        .step-content::-webkit-scrollbar,
+        .preview-area::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .step-list::-webkit-scrollbar-track,
+        .step-content::-webkit-scrollbar-track,
+        .preview-area::-webkit-scrollbar-track {
+            background: #f1f5f9;
+            border-radius: 3px;
+        }
+
+        .step-list::-webkit-scrollbar-thumb,
+        .step-content::-webkit-scrollbar-thumb,
+        .preview-area::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 3px;
+        }
+
+        .step-list::-webkit-scrollbar-thumb:hover,
+        .step-content::-webkit-scrollbar-thumb:hover,
+        .preview-area::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+
+        /* Responsive adjustments */
+        @media (max-height: 700px) {
+            .app-container {
+                gap: 10px;
+                padding: 10px;
+            }
+            
+            .sidebar, .main-content {
+                height: calc(100vh - 20px);
+                max-height: calc(100vh - 20px);
+            }
+            
+            .step-content {
+                padding: 15px;
+            }
+            
+            .input-area, .status-area {
+                padding: 10px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .app-container {
+                grid-template-columns: 1fr;
+                grid-template-rows: auto 1fr;
+            }
+            
+            .sidebar {
+                height: auto;
+                max-height: 30vh;
+            }
+            
+            .main-content {
+                height: auto;
+            }
+        }
+
+        /* Message container styles */
+        .message-container {
+            margin-bottom: 20px;
+            padding: 15px;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            transition: all 0.2s ease;
+        }
+
+        .message-container.user {
+            background-color: #e9ecef;
+            margin-left: 40px;
+            border-color: #ced4da;
+        }
+
+        .message-container.assistant {
+            background-color: #f8fafc;
+            margin-right: 40px;
+            border-color: #e2e8f0;
+        }
+
+        .message-header {
+            font-size: 0.875rem;
+            color: #4b5563;
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+
+        .message-container:hover {
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+
+        .message-container:last-child {
+            margin-bottom: 0;
+        }
+
+        .clear-button {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            padding: 8px 16px;
+            background: #ef4444;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background 0.2s;
+        }
+
+        .clear-button:hover {
+            background: #dc2626;
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <div class="sidebar">
+            <h2>PRD Creation Steps</h2>
+            <div class="step-list">
+                <div class="step-item" data-step="1" onclick="selectStep(1)">
+                    <h3>1. Project Overview</h3>
+                    <p>Define your project's purpose and goals</p>
+                </div>
+                <div class="step-item" data-step="2" onclick="selectStep(2)">
+                    <h3>2. Target Audience</h3>
+                    <p>Identify your users and their needs</p>
+                </div>
+                <div class="step-item" data-step="3" onclick="selectStep(3)">
+                    <h3>3. Key Features</h3>
+                    <p>List main features and capabilities</p>
+                </div>
+                <div class="step-item" data-step="4" onclick="selectStep(4)">
+                    <h3>4. Technical Requirements</h3>
+                    <p>Define system architecture and constraints</p>
+                </div>
+                <div class="step-item" data-step="5" onclick="selectStep(5)">
+                    <h3>5. Functional Requirements</h3>
+                    <p>Detail features and user stories</p>
+                </div>
+                <div class="step-item" data-step="6" onclick="selectStep(6)">
+                    <h3>6. Non-Functional Requirements</h3>
+                    <p>Specify performance and security needs</p>
+                </div>
+                <div class="step-item" data-step="7" onclick="selectStep(7)">
+                    <h3>7. Integration Requirements</h3>
+                    <p>List external systems and APIs</p>
+                </div>
+                <div class="step-item" data-step="8" onclick="selectStep(8)">
+                    <h3>8. Development Phases</h3>
+                    <p>Plan MVP and future phases</p>
+                </div>
+                <div class="step-item" data-step="9" onclick="selectStep(9)">
+                    <h3>9. Success Metrics</h3>
+                    <p>Define KPIs and user metrics</p>
+                </div>
+                <div class="step-item" data-step="10" onclick="selectStep(10)">
+                    <h3>10. Review & Export</h3>
+                    <p>Review and export your PRD</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="main-content">
+            <div class="step-content" id="step-content">
+                <h2>Welcome to PRD Creator</h2>
+                <p>Let's create a comprehensive Product Requirements Document for your project. We'll guide you through each step, providing suggestions and examples along the way.</p>
+                <p>Start by selecting a step from the sidebar or click "Begin" to start with the Project Overview.</p>
+            </div>
+
+            <button class="clear-button" id="clear-button" onclick="clearStepContent()" style="display: none;">Clear Conversation</button>
+
+            <div class="preview-area" id="preview-area">
+                <h2>PRD Preview</h2>
+                <div id="preview-content"></div>
+            </div>
+
+            <div class="input-area">
+                <div class="input-container">
+                    <textarea id="user-input" placeholder="Type your response or ask for guidance..."></textarea>
+                    <button id="submit-button" onclick="submitResponse()">Submit</button>
+                </div>
+            </div>
+
+            <div class="status-area" id="status-area">
+                Ready to begin PRD creation
+            </div>
+        </div>
+    </div>
+
+    <button class="export-button" id="export-button" onclick="exportPRD()" style="display: none;">
+        Export PRD
+    </button>
+
+    <div class="loading-overlay" id="loading-overlay">
+        <div class="loading-spinner"></div>
+    </div>
+
+    <script>
+        // Global variables
+        let worksona = null;
+        let currentStep = 0;
+        let prdContent = {};
+        let isProcessing = false;
+        
+        // Add state management
+        const stepState = {
+            conversations: {}, // Store conversations for each step
+            content: {}, // Store final content for each step
+            completed: new Set(), // Track completed steps
+            messages: {} // Store message history for each step
+        };
+
+        // Initialize Worksona with API keys
+        async function initializeWorksona() {
+            try {
+                updateStatus('Initializing PRD Creator...');
+                
+                // Get API keys from environment or prompt user
+                const apiKeys = {
+                    openai: localStorage.getItem('openai_api_key') || '',
+                    anthropic: localStorage.getItem('anthropic_api_key') || ''
+                };
+
+                // Check if any API keys are available
+                const hasApiKeys = Object.values(apiKeys).some(key => key.trim() !== '');
+                
+                if (!hasApiKeys) {
+                    updateStatus('No API keys found. Please configure your API keys in the control panel.');
+                }
+                
+                // Create Worksona instance with control panel enabled
+                worksona = new Worksona({
+                    apiKeys: apiKeys,
+                    debug: true,
+                    controlPanel: true
+                });
+
+                // Load PRD Generator Agent
+                await worksona.loadAgent({
+                    id: 'prd-generator',
+                    name: 'PRD Generator',
+                    description: 'Expert PRD creation assistant that helps users create comprehensive product requirements documents',
+                    traits: {
+                        personality: ['methodical', 'detail-oriented', 'helpful', 'professional'],
+                        knowledge: ['product management', 'technical documentation', 'software development', 'project planning'],
+                        tone: 'professional and instructive',
+                        background: 'Senior Product Manager with extensive experience in creating and reviewing PRDs'
+                    },
+                    config: {
+                        provider: 'openai',
+                        model: 'gpt-4o-mini',
+                        temperature: 0.3,
+                        maxTokens: 2500,
+                        systemPrompt: `You are an expert PRD (Product Requirements Document) creation assistant with extensive experience in product management and technical documentation. Your role is to help users create comprehensive PRDs using the Worksona.js PRD template.
+
+Your approach should be:
+
+1. Template Understanding
+   - Guide users through each section of the PRD template
+   - Explain the purpose and importance of each section
+   - Provide context for required information
+
+2. Content Generation
+   - Help users define clear and specific requirements
+   - Suggest appropriate content for each section
+   - Provide examples and best practices
+   - Ensure consistency across sections
+
+3. Best Practices
+   - Maintain clarity and precision in language
+   - Ensure requirements are specific and measurable
+   - Validate technical feasibility
+   - Consider user needs and business goals
+
+4. Section-Specific Guidance
+   - Executive Summary: Help craft a compelling overview
+   - Product Overview: Guide vision and target audience definition
+   - Technical Requirements: Assist with technical specifications
+   - Functional Requirements: Help define features and user stories
+   - Non-Functional Requirements: Guide performance and security requirements
+   - Integration Requirements: Help identify necessary integrations
+   - Development Phases: Assist with project planning
+   - Success Metrics: Help define measurable outcomes
+
+5. Quality Assurance
+   - Review content for completeness
+   - Check for consistency and clarity
+   - Validate technical accuracy
+   - Ensure alignment with best practices
+
+When users provide information or ask questions:
+1. Understand their specific needs and context
+2. Provide relevant examples and suggestions
+3. Guide them through the PRD creation process
+4. Help them refine and improve their content
+5. Ensure all requirements are clear and actionable
+
+Remember to:
+- Ask clarifying questions when needed
+- Provide specific examples when helpful
+- Maintain a professional and helpful tone
+- Focus on creating a comprehensive and actionable PRD`,
+                        examples: [
+                            {
+                                user: "I need help creating a PRD for a new mobile app",
+                                assistant: "I'll help you create a comprehensive PRD for your mobile app. Let's start with the Executive Summary. Could you tell me:\n\n1. What is the main purpose of your mobile app?\n2. Who are the primary users?\n3. What key problems does it solve?\n\nThis will help us craft a compelling overview that sets the foundation for the rest of the PRD."
+                            },
+                            {
+                                user: "How should I structure the Technical Requirements section?",
+                                assistant: "The Technical Requirements section should cover several key areas:\n\n1. System Architecture\n   - Frontend framework and components\n   - Backend services and APIs\n   - Database design\n   - Third-party integrations\n\n2. Performance Requirements\n   - Response times\n   - Scalability needs\n   - Availability targets\n\n3. Security Requirements\n   - Authentication methods\n   - Data protection\n   - Compliance needs\n\nWould you like me to help you define specific requirements for any of these areas?"
+                            },
+                            {
+                                user: "What should I include in the Functional Requirements?",
+                                assistant: "Functional Requirements should detail the specific features and capabilities of your product. For each feature, include:\n\n1. User Stories\n   - As a [user type], I want to [action] so that [benefit]\n\n2. Acceptance Criteria\n   - Specific, measurable criteria for feature completion\n\n3. Technical Implementation Details\n   - Required components\n   - Dependencies\n   - Integration points\n\nLet's start with your core features. What are the main functionalities your product needs to provide?"
+                            }
+                        ]
+                    }
+                });
+
+                // Remove any existing event listeners
+                worksona.removeAllListeners();
+
+                updateStatus('PRD Creator is ready! Select a step to begin.');
+            } catch (error) {
+                console.error('Failed to initialize Worksona:', error);
+                updateStatus('Failed to initialize. Please check your API keys in the control panel.');
+            }
+        }
+
+        // Select a step
+        function selectStep(step) {
+            if (!worksona) {
+                updateStatus('System is still initializing. Please wait...');
+                return;
+            }
+            
+            if (step === currentStep) return; // Don't reload if it's the same step
+            
+            currentStep = step;
+            
+            // Update UI to show selected step
+            document.querySelectorAll('.step-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            document.querySelector(`[data-step="${step}"]`).classList.add('active');
+            
+            // Show clear button if there's existing content
+            const clearButton = document.getElementById('clear-button');
+            clearButton.style.display = 'none';  // Hide initially
+            
+            // Clear the step content
+            const stepContent = document.getElementById('step-content');
+            stepContent.innerHTML = '';
+            
+            // Add step header
+            const stepHeader = document.createElement('div');
+            stepHeader.className = 'step-header';
+            stepHeader.style.marginBottom = '20px';
+            stepHeader.style.padding = '10px';
+            stepHeader.style.borderBottom = '2px solid #e2e8f0';
+            stepHeader.innerHTML = `<h2>Step ${step}: ${getStepTitle(step)}</h2>`;
+            stepContent.appendChild(stepHeader);
+            
+            // If we have a conversation history, replay it
+            if (stepState.conversations[step] && stepState.conversations[step].length > 0) {
+                stepState.conversations[step].forEach(msg => {
+                    updateStepContent(msg.content, msg.role);
+                });
+                clearButton.style.display = 'block';
+            } else {
+                // Start a new conversation
+                const prompt = `Help me with the ${getStepTitle(step)} section of my PRD. ${getStepContext(step)}`;
+                
+                // Show loading state
+                showLoading(true);
+                updateStatus('Starting new conversation...');
+                
+                // Use direct promise handling instead of event listeners
+                worksona.chat('prd-generator', prompt, { handleEvents: false })
+                    .then(response => {
+                        // Initialize conversation array for this step
+                        stepState.conversations[step] = [{
+                            role: 'assistant',
+                            content: response
+                        }];
+                        // Display the response
+                        updateStepContent(response, 'assistant');
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        updateStatus(`Error: ${error.message}`);
+                    })
+                    .finally(() => {
+                        showLoading(false);
+                        updateStatus('Ready for your input');
+                    });
+            }
+        }
+
+        // Helper function to get step title
+        function getStepTitle(step) {
+            const stepTitles = {
+                1: 'Project Overview',
+                2: 'Target Audience',
+                3: 'Key Features',
+                4: 'Technical Requirements',
+                5: 'Functional Requirements',
+                6: 'Non-Functional Requirements',
+                7: 'Integration Requirements',
+                8: 'Development Phases',
+                9: 'Success Metrics',
+                10: 'Review & Export'
+            };
+            return stepTitles[step] || '';
+        }
+
+        // Get context for each step
+        function getStepContext(step) {
+            const contexts = {
+                1: 'I need to define the project\'s purpose, goals, and main objectives.',
+                2: 'I need to identify the primary and secondary users, their needs, and pain points.',
+                3: 'I need to list and describe the main features of the product.',
+                4: 'I need to define the technical architecture, performance requirements, and constraints.',
+                5: 'I need to detail the specific features, user stories, and acceptance criteria.',
+                6: 'I need to specify performance, security, and reliability requirements.',
+                7: 'I need to list required external systems and API specifications.',
+                8: 'I need to plan the MVP and future development phases.',
+                9: 'I need to define KPIs and user metrics for success.',
+                10: 'I need to review the entire PRD and prepare it for export.'
+            };
+            return contexts[step] || '';
+        }
+
+        // Submit user response
+        async function submitResponse() {
+            if (!worksona || isProcessing) return;
+            
+            const input = document.getElementById('user-input');
+            const message = input.value.trim();
+            
+            if (!message) return;
+            
+            isProcessing = true;
+            showLoading(true);
+            updateStatus('Processing your request...');
+            
+            try {
+                // Clear input field early
+                input.value = '';
+                
+                // Display user message first
+                updateStepContent(message, 'user');
+                
+                // Store the user's message in the conversation history
+                if (!stepState.conversations[currentStep]) {
+                    stepState.conversations[currentStep] = [];
+                }
+                
+                // Add user message to conversation history
+                stepState.conversations[currentStep].push({
+                    role: 'user',
+                    content: message
+                });
+                
+                // Get the response without event handling
+                const response = await worksona.chat('prd-generator', message, {
+                    messages: stepState.conversations[currentStep],
+                    handleEvents: false
+                });
+                
+                // Add and display assistant response
+                stepState.conversations[currentStep].push({
+                    role: 'assistant',
+                    content: response
+                });
+                updateStepContent(response, 'assistant');
+                
+                // Check if this step is complete
+                if (response.includes('Great!') || response.includes('Perfect!') || response.includes('Excellent!')) {
+                    stepState.completed.add(currentStep);
+                    document.querySelector(`[data-step="${currentStep}"]`).classList.add('completed');
+                }
+                
+                // Show export button if all steps are complete
+                if (stepState.completed.size === 10) {
+                    document.getElementById('export-button').style.display = 'block';
+                }
+                
+                updateStatus('Ready for your input');
+            } catch (error) {
+                console.error('Error:', error);
+                updateStatus(`Error: ${error.message}`);
+            } finally {
+                isProcessing = false;
+                showLoading(false);
+            }
+        }
+
+        // Update step content
+        function updateStepContent(content, role = 'assistant') {
+            const stepContent = document.getElementById('step-content');
+            
+            // Create a new message container
+            const messageContainer = document.createElement('div');
+            messageContainer.className = `message-container ${role}`;
+            
+            // Add message header
+            const messageHeader = document.createElement('div');
+            messageHeader.className = 'message-header';
+            messageHeader.textContent = role === 'user' ? 'You' : 'PRD Generator';
+            messageContainer.appendChild(messageHeader);
+            
+            // Create content container
+            const contentContainer = document.createElement('div');
+            contentContainer.className = 'message-content';
+            
+            // Parse and add the new content
+            const parsedContent = marked.parse(content);
+            contentContainer.innerHTML = parsedContent;
+            
+            // Apply syntax highlighting to code blocks
+            contentContainer.querySelectorAll('pre code').forEach((block) => {
+                hljs.highlightElement(block);
+            });
+            
+            messageContainer.appendChild(contentContainer);
+            
+            // Append the new message to the existing content
+            stepContent.appendChild(messageContainer);
+            
+            // Scroll to the bottom of the content
+            stepContent.scrollTop = stepContent.scrollHeight;
+        }
+
+        // Update status message
+        function updateStatus(message) {
+            document.getElementById('status-area').textContent = message;
+        }
+
+        // Show/hide loading overlay
+        function showLoading(show) {
+            const overlay = document.getElementById('loading-overlay');
+            overlay.style.display = show ? 'flex' : 'none';
+        }
+
+        // Export PRD
+        function exportPRD() {
+            // Generate markdown content
+            const markdown = generateMarkdown();
+            
+            // Create blob and download
+            const blob = new Blob([markdown], { type: 'text/markdown' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'product-requirements-document.md';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+
+        // Generate markdown content
+        function generateMarkdown() {
+            // Generate the final PRD markdown based on the collected content
+            let markdown = `# Product Requirements Document\n\n`;
+            
+            // Add each section
+            const sections = [
+                { title: 'Executive Summary', key: 1 },
+                { title: 'Product Overview', key: 2 },
+                { title: 'Key Features', key: 3 },
+                { title: 'Technical Requirements', key: 4 },
+                { title: 'Functional Requirements', key: 5 },
+                { title: 'Non-Functional Requirements', key: 6 },
+                { title: 'Integration Requirements', key: 7 },
+                { title: 'Development Phases', key: 8 },
+                { title: 'Success Metrics', key: 9 }
+            ];
+            
+            sections.forEach(section => {
+                markdown += `## ${section.title}\n\n`;
+                if (stepState.content[section.key]) {
+                    // Extract the main content from the conversation
+                    const content = stepState.content[section.key];
+                    // Remove any markdown formatting that might be in the response
+                    const cleanContent = content.replace(/^#.*$/gm, '').trim();
+                    markdown += cleanContent + '\n\n';
+                } else {
+                    markdown += '[Content not yet completed]\n\n';
+                }
+            });
+            
+            return markdown;
+        }
+
+        // Handle Enter key press
+        function handleKeyPress(event) {
+            if (event.key === 'Enter' && !event.shiftKey) {
+                event.preventDefault();
+                submitResponse();
+            }
+        }
+
+        // Clear step content
+        function clearStepContent() {
+            const stepContent = document.getElementById('step-content');
+            const clearButton = document.getElementById('clear-button');
+            
+            // Keep only the welcome message
+            const welcomeContent = `
+                <h2>Welcome to PRD Creator</h2>
+                <p>Let's create a comprehensive Product Requirements Document for your project. We'll guide you through each step, providing suggestions and examples along the way.</p>
+                <p>Start by selecting a step from the sidebar or click "Begin" to start with the Project Overview.</p>
+            `;
+            stepContent.innerHTML = welcomeContent;
+            
+            // Hide clear button
+            clearButton.style.display = 'none';
+            
+            // Clear the conversation history for this step
+            if (stepState.conversations[currentStep]) {
+                stepState.conversations[currentStep] = [];
+            }
+        }
+
+        // Initialize the application
+        window.onload = initializeWorksona;
+    </script>
+</body>
+</html> 

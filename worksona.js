@@ -550,7 +550,10 @@ class Agent {
         <div class="worksona-control-panel">
           <div class="worksona-panel-header">
             <h2>Worksona Agents Control Panel</h2>
-            <button class="worksona-close-button">×</button>
+            <div class="worksona-header-buttons">
+              <button class="worksona-expand-button" title="Toggle full screen">⛶</button>
+              <button class="worksona-close-button">×</button>
+            </div>
           </div>
           
           <div class="worksona-llm-status-bar">
@@ -645,6 +648,29 @@ class Agent {
           color: #1a56db;
           font-size: 18px;
           font-weight: 600;
+        }
+
+        .worksona-header-buttons {
+          display: flex;
+          gap: 10px;
+          align-items: center;
+        }
+
+        .worksona-expand-button {
+          background: none;
+          border: none;
+          font-size: 20px;
+          cursor: pointer;
+          color: #64748b;
+          padding: 4px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          transition: color 0.2s;
+        }
+
+        .worksona-expand-button:hover {
+          color: #334155;
         }
 
         .worksona-close-button {
@@ -1151,10 +1177,19 @@ class Agent {
       // Save API keys
       const saveButton = document.getElementById('worksona-save-keys');
       if (saveButton) {
-        saveButton.addEventListener('click', () => {
+        // Remove any existing event listeners
+        const newSaveButton = saveButton.cloneNode(true);
+        saveButton.parentNode.replaceChild(newSaveButton, saveButton);
+        
+        newSaveButton.addEventListener('click', () => {
           const openaiKey = document.getElementById('worksona-openai-key').value;
           const anthropicKey = document.getElementById('worksona-anthropic-key').value;
           const googleKey = document.getElementById('worksona-google-key').value;
+          
+          // Save to localStorage first
+          if (openaiKey) localStorage.setItem('openai_api_key', openaiKey);
+          if (anthropicKey) localStorage.setItem('anthropic_api_key', anthropicKey);
+          if (googleKey) localStorage.setItem('google_api_key', googleKey);
           
           // Update API keys in options
           this.options.apiKeys = {
@@ -1173,7 +1208,7 @@ class Agent {
           // Emit event
           this._emit('api-keys-updated', { providers: Object.keys(this.options.apiKeys) });
           
-          // Show success message
+          // Show success message only once
           alert('API keys saved successfully!');
         });
       }
@@ -1181,16 +1216,20 @@ class Agent {
       // Test connections
       const testButton = document.getElementById('worksona-test-connections');
       if (testButton) {
-        testButton.addEventListener('click', async () => {
-          testButton.disabled = true;
-          testButton.textContent = 'Testing...';
+        // Remove any existing event listeners
+        const newTestButton = testButton.cloneNode(true);
+        testButton.parentNode.replaceChild(newTestButton, testButton);
+        
+        newTestButton.addEventListener('click', async () => {
+          newTestButton.disabled = true;
+          newTestButton.textContent = 'Testing...';
           
           try {
             await this._testProviderConnections();
             this.updateControlPanel();
           } finally {
-            testButton.disabled = false;
-            testButton.textContent = 'Test Connections';
+            newTestButton.disabled = false;
+            newTestButton.textContent = 'Test Connections';
           }
         });
       }
@@ -1198,7 +1237,11 @@ class Agent {
       // Close button
       const closeButton = container.querySelector('.worksona-close-button');
       if (closeButton) {
-        closeButton.addEventListener('click', () => {
+        // Remove any existing event listeners
+        const newCloseButton = closeButton.cloneNode(true);
+        closeButton.parentNode.replaceChild(newCloseButton, closeButton);
+        
+        newCloseButton.addEventListener('click', () => {
           // If the control panel is in a modal or overlay, hide it
           const panel = container.querySelector('.worksona-control-panel');
           if (panel) {
@@ -1596,6 +1639,19 @@ class Agent {
       
       // Set up the control panel - this will set up basic structure and event listeners
       this.createControlPanel('worksona-modal-container');
+
+      // Helper function to close the panel
+      const closePanel = () => {
+        overlay.classList.remove('active');
+        panelContainer.classList.remove('active');
+        const panel = panelContainer.querySelector('.worksona-control-panel');
+        if (panel) {
+          panel.style.display = 'none';
+          // Reset expanded state when closing
+          panel.classList.remove('expanded');
+          panelContainer.classList.remove('expanded');
+        }
+      };
       
       // Add styles for floating button and modal
       const floatingStyles = document.createElement('style');
@@ -1651,6 +1707,8 @@ class Agent {
           max-height: 80vh;
           overflow: auto;
           display: none;
+          background: white;
+          border-radius: 8px;
         }
         
         #worksona-modal-container.active {
@@ -1679,6 +1737,73 @@ class Agent {
           background: white;
           border-radius: 8px;
         }
+
+        .worksona-panel-header {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          padding: 15px 20px;
+          border-bottom: 1px solid #eee;
+          background: #fff;
+          position: sticky;
+          top: 0;
+          z-index: 1;
+        }
+
+        .worksona-header-buttons {
+          display: flex;
+          gap: 10px;
+          align-items: center;
+        }
+
+        .worksona-expand-button {
+          background: none;
+          border: none;
+          font-size: 20px;
+          cursor: pointer;
+          color: #64748b;
+          padding: 4px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          transition: color 0.2s;
+        }
+
+        .worksona-expand-button:hover {
+          color: #334155;
+        }
+
+        .worksona-control-panel {
+          box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+          max-height: 80vh;
+          overflow: auto;
+          background: white;
+          border-radius: 8px;
+          transition: all 0.3s ease;
+        }
+
+        .worksona-control-panel.expanded {
+          position: fixed;
+          top: 0;
+          left: 0;
+          width: 100% !important;
+          height: 100vh !important;
+          max-height: 100vh !important;
+          max-width: 100% !important;
+          border-radius: 0;
+          z-index: 10001;
+        }
+
+        #worksona-modal-container.expanded {
+          width: 100%;
+          max-width: 100%;
+          height: 100vh;
+          max-height: 100vh;
+          top: 0;
+          left: 0;
+          transform: none;
+          border-radius: 0;
+        }
       `;
       document.head.appendChild(floatingStyles);
       
@@ -1686,25 +1811,53 @@ class Agent {
       button.addEventListener('click', () => {
         overlay.classList.add('active');
         panelContainer.classList.add('active');
+        // Ensure the control panel is visible
+        const panel = panelContainer.querySelector('.worksona-control-panel');
+        if (panel) {
+          panel.style.display = 'block';
+        }
       });
       
-      overlay.addEventListener('click', () => {
-        overlay.classList.remove('active');
-        panelContainer.classList.remove('active');
-      });
+      // Add expand/contract functionality
+      const expandButton = panelContainer.querySelector('.worksona-expand-button');
+      if (expandButton) {
+        expandButton.addEventListener('click', () => {
+          const panel = panelContainer.querySelector('.worksona-control-panel');
+          const isExpanded = panel.classList.contains('expanded');
+          
+          if (isExpanded) {
+            panel.classList.remove('expanded');
+            panelContainer.classList.remove('expanded');
+            expandButton.innerHTML = '⛶'; // Expand icon
+            expandButton.title = 'Expand to full screen';
+          } else {
+            panel.classList.add('expanded');
+            panelContainer.classList.add('expanded');
+            expandButton.innerHTML = '⛾'; // Contract icon
+            expandButton.title = 'Return to normal size';
+          }
+        });
+      }
+
+      // Close panel when clicking overlay
+      overlay.addEventListener('click', closePanel);
       
-      // Also close when clicking the close button in the panel
+      // Close panel when clicking close button
       const closeButton = panelContainer.querySelector('.worksona-close-button');
       if (closeButton) {
         closeButton.addEventListener('click', (e) => {
-          // Prevent default to avoid conflicts with other event handlers
           e.preventDefault();
           e.stopPropagation();
-          
-          overlay.classList.remove('active');
-          panelContainer.classList.remove('active');
+          closePanel();
         });
       }
+
+      // Add keyboard event listener for Escape key
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && overlay.classList.contains('active')) {
+          closePanel();
+        }
+      });
     }
   }
 

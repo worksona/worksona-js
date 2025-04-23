@@ -1,0 +1,17 @@
+# Ignore OS files
+.DS_Store
+
+# Ignore node_modules if ever added
+node_modules/
+
+# Ignore log files
+*.log
+
+# Ignore local env files
+.env
+.env.*
+
+# Ignore Netlify build output
+.netlify/
+dist/
+build/
