@@ -583,8 +583,26 @@ Remember to:
                     }
                 });
 
-                // Remove any existing event listeners
-
+                // Direct registration of PRD Editor Agent - no file loading needed
+                try {
+                    await worksona.loadAgent({
+                        id: 'prd-editor-agent',
+                        name: 'PRD Editor Agent',
+                        description: 'A long-form Worksona agent specialized in reviewing, editing, and refining PRD documents.',
+                        persona: 'You are a helpful, detail-oriented product requirements document (PRD) editor. You can analyze, rewrite, and improve sections of a PRD based on user instructions. Always ask clarifying questions if the user\'s request is ambiguous, and confirm changes before applying them. If the user highlights text, focus only on that section; otherwise, operate on the entire document. Respond in markdown or rich text as appropriate. When suggesting changes, start your response with "REPLACE:" followed by the new text to replace the selection or document.',
+                        config: {
+                            provider: 'openai',
+                            model: 'gpt-4o-mini',
+                            temperature: 0.3,
+                            maxTokens: 2500
+                        }
+                    });
+                    prdEditorAgentReady = true;
+                    console.log('[Worksona] prd-editor-agent registered directly - success!');
+                } catch (err) {
+                    prdEditorAgentReady = false;
+                    console.error('[Worksona] Failed to register prd-editor-agent directly:', err);
+                }
 
                 updateStatus('PRD Creator is ready! Select a step to begin.');
             } catch (error) {
@@ -610,6 +628,16 @@ Remember to:
             });
             document.querySelector(`[data-step="${step}"]`).classList.add('active');
             
+            // Show/hide standard chat interface based on step
+            const inputArea = document.querySelector('.input-area');
+            if (step === 10) {
+                // Hide standard chat for Step 10 (using Quill editor instead)
+                inputArea.style.display = 'none';
+            } else {
+                // Show standard chat for all other steps
+                inputArea.style.display = 'block';
+            }
+            
             // Show clear button if there's existing content
             const clearButton = document.getElementById('clear-button');
             clearButton.style.display = 'none';  // Hide initially
@@ -627,11 +655,9 @@ Remember to:
             stepHeader.innerHTML = `<h2>Step ${step}: ${getStepTitle(step)}</h2>`;
             stepContent.appendChild(stepHeader);
 
-            // Special UI for Step 10: use ONLY prd-editor-agent for chat and editing
+            // Special UI for Step 10
+            // Step 10: Use only prd-editor-agent for chat/editor
             if (step === 10) {
-                // Hide the main chat input and submit button
-                document.querySelector('.input-area').style.display = 'none';
-                (async () => {
                 // Create container for advanced review/editor UI
                 const reviewContainer = document.createElement('div');
                 reviewContainer.style.display = 'flex';
@@ -714,13 +740,20 @@ Remember to:
                 let undoStack = [];
 
                 // Consolidate PRD for initial content
+                // Get the structured PRD from all previous steps' final content
                 const consolidated = generateMarkdown();
                 setTimeout(() => {
+                    // Initialize Quill with proper content type
                     quill = new Quill('#quill-editor', {
                         theme: 'snow',
                         modules: { toolbar: true }
                     });
-                    quill.setText(consolidated);
+                    
+                    // Insert the formatted PRD content
+                    // Use clipboard.dangerouslyPasteHTML to preserve formatting
+                    const delta = quill.clipboard.convert(marked.parse(consolidated));
+                    quill.setContents(delta);
+                    
                     // Push initial state
                     undoStack.push(quill.getContents());
                 }, 0);
@@ -744,57 +777,9 @@ Remember to:
                     chatWindow.scrollTop = chatWindow.scrollHeight;
                 }
                 // Disable send button until agent is ready
-                function showAgentErrorUI() {
-                    chatWindow.innerHTML = `<div style='color:#dc2626;'><b>PRD Editor agent is not loaded. Please contact support or <button id='retry-agent-btn' style='color:#1e40af;background:none;border:none;cursor:pointer;text-decoration:underline;'>retry</button>.</b></div>`;
-                    chatSend.disabled = true;
-                    chatInput.disabled = true;
-                    const retryBtn = document.getElementById('retry-agent-btn');
-                    if (retryBtn) {
-                        retryBtn.onclick = async function() {
-                            chatWindow.innerHTML = '<div style="color:#64748b;">Retrying agent load...</div>';
-                            chatSend.disabled = true;
-                            chatInput.disabled = true;
-                            await loadPrdEditorAgent();
-                            if (prdEditorAgentReady) {
-                                chatWindow.innerHTML = '';
-                                chatSend.disabled = false;
-                                chatInput.disabled = false;
-                            } else {
-                                showAgentErrorUI();
-                            }
-                        };
-                    }
-                }
-                async function loadPrdEditorAgent() {
-                    try {
-                        console.log('[Worksona] Attempting to load prd-editor-agent...');
-                        if (typeof worksona.loadAgentFromFile === 'function') {
-                            await worksona.loadAgentFromFile('prd-editor-agent', '../agents/prd-editor-agent.json');
-                            console.log('[Worksona] loadAgentFromFile success');
-                        } else {
-                            // Manual fallback if loadAgentFromFile is not available
-                            const res = await fetch('../agents/prd-editor-agent.json');
-                            const agentDef = await res.json();
-                            console.log('[Worksona] Loaded agent definition:', agentDef);
-                            await worksona.loadAgent({
-                                id: 'prd-editor-agent',
-                                ...agentDef
-                            });
-                        }
-                        prdEditorAgentReady = true;
-                        console.log('[Worksona] prd-editor-agent loaded successfully');
-                    } catch (err) {
-                        prdEditorAgentReady = false;
-                        console.error('[Worksona] Failed to load prd-editor-agent:', err);
-                    }
-                }
-                // Initial agent load
-                await loadPrdEditorAgent();
+                chatSend.disabled = !prdEditorAgentReady;
                 if (!prdEditorAgentReady) {
-                    showAgentErrorUI();
-                } else {
-                    chatSend.disabled = false;
-                    chatInput.disabled = false;
+                    chatWindow.innerHTML = `<div style='color:#dc2626;'><b>PRD Editor agent is not loaded. Please contact support or reload the page.</b></div>`;
                 }
                 // Chat send logic
                 chatSend.onclick = async function() {
@@ -823,29 +808,48 @@ Remember to:
                     renderChatHistory();
                     let agentResponse = '';
                     try {
-                        console.log('[Worksona] Attempting to load prd-editor-agent...');
-                        if (typeof worksona.loadAgentFromFile === 'function') {
-                            await worksona.loadAgentFromFile('prd-editor-agent', '../agents/prd-editor-agent.json');
-                            console.log('[Worksona] loadAgentFromFile success');
-                        } else {
-                            // Manual fallback if loadAgentFromFile is not available
-                            const res = await fetch('../agents/prd-editor-agent.json');
-                            const agentDef = await res.json();
-                            console.log('[Worksona] Loaded agent definition:', agentDef);
-                            await worksona.loadAgent({
-                                id: 'prd-editor-agent',
-                                ...agentDef
-                            });
+                        try {
+                            console.log('[Worksona] Attempting to load prd-editor-agent from ../agents/prd-editor-agent.json ...');
+                            if (typeof worksona.loadAgentFromFile === 'function') {
+                                try {
+                                    await worksona.loadAgentFromFile('prd-editor-agent', '../agents/prd-editor-agent.json');
+                                    console.log('[Worksona] loadAgentFromFile success (../agents)');
+                                } catch (err1) {
+                                    console.warn('[Worksona] Failed to load from ../agents/prd-editor-agent.json, trying ./agents/prd-editor-agent.json ...', err1);
+                                    await worksona.loadAgentFromFile('prd-editor-agent', './agents/prd-editor-agent.json');
+                                    console.log('[Worksona] loadAgentFromFile success (./agents)');
+                                }
+                            } else {
+                                // Manual fallback if loadAgentFromFile is not available
+                                let agentDef = null;
+                                try {
+                                    const res = await fetch('../agents/prd-editor-agent.json');
+                                    agentDef = await res.json();
+                                    console.log('[Worksona] Loaded agent definition (../agents):', agentDef);
+                                } catch (err1) {
+                                    console.warn('[Worksona] Failed to fetch ../agents/prd-editor-agent.json, trying ./agents/prd-editor-agent.json ...', err1);
+                                    const res2 = await fetch('./agents/prd-editor-agent.json');
+                                    agentDef = await res2.json();
+                                    console.log('[Worksona] Loaded agent definition (./agents):', agentDef);
+                                }
+                                await worksona.loadAgent({
+                                    id: 'prd-editor-agent',
+                                    ...agentDef
+                                });
+                            }
+                            prdEditorAgentReady = true;
+                            console.log('[Worksona] prd-editor-agent loaded successfully');
+                        } catch (err) {
+                            prdEditorAgentReady = false;
+                            console.error('[Worksona] Failed to load prd-editor-agent:', err);
                         }
-                        prdEditorAgentReady = true;
-                        console.log('[Worksona] prd-editor-agent loaded successfully');
+                        // Remove 'thinking' message
+                        chatHistory = chatHistory.filter(msg => msg.content !== '<i>PRD Editor is thinking...</i>');
                         agentResponse = await worksona.chat('prd-editor-agent', agentPrompt);
                     } catch (err) {
                         prdEditorAgentReady = false;
                         console.error('[Worksona] Failed to load prd-editor-agent:', err);
                     }
-                    // Remove 'thinking' message
-                    chatHistory = chatHistory.filter(msg => msg.content !== '<i>PRD Editor is thinking...</i>');
                     chatHistory.push({role: 'assistant', content: agentResponse});
                     renderChatHistory();
                     // If agent suggests a change, apply it
@@ -858,18 +862,36 @@ Remember to:
                             quill.setText(newText);
                         }
                         undoStack.push(quill.getContents());
+                        
+                        // Update stepState.content with the changed content
+                        // This ensures the updated content is used for export
+                        // Parse the full document to identify which section was modified
+                        const fullContent = quill.getText();
+                        const sections = [
+                            { title: 'Executive Summary', key: 1 },
+                            { title: 'Product Overview', key: 2 },
+                            { title: 'Key Features', key: 3 },
+                            { title: 'Technical Requirements', key: 4 },
+                            { title: 'Functional Requirements', key: 5 },
+                            { title: 'Non-Functional Requirements', key: 6 },
+                            { title: 'Integration Requirements', key: 7 },
+                            { title: 'Development Phases', key: 8 },
+                            { title: 'Success Metrics', key: 9 }
+                        ];
+                        
+                        // For now, if editing the whole document, just mark all sections as updated
+                        if (!contextRange) {
+                            // Update all sections content
+                            sections.forEach(section => {
+                                stepState.content[section.key] = newText;
+                            });
+                        }
                     }
                 };
                 return; // Skip normal step logic for step 10
-                })();
             }
 
             // If we have a conversation history, replay it
-            if (step !== 10) {
-
-                // Step 10 handled above (exclusive to prd-editor-agent)
-                return;
-            }
             if (stepState.conversations[step] && stepState.conversations[step].length > 0) {
                 stepState.conversations[step].forEach(msg => {
                     updateStepContent(msg.content, msg.role);
