@@ -1,6 +1,6 @@
 /**
  * Worksona.js - LLM Agent Management API
- * Version: 1.0.0
+ * Version: 0.1.2
  * 
  * A lightweight, single-file solution for deploying and managing AI agents
  * with distinct personalities across multiple LLM providers.
@@ -123,23 +123,107 @@ class Agent {
         openai: this.options.apiKeys.openai ? {
           chat: async (agent, message) => {
             try {
-              // Use a guaranteed valid model name and ensure there are no spaces or invalid chars
-              const modelName = (agent.config.model || this.options.defaultModel || 'gpt-3.5-turbo').trim();
+              // Determine if this is a vision request
+              const isVisionRequest = message.content && message.content.type === 'image';
+              const modelName = (agent.config.model || this.options.defaultModel || 'gpt-4o').trim();
               
-              // Log the request details for debugging
               this._log(`Making OpenAI request with model: ${modelName}`, 'info');
               
+              let messages;
+              // Determine if this is a vision request - check both formats for backward compatibility
+              if (isVisionRequest || (message && message.type === 'image') || (message && message.content && typeof message.content === 'object' && message.content.type === 'image')) {
+                // Format vision-specific message
+                // Handle different possible formats for image data
+                let imageData;
+                
+                if (isVisionRequest) {
+                  imageData = message.content;
+                } else if (message.type === 'image') {
+                  imageData = message;
+                } else if (message.content && message.content.type === 'image') {
+                  imageData = message.content;
+                }
+                
+                // Ensure we have valid image data
+                if (!imageData || !imageData.imageUrl) {
+                  throw new Error('Invalid image data: Missing required imageUrl property');
+                }
+                
+                messages = [
+                  { 
+                    role: 'system', 
+                    content: agent.config.systemPrompt || 'You are a helpful vision analysis assistant.'
+                  },
+                  {
+                    role: 'user',
+                    content: [
+                      {
+                        type: 'text',
+                        text: imageData.prompt || 'Please analyze this image.'
+                      },
+                      {
+                        type: 'image_url',
+                        image_url: {
+                          url: imageData.imageUrl,
+                          detail: imageData.detail || 'high' // 'auto', 'low', or 'high'
+                        }
+                      }
+                    ]
+                  }
+                ];
+                
+                // Log the message structure for debugging
+                this._log(`Vision message structure: ${JSON.stringify(messages)}`, 'info');
+              } else {
+                // Standard chat message format
+                // Ensure we have a valid message content
+                let userContent = '';
+                
+                if (typeof message === 'string') {
+                  userContent = message;
+                } else if (message && typeof message.content === 'string') {
+                  userContent = message.content;
+                } else if (message && message.content) {
+                  // If content is an object, convert it to a string
+                  try {
+                    userContent = JSON.stringify(message.content);
+                  } catch (e) {
+                    userContent = 'Unable to process message content';
+                  }
+                } else if (message) {
+                  // If message is an object but doesn't have content property
+                  try {
+                    userContent = JSON.stringify(message);
+                  } catch (e) {
+                    userContent = 'Unable to process message';
+                  }
+                } else {
+                  userContent = 'No message provided';
+                }
+                
+                // Log the processed content for debugging
+                this._log(`Processed user content: ${userContent.substring(0, 100)}${userContent.length > 100 ? '...' : ''}`, 'info');
+                
+                messages = [
+                  { 
+                    role: 'system', 
+                    content: agent.config.systemPrompt || 'You are a helpful assistant.' 
+                  },
+                  ...(agent.config.examples || []).flatMap(ex => [
+                    { role: 'user', content: ex.user },
+                    { role: 'assistant', content: ex.assistant }
+                  ]),
+                  { 
+                    role: 'user', 
+                    content: userContent
+                  }
+                ];
+              }
+
               const requestBody = {
                 model: modelName,
-                  messages: [
-                  { role: 'system', content: agent.config.systemPrompt || 'You are a helpful assistant.' },
-                    ...(agent.config.examples || []).flatMap(ex => [
-                      { role: 'user', content: ex.user },
-                      { role: 'assistant', content: ex.assistant }
-                    ]),
-                    { role: 'user', content: message }
-                  ],
-                  temperature: agent.config.temperature || 0.7,
+                messages: messages,
+                temperature: agent.config.temperature || 0.7,
                 max_tokens: agent.config.maxTokens || 500,
                 top_p: agent.config.topP || 1,
                 frequency_penalty: agent.config.frequencyPenalty || 0,
@@ -147,21 +231,31 @@ class Agent {
                 stream: false
               };
               
-              const response = await fetch('https://api.openai.com/v1/chat/completions', {
+              // Use the appropriate API endpoint based on the model
+              const apiEndpoint = isVisionRequest ? 
+                'https://api.openai.com/v1/chat/completions' : 
+                'https://api.openai.com/v1/chat/completions';
+
+              const response = await fetch(apiEndpoint, {
                 method: 'POST',
                 headers: {
                   'Content-Type': 'application/json',
-                  'Authorization': `Bearer ${this.options.apiKeys.openai}`
+                  'Authorization': `Bearer ${this.options.apiKeys.openai}`,
+                  'OpenAI-Organization': agent.config.organization || ''
                 },
                 body: JSON.stringify(requestBody)
               });
 
               const data = await response.json();
               
-              // Log detailed error information
               if (!response.ok) {
                 this._log(`OpenAI API error: ${JSON.stringify(data)}`, 'error');
                 throw new Error(data.error?.message || `OpenAI API error: ${response.status}`);
+              }
+              
+              // Log successful vision processing
+              if (isVisionRequest) {
+                this._log(`Successfully processed vision request with model: ${modelName}`);
               }
               
               return data.choices[0].message.content;
@@ -171,8 +265,8 @@ class Agent {
             }
           },
           defaultModels: {
-            chat: 'gpt-3.5-turbo',
-            completion: 'gpt-3.5-turbo'
+            chat: 'gpt-4o',
+            vision: 'gpt-4o'
           }
         } : null,
 
@@ -505,15 +599,48 @@ class Agent {
     _handleError(error, code, message) {
       let errorMessage = message || error.message;
       
-      // Add more context for common errors
-      if (code === 'PROVIDER_ERROR') {
-        if (error.message && error.message.includes('401')) {
-          errorMessage = 'API key is invalid or missing. Please check your API key in the control panel.';
-        } else if (error.message && error.message.includes('invalid_api_key')) {
-          errorMessage = 'Invalid API key format. Please check your API key in the control panel.';
-        } else if (error.message && error.message.includes('model')) {
-          errorMessage = `Model error: ${error.message}. Please try a different model in the control panel.`;
-        }
+      switch (code) {
+        case 'IMAGE_PROCESSING_ERROR':
+          if (error.message.includes('image_too_large')) {
+            errorMessage = 'Image size exceeds maximum allowed size. Please reduce the image size.';
+          } else if (error.message.includes('invalid_image_format')) {
+            errorMessage = 'Invalid image format. Supported formats are: JPEG, PNG, WEBP, GIF.';
+          } else if (error.message.includes('vision_model_unavailable')) {
+            errorMessage = 'Vision model is currently unavailable. Please try again later.';
+          }
+          
+          // OpenAI-specific errors
+          if (error.message.includes('invalid_api_key')) {
+            errorMessage = 'Invalid OpenAI API key. Please check your credentials.';
+          } else if (error.message.includes('insufficient_quota')) {
+            errorMessage = 'OpenAI API quota exceeded. Please check your usage limits.';
+          } else if (error.message.includes('rate_limit_exceeded')) {
+            errorMessage = 'OpenAI API rate limit exceeded. Please try again later.';
+          }
+          break;
+        case 'PROVIDER_ERROR':
+          if (error.message && error.message.includes('401')) {
+            errorMessage = 'API key is invalid or missing. Please check your API key in the control panel.';
+          } else if (error.message && error.message.includes('invalid_api_key')) {
+            errorMessage = 'Invalid API key format. Please check your API key in the control panel.';
+          } else if (error.message && error.message.includes('model')) {
+            errorMessage = `Model error: ${error.message}. Please try a different model in the control panel.`;
+          }
+          break;
+        case 'CONFIG_ERROR':
+          errorMessage = 'Invalid agent configuration. Please check your agent configuration and try again.';
+          break;
+        case 'AGENT_LOAD_ERROR':
+          errorMessage = `Failed to load agent: ${error.message}. Please check the agent configuration and try again.`;
+          break;
+        case 'AGENT_NOT_FOUND':
+          errorMessage = `Agent not found: ${error.message}. Please check the agent ID and try again.`;
+          break;
+        case 'CHAT_ERROR':
+          errorMessage = `Chat failed with ${error.message}. Please check the chat request and try again.`;
+          break;
+        default:
+          errorMessage = error.message || 'An unknown error occurred. Please try again later.';
       }
       
       const worksonaError = {
@@ -1647,9 +1774,6 @@ class Agent {
         const panel = panelContainer.querySelector('.worksona-control-panel');
         if (panel) {
           panel.style.display = 'none';
-          // Reset expanded state when closing
-          panel.classList.remove('expanded');
-          panelContainer.classList.remove('expanded');
         }
       };
       
@@ -1858,6 +1982,192 @@ class Agent {
           closePanel();
         }
       });
+    }
+
+    /**
+     * Process (analyze) an image using the agent's provider (gpt-4o for OpenAI)
+     */
+    async processImage(agentId, imageData, options = {}) {
+      const agent = this.agents.get(agentId);
+      if (!agent) {
+        this._handleError(new Error(`Agent not found: ${agentId}`), 'AGENT_NOT_FOUND');
+        return null;
+      }
+      const provider = agent.config.provider || this.options.defaultProvider;
+      this._emit('image-analysis-start', { agentId, provider, imageData, options });
+      try {
+        if (provider === 'openai') {
+          // Use OpenAI GPT-4o for vision analysis
+          const modelName = (agent.config.model || 'gpt-4o').trim();
+          const messages = [
+            { role: 'system', content: agent.config.systemPrompt || 'You are a helpful vision analysis assistant.' },
+            { role: 'user', content: [
+              { type: 'text', text: options.prompt || 'Please analyze this image.' },
+              { type: 'image_url', image_url: { url: imageData, detail: options.detail || 'high' } }
+            ] }
+          ];
+          const requestBody = {
+            model: modelName,
+            messages,
+            temperature: agent.config.temperature || 0.7,
+            max_tokens: agent.config.maxTokens || 500,
+            top_p: agent.config.topP || 1,
+            frequency_penalty: agent.config.frequencyPenalty || 0,
+            presence_penalty: agent.config.presencePenalty || 0,
+            stream: false
+          };
+          const response = await fetch('https://api.openai.com/v1/chat/completions', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${this.options.apiKeys.openai}`
+            },
+            body: JSON.stringify(requestBody)
+          });
+          const data = await response.json();
+          if (!response.ok) throw new Error(data.error?.message || 'OpenAI image analysis error');
+          this._emit('image-analysis-complete', { agentId, provider, imageData, result: data });
+          return data.choices[0].message.content;
+        } else {
+          throw new Error(`Provider ${provider} does not support image analysis`);
+        }
+      } catch (error) {
+        this._emit('image-processing-error', { agentId, error });
+        this._handleError(error, 'IMAGE_PROCESSING_ERROR', 'Failed to analyze image');
+        return null;
+      }
+    }
+
+    // Alias method for analyzeImage that calls processImage
+    async analyzeImage(agentId, imageData, options = {}) {
+      return this.processImage(agentId, imageData, options);
+    }
+
+    /**
+     * Generate an image from a text prompt using the agent's provider (gpt-4o/DALL-E for OpenAI)
+     */
+    async generateImage(agentId, prompt, options = {}) {
+      const agent = this.agents.get(agentId);
+      if (!agent) {
+        this._handleError(new Error(`Agent not found: ${agentId}`), 'AGENT_NOT_FOUND');
+        return null;
+      }
+      const provider = agent.config.provider || this.options.defaultProvider;
+      this._emit('image-generation-start', { agentId, provider, prompt, options });
+      try {
+        if (provider === 'openai') {
+          // Use OpenAI DALL-E API for image generation
+          const response = await fetch('https://api.openai.com/v1/images/generations', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${this.options.apiKeys.openai}`
+            },
+            body: JSON.stringify({
+              prompt,
+              n: options.n || 1,
+              size: options.size || '1024x1024',
+              response_format: options.response_format || 'url',
+              user: agentId
+            })
+          });
+          const data = await response.json();
+          if (!response.ok) throw new Error(data.error?.message || 'OpenAI image generation error');
+          this._emit('image-generation-complete', { agentId, provider, prompt, result: data });
+          return data.data[0].url;
+        } else {
+          throw new Error(`Provider ${provider} does not support image generation`);
+        }
+      } catch (error) {
+        this._emit('image-generation-error', { agentId, error });
+        this._handleError(error, 'IMAGE_GENERATION_ERROR', 'Failed to generate image');
+        return null;
+      }
+    }
+
+    /**
+     * Edit an image based on a prompt using the agent's provider (OpenAI DALL-E)
+     */
+    async editImage(agentId, imageData, prompt, options = {}) {
+      const agent = this.agents.get(agentId);
+      if (!agent) {
+        this._handleError(new Error(`Agent not found: ${agentId}`), 'AGENT_NOT_FOUND');
+        return null;
+      }
+      const provider = agent.config.provider || this.options.defaultProvider;
+      this._emit('image-edit-start', { agentId, provider, prompt, options });
+      try {
+        if (provider === 'openai') {
+          // imageData should be a base64 PNG string
+          const response = await fetch('https://api.openai.com/v1/images/edits', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${this.options.apiKeys.openai}`
+            },
+            body: JSON.stringify({
+              image: imageData,
+              prompt,
+              n: options.n || 1,
+              size: options.size || '1024x1024',
+              response_format: options.response_format || 'url',
+              user: agentId
+            })
+          });
+          const data = await response.json();
+          if (!response.ok) throw new Error(data.error?.message || 'OpenAI image edit error');
+          this._emit('image-edit-complete', { agentId, provider, prompt, result: data });
+          return data.data[0].url;
+        } else {
+          throw new Error(`Provider ${provider} does not support image editing`);
+        }
+      } catch (error) {
+        this._emit('image-edit-error', { agentId, error });
+        this._handleError(error, 'IMAGE_EDIT_ERROR', 'Failed to edit image');
+        return null;
+      }
+    }
+
+    /**
+     * Create a variation of an image using the agent's provider (OpenAI DALL-E)
+     */
+    async variationImage(agentId, imageData, options = {}) {
+      const agent = this.agents.get(agentId);
+      if (!agent) {
+        this._handleError(new Error(`Agent not found: ${agentId}`), 'AGENT_NOT_FOUND');
+        return null;
+      }
+      const provider = agent.config.provider || this.options.defaultProvider;
+      this._emit('image-variation-start', { agentId, provider, options });
+      try {
+        if (provider === 'openai') {
+          // imageData should be a base64 PNG string
+          const response = await fetch('https://api.openai.com/v1/images/variations', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${this.options.apiKeys.openai}`
+            },
+            body: JSON.stringify({
+              image: imageData,
+              n: options.n || 1,
+              size: options.size || '1024x1024',
+              response_format: options.response_format || 'url',
+              user: agentId
+            })
+          });
+          const data = await response.json();
+          if (!response.ok) throw new Error(data.error?.message || 'OpenAI image variation error');
+          this._emit('image-variation-complete', { agentId, provider, result: data });
+          return data.data[0].url;
+        } else {
+          throw new Error(`Provider ${provider} does not support image variation`);
+        }
+      } catch (error) {
+        this._emit('image-variation-error', { agentId, error });
+        this._handleError(error, 'IMAGE_VARIATION_ERROR', 'Failed to create image variation');
+        return null;
+      }
     }
   }
 

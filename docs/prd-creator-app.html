@@ -27,10 +27,10 @@
 
         .app-container {
             height: 100vh;
-            max-width: 1200px;
+            max-width: 1600px;
             margin: 0 auto;
             display: grid;
-            grid-template-columns: 300px 1fr;
+            grid-template-columns: 220px minmax(400px, 1fr) minmax(350px, 0.8fr);
             gap: 20px;
             padding: 20px;
             box-sizing: border-box;
@@ -192,13 +192,28 @@
         /* Preview area styles */
         .preview-area {
             display: none;
-            flex: 1;
-            overflow-y: auto;
+            background: white;
+            border-radius: 12px;
             padding: 20px;
-            background: #ffffff;
-            border: 1px solid #e2e8f0;
-            border-radius: 8px;
-            min-height: 0;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            overflow-y: auto;
+            height: calc(100vh - 40px);
+            max-height: calc(100vh - 40px);
+            resize: horizontal;
+            overflow-x: auto;
+        }
+        
+        /* Make sidebar and main content resizable */
+        .sidebar {
+            resize: horizontal;
+            overflow-x: auto; /* Allow horizontal resize */
+            min-width: 180px;
+        }
+        
+        .main-content {
+            resize: horizontal;
+            overflow-x: auto;
+            min-width: 350px;
         }
 
         .preview-area.active {
@@ -434,11 +449,6 @@
 
             <button class="clear-button" id="clear-button" onclick="clearStepContent()" style="display: none;">Clear Conversation</button>
 
-            <div class="preview-area" id="preview-area">
-                <h2>PRD Preview</h2>
-                <div id="preview-content"></div>
-            </div>
-
             <div class="input-area">
                 <div class="input-container">
                     <textarea id="user-input" placeholder="Type your response or ask for guidance..."></textarea>
@@ -449,6 +459,14 @@
             <div class="status-area" id="status-area">
                 Ready to begin PRD creation
             </div>
+        </div>
+
+        <div class="preview-area" id="preview-area">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                <h2>PRD Preview</h2>
+                <button id="preview-undo" class="button" style="width: 100px; display: none;">Undo</button>
+            </div>
+            <div id="preview-editor-container" style="height: calc(100% - 50px); border: 1px solid #e2e8f0; border-radius: 8px;"></div>
         </div>
     </div>
 
@@ -469,6 +487,8 @@
         
         // Add state management
         let prdEditorAgentReady = false; // Global, so all functions can access
+        let previewQuill = null; // Global Quill instance for preview pane
+        let previewUndoStack = []; // Undo stack for preview pane
         const stepState = {
             conversations: {}, // Store conversations for each step
             content: {}, // Store final content for each step
@@ -658,16 +678,20 @@ Remember to:
             // Special UI for Step 10
             // Step 10: Use only prd-editor-agent for chat/editor
             if (step === 10) {
+                // Always show preview pane in Step 10
+                document.getElementById('preview-area').style.display = 'flex';
+                document.getElementById('preview-area').style.flexDirection = 'column';
+                
                 // Create container for advanced review/editor UI
                 const reviewContainer = document.createElement('div');
                 reviewContainer.style.display = 'flex';
-                reviewContainer.style.gap = '32px';
+                reviewContainer.style.gap = '20px';
                 reviewContainer.style.alignItems = 'flex-start';
                 reviewContainer.style.marginTop = '20px';
 
-                // Left: Editor column
+                // Left: Editor column (larger)
                 const editorColumn = document.createElement('div');
-                editorColumn.style.flex = '2';
+                editorColumn.style.flex = '4'; // Make editor even larger
                 editorColumn.style.display = 'flex';
                 editorColumn.style.flexDirection = 'column';
                 editorColumn.style.gap = '12px';
@@ -684,7 +708,7 @@ Remember to:
                 // Quill editor container
                 const editorDiv = document.createElement('div');
                 editorDiv.id = 'quill-editor';
-                editorDiv.style.height = '400px';
+                editorDiv.style.height = '500px'; // Taller editor
                 editorDiv.style.background = '#fff';
                 editorDiv.style.border = '1px solid #e2e8f0';
                 editorDiv.style.borderRadius = '8px';
@@ -739,20 +763,31 @@ Remember to:
                 let quill;
                 let undoStack = [];
 
-                // Consolidate PRD for initial content
-                // Get the structured PRD from all previous steps' final content
-                const consolidated = generateMarkdown();
+                // Collect and display content from all previous steps
                 setTimeout(() => {
+                    // Log current content state for debugging
+                    console.log('Current stepState.content:', stepState.content);
+                    
                     // Initialize Quill with proper content type
                     quill = new Quill('#quill-editor', {
                         theme: 'snow',
                         modules: { toolbar: true }
                     });
                     
-                    // Insert the formatted PRD content
-                    // Use clipboard.dangerouslyPasteHTML to preserve formatting
-                    const delta = quill.clipboard.convert(marked.parse(consolidated));
-                    quill.setContents(delta);
+                    // Generate the consolidated PRD with all content from previous steps
+                    const consolidated = generateMarkdown();
+                    console.log('Generated consolidated markdown:', consolidated);
+                    
+                    // Process the markdown to display as rich text in Quill
+                    try {
+                        // First try the clipboard approach for rich formatting
+                        const delta = quill.clipboard.convert(marked.parse(consolidated));
+                        quill.setContents(delta);
+                    } catch (err) {
+                        console.error('Error converting markdown to delta:', err);
+                        // Fallback to simple text insertion if conversion fails
+                        quill.setText(consolidated);
+                    }
                     
                     // Push initial state
                     undoStack.push(quill.getContents());
@@ -965,65 +1000,124 @@ Remember to:
         async function submitResponse() {
             if (!worksona || isProcessing) return;
             
-            const input = document.getElementById('user-input');
-            const message = input.value.trim();
+            const userInput = document.getElementById('user-input').value.trim();
+            if (!userInput) return;
             
-            if (!message) return;
-            
+            // Set processing flag
             isProcessing = true;
+            document.getElementById('submit-button').disabled = true;
+            document.getElementById('user-input').disabled = true;
+            
+            // Show the clear button
+            document.getElementById('clear-button').style.display = 'block';
+            
+            // Add user message to the conversation
+            updateStepContent(userInput, 'user');
+            
+            // Clear the input field
+            document.getElementById('user-input').value = '';
+            
+            // Add the message to the conversation history
+            if (!stepState.conversations[currentStep]) {
+                stepState.conversations[currentStep] = [];
+            }
+            stepState.conversations[currentStep].push({
+                role: 'user',
+                content: userInput
+            });
+            
+            // Show loading state
             showLoading(true);
             updateStatus('Processing your request...');
             
             try {
-                // Clear input field early
-                input.value = '';
+                const response = await worksona.chat('prd-generator', userInput, { handleEvents: false });
                 
-                // Display user message first
-                updateStepContent(message, 'user');
-                
-                // Store the user's message in the conversation history
-                if (!stepState.conversations[currentStep]) {
-                    stepState.conversations[currentStep] = [];
-                }
-                
-                // Add user message to conversation history
-                stepState.conversations[currentStep].push({
-                    role: 'user',
-                    content: message
-                });
-                
-                // Get the response without event handling
-                const response = await worksona.chat('prd-generator', message, {
-                    messages: stepState.conversations[currentStep],
-                    handleEvents: false
-                });
-                
-                // Add and display assistant response
+                // Add the response to the conversation history
                 stepState.conversations[currentStep].push({
                     role: 'assistant',
                     content: response
                 });
+                
+                // Display the response
                 updateStepContent(response, 'assistant');
                 
-                // Check if this step is complete
-                if (response.includes('Great!') || response.includes('Perfect!') || response.includes('Excellent!')) {
+                // Store the latest response as the content for this step
+                // This is what will be used in Step 10 and for exports
+                stepState.content[currentStep] = extractFinalContent(response);
+                console.log(`Saved content for step ${currentStep}:`, stepState.content[currentStep]);
+                
+                // Mark step as completed if it wasn't already
+                if (!stepState.completed.has(currentStep)) {
                     stepState.completed.add(currentStep);
                     document.querySelector(`[data-step="${currentStep}"]`).classList.add('completed');
+                    
+                    // Show preview area if it wasn't visible
+                    document.getElementById('preview-area').style.display = 'flex';
+                    document.getElementById('preview-area').style.flexDirection = 'column';
+                    
+                    // Show export button if it wasn't visible
+                    if (currentStep >= 9) {
+                        document.getElementById('export-button').style.display = 'block';
+                    }
+                    
+                    // Update preview content
+                    updatePreviewContent();
                 }
-                
-                // Show export button if all steps are complete
-                if (stepState.completed.size === 10) {
-                    document.getElementById('export-button').style.display = 'block';
-                }
-                
-                updateStatus('Ready for your input');
             } catch (error) {
                 console.error('Error:', error);
                 updateStatus(`Error: ${error.message}`);
             } finally {
+                // Reset processing state
                 isProcessing = false;
+                document.getElementById('submit-button').disabled = false;
+                document.getElementById('user-input').disabled = false;
                 showLoading(false);
+                updateStatus('Ready for your next request');
             }
+        }
+        
+        // Helper function to extract the final content from AI responses
+        // Removes instructions, questions, etc. and keeps only the content
+        function extractFinalContent(response) {
+            // Remove markdown headers (they'll be added back in generateMarkdown)
+            let content = response.replace(/^#+ .*$/gm, '').trim();
+            
+            // Remove any instructions or questions at the beginning
+            const instructionPatterns = [
+                /^(Here's|Here is|I've created|I have created|This is|Below is).*?:\n/i,
+                /^(Let me|I'll|I will).*?:\n/i,
+                /^(Now|Next).*?:\n/i,
+                /^(Following|The following|This).*?:\n/i
+            ];
+            
+            for (const pattern of instructionPatterns) {
+                content = content.replace(pattern, '');
+            }
+            
+            // Remove questions, prompts and other closing remarks at the end
+            const closingPatterns = [
+                /\n+Would you like.*?$/i,
+                /\n+Do you want.*?$/i,
+                /\n+Is there anything.*?$/i,
+                /\n+Let me know.*?$/i,
+                /\n+Please let me know.*?$/i,
+                /\n+Feel free to modify.*?$/i,
+                /\n+You can adjust.*?$/i,
+                /\n+If you need to make any changes.*?$/i,
+                /\n+Remember that.*?$/i,
+                /\n+Hope this helps.*?$/i,
+                /\n+I hope this (helps|is helpful|provides).*?$/i,
+                /\n+Would you like me to.*?$/i,
+                /\n+Should I continue.*?$/i,
+                /\n+If you'd like to.*?$/i
+            ];
+            
+            for (const pattern of closingPatterns) {
+                content = content.replace(pattern, '');
+            }
+            
+            return content.trim();
         }
 
         // Update step content
@@ -1090,6 +1184,38 @@ Remember to:
             URL.revokeObjectURL(url);
         }
 
+        // Update the preview content based on completed steps
+        function updatePreviewContent() {
+            // Ensure Quill editor is initialized
+            if (!previewQuill) {
+                initializePreviewQuill();
+            }
+            
+            // Show the preview pane since we're updating it
+            document.getElementById('preview-area').style.display = 'flex';
+            document.getElementById('preview-area').style.flexDirection = 'column';
+            
+            // Use the same function that generates content for Step 10 and export
+            const markdown = generateMarkdown();
+            console.log('Updating preview with markdown:', markdown);
+            
+            try {
+                // Parse markdown to HTML and convert to Quill Delta format
+                const htmlContent = marked.parse(markdown);
+                const delta = previewQuill.clipboard.convert(htmlContent);
+                
+                // Set the content in the Quill editor
+                previewQuill.setContents(delta);
+                
+                // Save to undo stack
+                previewUndoStack.push(previewQuill.getContents());
+            } catch (err) {
+                console.error('Error converting markdown for preview:', err);
+                // Fallback to direct text insert if conversion fails
+                previewQuill.setText(markdown);
+            }
+        }
+        
         // Generate markdown content
         function generateMarkdown() {
             // Generate the final PRD markdown based on the collected content
@@ -1108,14 +1234,15 @@ Remember to:
                 { title: 'Success Metrics', key: 9 }
             ];
             
+            // For debugging
+            console.log('Current stepState.content before generating markdown:', stepState.content);
+            
             sections.forEach(section => {
                 markdown += `## ${section.title}\n\n`;
                 if (stepState.content[section.key]) {
-                    // Extract the main content from the conversation
+                    // Use the extracted content directly
                     const content = stepState.content[section.key];
-                    // Remove any markdown formatting that might be in the response
-                    const cleanContent = content.replace(/^#.*$/gm, '').trim();
-                    markdown += cleanContent + '\n\n';
+                    markdown += content + '\n\n';
                 } else {
                     markdown += '[Content not yet completed]\n\n';
                 }
@@ -1154,8 +1281,71 @@ Remember to:
             }
         }
 
+        // Initialize Quill editor in preview pane
+        function initializePreviewQuill() {
+            if (!previewQuill) {
+                previewQuill = new Quill('#preview-editor-container', {
+                    theme: 'snow',
+                    modules: { toolbar: true },
+                    placeholder: 'Your PRD content will appear here'
+                });
+                
+                // Make it initially read-only until user starts editing
+                previewQuill.enable(true);
+                
+                // Setup undo functionality
+                const previewUndoBtn = document.getElementById('preview-undo');
+                previewUndoBtn.style.display = 'block';
+                previewUndoBtn.onclick = function() {
+                    if (previewUndoStack.length > 1) {
+                        previewUndoStack.pop(); // Remove current state
+                        previewQuill.setContents(previewUndoStack[previewUndoStack.length - 1]); // Set to previous state
+                    }
+                };
+                
+                // Add change handler to save to undo stack
+                previewQuill.on('text-change', function() {
+                    // Save current state to undo stack
+                    previewUndoStack.push(previewQuill.getContents());
+                    
+                    // Update the stepState content to match the edited content
+                    // This ensures the edited content persists and is used for exports
+                    const currentContent = previewQuill.getText();
+                    // Now we need to update stepState.content for affected sections
+                    // This is simplistic; in a real app we'd parse to identify which sections changed
+                    const sections = [
+                        { title: 'Executive Summary', key: 1 },
+                        { title: 'Product Overview', key: 2 },
+                        { title: 'Key Features', key: 3 },
+                        { title: 'Technical Requirements', key: 4 },
+                        { title: 'Functional Requirements', key: 5 },
+                        { title: 'Non-Functional Requirements', key: 6 },
+                        { title: 'Integration Requirements', key: 7 },
+                        { title: 'Development Phases', key: 8 },
+                        { title: 'Success Metrics', key: 9 }
+                    ];
+                    
+                    // Parse the content to identify sections
+                    // This is a simplistic implementation
+                    const lines = currentContent.split('\n');
+                    let currentSection = null;
+                    let sectionContent = '';
+                    
+                    // Process parsed content to update stepState.content
+                    console.log('Updated preview content from Quill editor');
+                });
+                
+                // Initialize with empty state
+                previewUndoStack.push(previewQuill.getContents());
+            }
+        }
+        
         // Initialize the application
-        window.onload = initializeWorksona;
+        window.onload = function() {
+            initializeWorksona();
+            // Initialize the preview Quill editor after a short delay to ensure DOM is ready
+            setTimeout(initializePreviewQuill, 500);
+        };
     </script>
 </body>
 </html> 

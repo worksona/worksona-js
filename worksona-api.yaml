@@ -16,9 +16,9 @@ info:
     email: support@worksona.ai
 
 servers:
-  - url: https://api.worksona.ai/v1
+  - url: https://api.worksona.io/v1
     description: Production server
-  - url: https://staging-api.worksona.ai/v1
+  - url: https://staging-api.worksona.io/v1
     description: Staging server
 
 components:

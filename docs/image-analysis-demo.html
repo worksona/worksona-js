@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Worksona.js Image Generation & Analysis Demo</title>
+  <style>
+    body { font-family: sans-serif; background: #f8fafc; color: #1e293b; margin: 0; padding: 0; }
+    .container { max-width: 600px; margin: 40px auto; background: #fff; border-radius: 10px; box-shadow: 0 4px 16px rgba(0,0,0,0.07); padding: 32px; }
+    h1 { color: #2563eb; }
+    label { display: block; margin-bottom: 8px; font-weight: 600; }
+    input[type="text"] { width: 100%; padding: 10px; border: 1px solid #e2e8f0; border-radius: 6px; margin-bottom: 16px; font-size: 1rem; }
+    button { background: #2563eb; color: #fff; border: none; border-radius: 6px; padding: 10px 20px; font-size: 1rem; cursor: pointer; margin-right: 10px; }
+    button:disabled { background: #a5b4fc; }
+    .result-img { display: block; margin: 24px auto 12px; max-width: 100%; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); }
+    .analysis-box { background: #f1f5f9; border-radius: 6px; padding: 16px; margin-top: 16px; font-size: 1.05em; }
+    .loading { color: #059669; font-weight: 600; }
+    .error { color: #dc2626; font-weight: 600; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Image Generation & Analysis Demo</h1>
+    <p>Enter a prompt to generate an image using <b>gpt-4o</b>, then analyze the generated image with the same agent.</p>
+    <label for="prompt">Image Prompt</label>
+    <input type="text" id="prompt" placeholder="e.g. A futuristic cityscape at sunset">
+    <button id="generateBtn">Generate Image</button>
+    <div id="loading" class="loading" style="display:none"></div>
+    <img id="resultImg" class="result-img" style="display:none"/>
+    <button id="analyzeBtn" style="display:none">Analyze Image</button>
+    <div id="analysis" class="analysis-box" style="display:none"></div>
+    <div id="error" class="error" style="display:none"></div>
+  </div>
+  <script src="../worksona.js"></script>
+  <script>
+    const worksona = new Worksona({
+      apiKeys: { openai: localStorage.getItem('openai_api_key') || '' }
+    });
+    let agentLoaded = false;
+    let generatedImageUrl = '';
+    async function ensureAgent() {
+      if (agentLoaded) return;
+      await worksona.loadAgent({
+        id: 'creative-agent',
+        name: 'Creative Agent',
+        config: { provider: 'openai', model: 'gpt-4o' }
+      });
+      agentLoaded = true;
+    }
+    document.getElementById('generateBtn').onclick = async () => {
+      document.getElementById('error').style.display = 'none';
+      document.getElementById('analysis').style.display = 'none';
+      document.getElementById('resultImg').style.display = 'none';
+      document.getElementById('analyzeBtn').style.display = 'none';
+      const prompt = document.getElementById('prompt').value.trim();
+      if (!prompt) return;
+      document.getElementById('loading').textContent = 'Generating image...';
+      document.getElementById('loading').style.display = 'block';
+      try {
+        await ensureAgent();
+        generatedImageUrl = await worksona.generateImage('creative-agent', prompt);
+        if (!generatedImageUrl) throw new Error('No image URL returned');
+        document.getElementById('resultImg').src = generatedImageUrl;
+        document.getElementById('resultImg').style.display = 'block';
+        document.getElementById('analyzeBtn').style.display = 'inline-block';
+      } catch (e) {
+        document.getElementById('error').textContent = e.message;
+        document.getElementById('error').style.display = 'block';
+      } finally {
+        document.getElementById('loading').style.display = 'none';
+      }
+    };
+    document.getElementById('analyzeBtn').onclick = async () => {
+      document.getElementById('analysis').style.display = 'none';
+      document.getElementById('error').style.display = 'none';
+      document.getElementById('loading').textContent = 'Analyzing image...';
+      document.getElementById('loading').style.display = 'block';
+      try {
+        await ensureAgent();
+        const analysis = await worksona.analyzeImage('creative-agent', generatedImageUrl);
+        document.getElementById('analysis').textContent = analysis;
+        document.getElementById('analysis').style.display = 'block';
+      } catch (e) {
+        document.getElementById('error').textContent = e.message;
+        document.getElementById('error').style.display = 'block';
+      } finally {
+        document.getElementById('loading').style.display = 'none';
+      }
+    };
+  </script>
+</body>
+</html> 

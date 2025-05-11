@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Getting Started with Worksona.js</title>
+    <title>Getting Started with Worksona.js - v0.1.2</title>
     <style>
         /* Main styles */
         :root {
@@ -366,7 +366,22 @@
 
     <main class="content">
         <h1>Getting Started with Worksona.js</h1>
-        
+        <p class="version">Version 0.1.2</p>
+
+        <div class="toc">
+            <h3>Table of Contents</h3>
+            <ul>
+                <li><a href="#installation">Installation</a></li>
+                <li><a href="#quick-start">Quick Start</a></li>
+                <li><a href="#agent-configuration">Agent Configuration</a></li>
+                <li><a href="#chat-functionality">Chat Functionality</a></li>
+                <li><a href="#image-analysis">Image Analysis</a></li>
+                <li><a href="#image-generation">Image Generation</a></li>
+                <li><a href="#event-handling">Event Handling</a></li>
+                <li><a href="#best-practices">Best Practices</a></li>
+            </ul>
+        </div>
+
         <p>
             Welcome to Worksona.js! This guide will walk you through everything you need to know to get started with
             creating and managing AI agents in your applications.
@@ -621,6 +636,133 @@ worksona.on(<span class="string">'api-key-update'</span>, (data) => {
         <div class="tip-box">
             <strong>Pro Tip:</strong> Start simple with one agent and basic functionality, then gradually add more agents and features as you get comfortable with the library.
         </div>
+
+        <h2 id="image-analysis">Image Analysis</h2>
+        <p>New in version 0.1.2, Worksona.js provides powerful image analysis capabilities. Here's how to get started:</p>
+
+        <h3>Basic Image Analysis</h3>
+        <pre><code><span class="comment">// Initialize Worksona with API keys</span>
+<span class="keyword">const</span> worksona = <span class="keyword">new</span> Worksona({
+    apiKeys: {
+        openai: <span class="string">'your-openai-key'</span>,
+        anthropic: <span class="string">'your-anthropic-key'</span>
+    }
+});
+
+<span class="comment">// Load an agent with image analysis capabilities</span>
+<span class="keyword">await</span> worksona.loadAgent({
+    id: <span class="string">'image-analyzer'</span>,
+    name: <span class="string">'Image Analysis Expert'</span>,
+    description: <span class="string">'Specialized in image analysis and processing'</span>,
+    traits: {
+        personality: [<span class="string">'analytical'</span>, <span class="string">'detail-oriented'</span>],
+        knowledge: [<span class="string">'computer vision'</span>, <span class="string">'image processing'</span>],
+        tone: <span class="string">'professional and precise'</span>
+    },
+    config: {
+        provider: <span class="string">'openai'</span>,
+        model: <span class="string">'gpt-4-vision-preview'</span>,
+        temperature: <span class="number">0.3</span>
+    }
+});
+
+<span class="comment">// Analyze an image</span>
+<span class="keyword">const</span> imageData = <span class="string">'base64-encoded-image-data'</span>;
+<span class="keyword">const</span> result = <span class="keyword">await</span> worksona.analyzeImage(<span class="string">'image-analyzer'</span>, imageData);
+console.log(result);</code></pre>
+
+        <h3>Image Text Extraction</h3>
+        <pre><code><span class="comment">// Extract text from an image</span>
+<span class="keyword">const</span> text = <span class="keyword">await</span> worksona.extractImageText(<span class="string">'image-analyzer'</span>, imageData);
+console.log(text);</code></pre>
+
+        <h3>Object Detection</h3>
+        <pre><code><span class="comment">// Detect objects in an image</span>
+<span class="keyword">const</span> objects = <span class="keyword">await</span> worksona.detectImageObjects(<span class="string">'image-analyzer'</span>, imageData);
+console.log(objects);</code></pre>
+
+        <h3>Image Classification</h3>
+        <pre><code><span class="comment">// Classify image content</span>
+<span class="keyword">const</span> classification = <span class="keyword">await</span> worksona.classifyImage(<span class="string">'image-analyzer'</span>, imageData);
+console.log(classification);</code></pre>
+
+        <div class="tip-box">
+            <strong>Tip:</strong> When working with image analysis, consider these best practices:
+            <ul>
+                <li>Optimize images before processing to reduce API costs</li>
+                <li>Handle image processing errors gracefully</li>
+                <li>Validate image data before sending to the API</li>
+                <li>Consider image size and format limitations</li>
+            </ul>
+        </div>
+
+        <h3>Event Handling for Image Analysis</h3>
+        <pre><code><span class="comment">// Listen for image analysis events</span>
+worksona.on(<span class="string">'image-analysis-start'</span>, (data) => {
+    console.log(<span class="string">`Analysis started for image: ${data.imageId}`</span>);
+});
+
+worksona.on(<span class="string">'image-analysis-complete'</span>, (data) => {
+    console.log(<span class="string">`Analysis completed for image: ${data.imageId}`</span>);
+    console.log(<span class="string">`Results: ${JSON.stringify(data.results)}`</span>);
+});
+
+worksona.on(<span class="string">'image-processing-error'</span>, (error) => {
+    console.error(<span class="string">`Error processing image: ${error.message}`</span>);
+});</code></pre>
+
+        <div class="warning-box">
+            <strong>Warning:</strong> Make sure to handle image processing errors appropriately in your application. Image analysis can fail for various reasons, such as invalid image data, unsupported formats, or API limitations.
+        </div>
+
+        <div class="info-box">
+            <strong>Note:</strong> Version 0.1.2 introduces new image analysis capabilities. Make sure to update your implementation to handle image-related events and errors appropriately.
+        </div>
+
+        <h2 id="image-generation">Image Generation</h2>
+        <p>All agents can generate images using the gpt-4o model (OpenAI). You do not need a special agent for image analysis or generation; any agent can use these capabilities if configured with a vision-capable model.</p>
+
+        <h3>Basic Image Generation</h3>
+        <pre><code><span class="comment">// Generate an image from a prompt</span>
+const generatedImage = await worksona.generateImage('creative-agent', 'A futuristic cityscape at sunset');
+console.log('Generated Image URL:', generatedImage);
+</code></pre>
+
+        <h3>Image Editing</h3>
+        <pre><code><span class="comment">// Edit an image based on a prompt</span>
+const editedImage = await worksona.editImage('creative-agent', imageData, 'Make the sky purple');
+console.log('Edited Image URL:', editedImage);
+</code></pre>
+
+        <h3>Image Variation</h3>
+        <pre><code><span class="comment">// Create a variation of an image</span>
+const variation = await worksona.variationImage('creative-agent', imageData);
+console.log('Variation Image URL:', variation);
+</code></pre>
+
+        <div class="tip-box">
+            <strong>Tip:</strong> You can use any agent for image analysis or generation. Just ensure the agent uses the <code>gpt-4o</code> model for best results.
+        </div>
+
+        <h3>Example: Image Analysis and Generation</h3>
+        <pre><code>const worksona = new Worksona({
+  apiKeys: { openai: 'sk-...' }
+});
+
+await worksona.loadAgent({
+  id: 'creative-agent',
+  name: 'Creative Agent',
+  config: { provider: 'openai', model: 'gpt-4o' }
+});
+
+// Analyze an image
+const analysis = await worksona.analyzeImage('creative-agent', imageData);
+console.log('Analysis:', analysis);
+
+// Generate an image from a prompt
+const generatedImage = await worksona.generateImage('creative-agent', 'A futuristic cityscape at sunset');
+console.log('Generated Image URL:', generatedImage);
+</code></pre>
 
     </main>
 

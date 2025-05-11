@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Worksona.js API Reference</title>
+    <title>Worksona.js API Reference - v0.1.2</title>
     <style>
         /* Main styles */
         :root {
@@ -341,6 +341,7 @@
                 <li><a href="#chat">Chat</a></li>
                 <li><a href="#events">Events</a></li>
                 <li><a href="#config">Configuration</a></li>
+                <li><a href="#image-generation">Image Generation</a></li>
             </ul>
             
             <h3>Resources</h3>
@@ -355,25 +356,26 @@
     </div>
 
     <main class="content">
-        <h1>API Reference</h1>
+        <h1>Worksona.js API Reference</h1>
+        <p class="version">Version 0.1.2</p>
         
-        <p>
-            This reference document covers all public methods, properties, and events in the Worksona.js API.
-            For a more practical introduction, see the <a href="getting-started.html">Getting Started</a> guide.
-        </p>
-
         <div class="toc">
             <h3>Table of Contents</h3>
             <ul>
-                <li><a href="#core">Core API</a></li>
-                <li><a href="#agents">Agent Management</a></li>
-                <li><a href="#chat">Chat Functionality</a></li>
-                <li><a href="#events">Event Handling</a></li>
-                <li><a href="#config">Configuration</a></li>
+                <li><a href="#core-methods">Core Methods</a></li>
+                <li><a href="#agent-management">Agent Management</a></li>
+                <li><a href="#chat-interaction">Chat & Interaction</a></li>
+                <li><a href="#image-analysis">Image Analysis</a></li>
+                <li><a href="#configuration">Configuration & Settings</a></li>
+                <li><a href="#control-panel">Control Panel</a></li>
+                <li><a href="#events">Events</a></li>
+                <li><a href="#event-handling">Event Handling</a></li>
+                <li><a href="#utility-methods">Utility Methods</a></li>
+                <li><a href="#image-generation">Image Generation</a></li>
             </ul>
         </div>
 
-        <h2 id="core">Core API</h2>
+        <h2 id="core-methods">Core Methods</h2>
         
         <h3 id="constructor">Constructor</h3>
         
@@ -447,7 +449,7 @@
   console.log(<span class="string">'API key updated successfully'</span>);
 }</code></pre>
 
-        <h2 id="agents">Agent Management</h2>
+        <h2 id="agent-management">Agent Management</h2>
         
         <h3 id="loadagent">loadAgent</h3>
         
@@ -553,7 +555,7 @@
   console.log(<span class="string">'Agent was removed'</span>);
 }</code></pre>
 
-        <h2 id="chat">Chat Functionality</h2>
+        <h2 id="chat-interaction">Chat & Interaction</h2>
         
         <h3 id="chat">chat</h3>
         
@@ -628,78 +630,61 @@ console.log(response);</code></pre>
         
         <pre><code>worksona.clearHistory(<span class="string">'customer-support'</span>);</code></pre>
 
-        <h2 id="events">Event Handling</h2>
-        
-        <h3 id="on">on</h3>
-        
-        <div class="method-signature">worksona.on(eventName, callback)</div>
-        
-        <p>Registers an event listener for the specified event.</p>
-        
-        <h4>Parameters</h4>
-        
+        <h2 id="image-analysis">Image Analysis</h2>
+        <p>New in version 0.1.2, Worksona.js provides comprehensive image analysis capabilities through specialized methods.</p>
+
+        <div class="method-signature">
+            worksona.analyzeImage(agentId, imageData, options)
+        </div>
+        <p>Analyzes the content of an image and provides detailed insights.</p>
         <table>
             <tr>
-                <th>Name</th>
+                <th>Parameter</th>
                 <th>Type</th>
                 <th>Description</th>
             </tr>
             <tr>
-                <td><code>eventName</code></td>
-                <td>String</td>
-                <td>Name of the event to listen for</td>
+                <td>agentId</td>
+                <td>string</td>
+                <td>ID of the agent to perform the analysis</td>
             </tr>
             <tr>
-                <td><code>callback</code></td>
-                <td>Function</td>
-                <td>Function to call when the event occurs</td>
+                <td>imageData</td>
+                <td>string|Buffer</td>
+                <td>Image data in base64 or Buffer format</td>
+            </tr>
+            <tr>
+                <td>options</td>
+                <td>object</td>
+                <td>Optional configuration parameters</td>
             </tr>
         </table>
-        
-        <h4>Example</h4>
-        
-        <pre><code>worksona.on(<span class="string">'chat-start'</span>, (data) => {
-  console.log(<span class="string">`Chat started with ${data.agentId}`</span>);
-});</code></pre>
 
-        <h3 id="off">off</h3>
-        
-        <div class="method-signature">worksona.off(eventName, callback)</div>
-        
-        <p>Removes an event listener for the specified event.</p>
-        
-        <h4>Parameters</h4>
-        
-        <table>
-            <tr>
-                <th>Name</th>
-                <th>Type</th>
-                <th>Description</th>
-            </tr>
-            <tr>
-                <td><code>eventName</code></td>
-                <td>String</td>
-                <td>Name of the event</td>
-            </tr>
-            <tr>
-                <td><code>callback</code></td>
-                <td>Function</td>
-                <td>Function to remove</td>
-            </tr>
-        </table>
-        
-        <h4>Example</h4>
-        
-        <pre><code><span class="keyword">function</span> handleChatStart(data) {
-  console.log(<span class="string">`Chat started with ${data.agentId}`</span>);
-}
+        <div class="method-signature">
+            worksona.extractImageText(agentId, imageData, options)
+        </div>
+        <p>Extracts text content from images using OCR capabilities.</p>
 
-worksona.on(<span class="string">'chat-start'</span>, handleChatStart);
+        <div class="method-signature">
+            worksona.detectImageObjects(agentId, imageData, options)
+        </div>
+        <p>Detects and identifies objects within images.</p>
 
-<span class="comment">// Later, to remove the listener</span>
-worksona.off(<span class="string">'chat-start'</span>, handleChatStart);</code></pre>
+        <div class="method-signature">
+            worksona.classifyImage(agentId, imageData, options)
+        </div>
+        <p>Classifies image content into predefined categories.</p>
 
-        <h2 id="config">Configuration</h2>
+        <div class="method-signature">
+            worksona._processImageData(imageData)
+        </div>
+        <p>Internal method for processing image data before analysis.</p>
+
+        <div class="tip-box">
+            <strong>Tip:</strong> When working with image analysis, consider optimizing your images before processing to improve performance and reduce API costs.
+        </div>
+
+        <h2 id="configuration">Configuration & Settings</h2>
         
         <h3>Supported Events</h3>
         
@@ -770,6 +755,243 @@ worksona.off(<span class="string">'chat-start'</span>, handleChatStart);</code><
   <span class="property">defaultProvider</span>: <span class="string">'openai'</span>,
   <span class="property">maxHistoryLength</span>: <span class="keyword">10</span>
 }</code></pre>
+
+        <h2 id="control-panel">Control Panel</h2>
+        <p>New in version 0.1.2, Worksona.js provides a control panel for managing agent configurations and settings.</p>
+
+        <h3>Supported Methods</h3>
+        <table>
+            <tr>
+                <th>Method</th>
+                <th>Description</th>
+            </tr>
+            <tr>
+                <td><code>worksona.updateAgentConfig(agentId, config)</code></td>
+                <td>Updates the configuration of an existing agent</td>
+            </tr>
+            <tr>
+                <td><code>worksona.addAgent(agentConfig)</code></td>
+                <td>Adds a new agent to the system</td>
+            </tr>
+            <tr>
+                <td><code>worksona.removeAgent(agentId)</code></td>
+                <td>Removes an agent from the system</td>
+            </tr>
+        </table>
+
+        <h2 id="events">Events</h2>
+        
+        <h3>Agent Events</h3>
+        <p>New events for monitoring agent-related operations.</p>
+        <table>
+            <tr>
+                <th>Event</th>
+                <th>Description</th>
+            </tr>
+            <tr>
+                <td>agent-added</td>
+                <td>Emitted when a new agent is added</td>
+            </tr>
+            <tr>
+                <td>agent-removed</td>
+                <td>Emitted when an agent is removed</td>
+            </tr>
+            <tr>
+                <td>agent-config-updated</td>
+                <td>Emitted when an agent's configuration is updated</td>
+            </tr>
+        </table>
+
+        <h3>Chat Events</h3>
+        <p>New events for monitoring chat-related operations.</p>
+        <table>
+            <tr>
+                <th>Event</th>
+                <th>Description</th>
+            </tr>
+            <tr>
+                <td>chat-start</td>
+                <td>Emitted when a chat begins</td>
+            </tr>
+            <tr>
+                <td>chat-complete</td>
+                <td>Emitted when a chat completes</td>
+            </tr>
+            <tr>
+                <td>chat-error</td>
+                <td>Emitted when an error occurs during chat</td>
+            </tr>
+        </table>
+
+        <h3>Image Analysis Events</h3>
+        <p>New events for monitoring image analysis operations.</p>
+        <table>
+            <tr>
+                <th>Event</th>
+                <th>Description</th>
+            </tr>
+            <tr>
+                <td>image-analysis-start</td>
+                <td>Emitted when image analysis begins</td>
+            </tr>
+            <tr>
+                <td>image-analysis-complete</td>
+                <td>Emitted when image analysis is completed</td>
+            </tr>
+            <tr>
+                <td>image-processing-error</td>
+                <td>Emitted when an error occurs during image processing</td>
+            </tr>
+        </table>
+
+        <h3>Provider Events</h3>
+        <p>New events for monitoring provider-related operations.</p>
+        <table>
+            <tr>
+                <th>Event</th>
+                <th>Description</th>
+            </tr>
+            <tr>
+                <td>provider-status</td>
+                <td>Emitted when provider status changes</td>
+            </tr>
+        </table>
+
+        <h2 id="event-handling">Event Handling</h2>
+        
+        <h3 id="on">on</h3>
+        
+        <div class="method-signature">worksona.on(eventName, callback)</div>
+        
+        <p>Registers an event listener for the specified event.</p>
+        
+        <h4>Parameters</h4>
+        
+        <table>
+            <tr>
+                <th>Name</th>
+                <th>Type</th>
+                <th>Description</th>
+            </tr>
+            <tr>
+                <td><code>eventName</code></td>
+                <td>String</td>
+                <td>Name of the event to listen for</td>
+            </tr>
+            <tr>
+                <td><code>callback</code></td>
+                <td>Function</td>
+                <td>Function to call when the event occurs</td>
+            </tr>
+        </table>
+        
+        <h4>Example</h4>
+        
+        <pre><code>worksona.on(<span class="string">'chat-start'</span>, (data) => {
+  console.log(<span class="string">`Chat started with ${data.agentId}`</span>);
+});</code></pre>
+
+        <h3 id="off">off</h3>
+        
+        <div class="method-signature">worksona.off(eventName, callback)</div>
+        
+        <p>Removes an event listener for the specified event.</p>
+        
+        <h4>Parameters</h4>
+        
+        <table>
+            <tr>
+                <th>Name</th>
+                <th>Type</th>
+                <th>Description</th>
+            </tr>
+            <tr>
+                <td><code>eventName</code></td>
+                <td>String</td>
+                <td>Name of the event</td>
+            </tr>
+            <tr>
+                <td><code>callback</code></td>
+                <td>Function</td>
+                <td>Function to remove</td>
+            </tr>
+        </table>
+        
+        <h4>Example</h4>
+        
+        <pre><code><span class="keyword">function</span> handleChatStart(data) {
+  console.log(<span class="string">`Chat started with ${data.agentId}`</span>);
+}
+
+worksona.on(<span class="string">'chat-start'</span>, handleChatStart);
+
+<span class="comment">// Later, to remove the listener</span>
+worksona.off(<span class="string">'chat-start'</span>, handleChatStart);</code></pre>
+
+        <h2 id="utility-methods">Utility Methods</h2>
+        <p>New in version 0.1.2, Worksona.js provides additional utility methods for managing image analysis operations.</p>
+
+        <div class="method-signature">
+            worksona.optimizeImage(agentId, imageData, options)
+        </div>
+        <p>Optimizes an image for better analysis results.</p>
+
+        <div class="method-signature">
+            worksona.enhanceImage(agentId, imageData, options)
+        </div>
+        <p>Enhances the quality of an image for better analysis results.</p>
+
+        <div class="info-box">
+            <strong>Note:</strong> Version 0.1.2 introduces new image analysis capabilities. Make sure to update your implementation to handle image-related events and errors appropriately.
+        </div>
+
+        <h2 id="image-generation">Image Generation</h2>
+        <p>All agents can generate images using the gpt-4o model (OpenAI). These methods are available to every agent configured with a vision-capable model.</p>
+
+        <div class="method-signature">
+            worksona.generateImage(agentId, prompt, options)
+        </div>
+        <p>Generates an image from a text prompt.</p>
+        <table>
+            <tr><th>Parameter</th><th>Type</th><th>Description</th></tr>
+            <tr><td>agentId</td><td>string</td><td>ID of the agent to generate the image</td></tr>
+            <tr><td>prompt</td><td>string</td><td>Text prompt describing the image</td></tr>
+            <tr><td>options</td><td>object</td><td>Optional configuration parameters</td></tr>
+        </table>
+
+        <div class="method-signature">
+            worksona.editImage(agentId, imageData, prompt, options)
+        </div>
+        <p>Edits an image based on a prompt.</p>
+
+        <div class="method-signature">
+            worksona.variationImage(agentId, imageData, options)
+        </div>
+        <p>Creates variations of an image.</p>
+
+        <div class="tip-box">
+            <strong>Tip:</strong> You can use any agent for image analysis or generation. Just ensure the agent uses the <code>gpt-4o</code> model for best results.
+        </div>
+
+        <h3>Example: Image Analysis and Generation</h3>
+        <pre><code>const worksona = new Worksona({
+  apiKeys: { openai: 'sk-...' }
+});
+
+await worksona.loadAgent({
+  id: 'creative-agent',
+  name: 'Creative Agent',
+  config: { provider: 'openai', model: 'gpt-4o' }
+});
+
+// Analyze an image
+const analysis = await worksona.analyzeImage('creative-agent', imageData);
+console.log('Analysis:', analysis);
+
+// Generate an image from a prompt
+const generatedImage = await worksona.generateImage('creative-agent', 'A futuristic cityscape at sunset');
+console.log('Generated Image URL:', generatedImage);
+</code></pre>
     </main>
 
     <script>

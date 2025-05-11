@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Worksona.js Chained Image Analysis & Generation Demo</title>
+  <style>
+    body { font-family: sans-serif; background: #f8fafc; color: #1e293b; margin: 0; padding: 0; }
+    .container { max-width: 700px; margin: 40px auto; background: #fff; border-radius: 10px; box-shadow: 0 4px 16px rgba(0,0,0,0.07); padding: 32px; }
+    h1 { color: #2563eb; }
+    label { display: block; margin-bottom: 8px; font-weight: 600; }
+    input[type="text"] { width: 100%; padding: 10px; border: 1px solid #e2e8f0; border-radius: 6px; margin-bottom: 16px; font-size: 1rem; }
+    button { background: #2563eb; color: #fff; border: none; border-radius: 6px; padding: 10px 20px; font-size: 1rem; cursor: pointer; margin-right: 10px; }
+    button:disabled { background: #a5b4fc; }
+    .result-img { display: block; margin: 24px auto 12px; max-width: 100%; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); }
+    .analysis-box { background: #f1f5f9; border-radius: 6px; padding: 16px; margin-top: 16px; font-size: 1.05em; }
+    .loading { color: #059669; font-weight: 600; }
+    .error { color: #dc2626; font-weight: 600; }
+    .step-title { font-weight: bold; margin-top: 24px; color: #059669; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Chained Image Analysis & Generation Demo</h1>
+    <p>Enter an image URL to analyze it, generate a new image based on the analysis, and then analyze the generated image. Powered by <b>gpt-4o</b>.</p>
+    <label for="inputImageUrl">Input Image URL</label>
+    <input type="text" id="inputImageUrl" placeholder="e.g. https://images.unsplash.com/photo-...">
+    <button id="startBtn">Start Chained Demo</button>
+    <div id="loading" class="loading" style="display:none"></div>
+    <div class="step-title" id="step1title" style="display:none">Step 1: Input Image</div>
+    <img id="inputImg" class="result-img" style="display:none"/>
+    <div id="analysis1" class="analysis-box" style="display:none"></div>
+    <div class="step-title" id="step2title" style="display:none">Step 2: Generated Image</div>
+    <img id="generatedImg" class="result-img" style="display:none"/>
+    <div class="step-title" id="step3title" style="display:none">Step 3: Analysis of Generated Image</div>
+    <div id="analysis2" class="analysis-box" style="display:none"></div>
+    <div id="error" class="error" style="display:none"></div>
+  </div>
+  <script src="../worksona.js"></script>
+  <script>
+    const worksona = new Worksona({
+      apiKeys: { openai: localStorage.getItem('openai_api_key') || '' }
+    });
+    let agentLoaded = false;
+    async function ensureAgent() {
+      if (agentLoaded) return;
+      await worksona.loadAgent({
+        id: 'creative-agent',
+        name: 'Creative Agent',
+        config: { provider: 'openai', model: 'gpt-4o' }
+      });
+      agentLoaded = true;
+    }
+    document.getElementById('startBtn').onclick = async () => {
+      document.getElementById('error').style.display = 'none';
+      document.getElementById('analysis1').style.display = 'none';
+      document.getElementById('analysis2').style.display = 'none';
+      document.getElementById('inputImg').style.display = 'none';
+      document.getElementById('generatedImg').style.display = 'none';
+      document.getElementById('step1title').style.display = 'none';
+      document.getElementById('step2title').style.display = 'none';
+      document.getElementById('step3title').style.display = 'none';
+      const inputImageUrl = document.getElementById('inputImageUrl').value.trim();
+      if (!inputImageUrl) return;
+      document.getElementById('loading').textContent = 'Analyzing input image...';
+      document.getElementById('loading').style.display = 'block';
+      try {
+        await ensureAgent();
+        // Step 1: Analyze input image
+        document.getElementById('inputImg').src = inputImageUrl;
+        document.getElementById('inputImg').style.display = 'block';
+        document.getElementById('step1title').style.display = 'block';
+        const analysis1 = await worksona.analyzeImage('creative-agent', inputImageUrl);
+        document.getElementById('analysis1').textContent = analysis1;
+        document.getElementById('analysis1').style.display = 'block';
+        // Step 2: Generate new image based on analysis
+        document.getElementById('loading').textContent = 'Generating new image based on analysis...';
+        document.getElementById('step2title').style.display = 'block';
+        const prompt = `Create an image inspired by this analysis: ${analysis1}`;
+        const generatedImageUrl = await worksona.generateImage('creative-agent', prompt);
+        document.getElementById('generatedImg').src = generatedImageUrl;
+        document.getElementById('generatedImg').style.display = 'block';
+        // Step 3: Analyze the generated image
+        document.getElementById('loading').textContent = 'Analyzing generated image...';
+        document.getElementById('step3title').style.display = 'block';
+        const analysis2 = await worksona.analyzeImage('creative-agent', generatedImageUrl);
+        document.getElementById('analysis2').textContent = analysis2;
+        document.getElementById('analysis2').style.display = 'block';
+      } catch (e) {
+        document.getElementById('error').textContent = e.message;
+        document.getElementById('error').style.display = 'block';
+      } finally {
+        document.getElementById('loading').style.display = 'none';
+      }
+    };
+  </script>
+</body>
+</html> 

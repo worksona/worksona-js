@@ -1118,6 +1118,54 @@ Create a multi-agent system application using Worksona.js that coordinates multi
 - Troubleshooting guide</code></pre>
             </div>
         </div>
+
+        <h2 id="image-generation-analysis-demo">Image Generation and Analysis Demo</h2>
+        <p>This demo shows how to generate an image from a prompt and then analyze it using the same agent.</p>
+        <pre><code>const worksona = new Worksona({
+  apiKeys: { openai: 'sk-...' }
+});
+
+await worksona.loadAgent({
+  id: 'creative-agent',
+  name: 'Creative Agent',
+  config: { provider: 'openai', model: 'gpt-4o' }
+});
+
+// Generate an image
+const generatedImageUrl = await worksona.generateImage('creative-agent', 'A futuristic cityscape at sunset');
+console.log('Generated Image URL:', generatedImageUrl);
+
+// Analyze the generated image
+const analysis = await worksona.analyzeImage('creative-agent', generatedImageUrl);
+console.log('Analysis:', analysis);
+</code></pre>
+
+        <h2 id="chained-analysis-generation-demo">Chained Analysis and Generation Demo</h2>
+        <p>This advanced demo chains image analysis and generation. It analyzes an input image, generates a new image based on the analysis, and then analyzes the generated image.</p>
+        <pre><code>const worksona = new Worksona({
+  apiKeys: { openai: 'sk-...' }
+});
+
+await worksona.loadAgent({
+  id: 'creative-agent',
+  name: 'Creative Agent',
+  config: { provider: 'openai', model: 'gpt-4o' }
+});
+
+// Step 1: Analyze an input image
+const inputImageUrl = 'https://example.com/input-image.png';
+const initialAnalysis = await worksona.analyzeImage('creative-agent', inputImageUrl);
+console.log('Initial Analysis:', initialAnalysis);
+
+// Step 2: Generate a new image based on the analysis
+const prompt = `Create an image inspired by this analysis: ${initialAnalysis}`;
+const newImageUrl = await worksona.generateImage('creative-agent', prompt);
+console.log('New Image URL:', newImageUrl);
+
+// Step 3: Analyze the newly generated image
+const newImageAnalysis = await worksona.analyzeImage('creative-agent', newImageUrl);
+console.log('New Image Analysis:', newImageAnalysis);
+</code></pre>
     </main>
 
     <script>
