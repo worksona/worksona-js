@@ -1993,7 +1993,7 @@ class Agent {
         this._handleError(new Error(`Agent not found: ${agentId}`), 'AGENT_NOT_FOUND');
         return null;
       }
-      const provider = agent.config.provider || this.options.defaultProvider;
+        const provider = agent.config.provider || this.options.defaultProvider;
       this._emit('image-analysis-start', { agentId, provider, imageData, options });
       try {
         if (provider === 'openai') {
@@ -2028,7 +2028,7 @@ class Agent {
           if (!response.ok) throw new Error(data.error?.message || 'OpenAI image analysis error');
           this._emit('image-analysis-complete', { agentId, provider, imageData, result: data });
           return data.choices[0].message.content;
-        } else {
+            } else {
           throw new Error(`Provider ${provider} does not support image analysis`);
         }
       } catch (error) {
@@ -2044,7 +2044,9 @@ class Agent {
     }
 
     /**
-     * Generate an image from a text prompt using the agent's provider (gpt-4o/DALL-E for OpenAI)
+     * Generate an image from a text prompt using the agent's provider (OpenAI DALL-E/gpt-4o)
+     * Supports models: 'dalle-3', 'gpt-4o', 'gpt-4o-vision-preview'.
+     * Model selection order: options.model > agent.config.model > 'dalle-3'
      */
     async generateImage(agentId, prompt, options = {}) {
       const agent = this.agents.get(agentId);
@@ -2056,20 +2058,24 @@ class Agent {
       this._emit('image-generation-start', { agentId, provider, prompt, options });
       try {
         if (provider === 'openai') {
-          // Use OpenAI DALL-E API for image generation
+          // Model selection logic
+          const modelName = (options.model || agent.config.imageGenerationModel || 'dall-e-3').trim();
+          // DALL-E endpoint supports model param for dalle-3
+          const requestBody = {
+            prompt,
+            n: options.n || 1,
+            size: options.size || '1024x1024',
+            response_format: options.response_format || 'url',
+            user: agentId,
+            model: modelName
+          };
           const response = await fetch('https://api.openai.com/v1/images/generations', {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
               'Authorization': `Bearer ${this.options.apiKeys.openai}`
             },
-            body: JSON.stringify({
-              prompt,
-              n: options.n || 1,
-              size: options.size || '1024x1024',
-              response_format: options.response_format || 'url',
-              user: agentId
-            })
+            body: JSON.stringify(requestBody)
           });
           const data = await response.json();
           if (!response.ok) throw new Error(data.error?.message || 'OpenAI image generation error');
@@ -2087,6 +2093,8 @@ class Agent {
 
     /**
      * Edit an image based on a prompt using the agent's provider (OpenAI DALL-E)
+     * Supports models: 'dalle-3', 'gpt-4o', 'gpt-4o-vision-preview'.
+     * Model selection order: options.model > agent.config.model > 'dalle-3'
      */
     async editImage(agentId, imageData, prompt, options = {}) {
       const agent = this.agents.get(agentId);
@@ -2098,21 +2106,24 @@ class Agent {
       this._emit('image-edit-start', { agentId, provider, prompt, options });
       try {
         if (provider === 'openai') {
-          // imageData should be a base64 PNG string
+          // Model selection logic
+          const modelName = (options.model || agent.config.model || 'dalle-3').trim();
+          const requestBody = {
+            image: imageData,
+            prompt,
+            n: options.n || 1,
+            size: options.size || '1024x1024',
+            response_format: options.response_format || 'url',
+            user: agentId,
+            model: modelName
+          };
           const response = await fetch('https://api.openai.com/v1/images/edits', {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
               'Authorization': `Bearer ${this.options.apiKeys.openai}`
             },
-            body: JSON.stringify({
-              image: imageData,
-              prompt,
-              n: options.n || 1,
-              size: options.size || '1024x1024',
-              response_format: options.response_format || 'url',
-              user: agentId
-            })
+            body: JSON.stringify(requestBody)
           });
           const data = await response.json();
           if (!response.ok) throw new Error(data.error?.message || 'OpenAI image edit error');
@@ -2130,6 +2141,8 @@ class Agent {
 
     /**
      * Create a variation of an image using the agent's provider (OpenAI DALL-E)
+     * Supports models: 'dalle-3', 'gpt-4o', 'gpt-4o-vision-preview'.
+     * Model selection order: options.model > agent.config.model > 'dalle-3'
      */
     async variationImage(agentId, imageData, options = {}) {
       const agent = this.agents.get(agentId);
@@ -2141,20 +2154,23 @@ class Agent {
       this._emit('image-variation-start', { agentId, provider, options });
       try {
         if (provider === 'openai') {
-          // imageData should be a base64 PNG string
+          // Model selection logic
+          const modelName = (options.model || agent.config.model || 'dalle-3').trim();
+          const requestBody = {
+            image: imageData,
+            n: options.n || 1,
+            size: options.size || '1024x1024',
+            response_format: options.response_format || 'url',
+            user: agentId,
+            model: modelName
+          };
           const response = await fetch('https://api.openai.com/v1/images/variations', {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
               'Authorization': `Bearer ${this.options.apiKeys.openai}`
             },
-            body: JSON.stringify({
-              image: imageData,
-              n: options.n || 1,
-              size: options.size || '1024x1024',
-              response_format: options.response_format || 'url',
-              user: agentId
-            })
+            body: JSON.stringify(requestBody)
           });
           const data = await response.json();
           if (!response.ok) throw new Error(data.error?.message || 'OpenAI image variation error');

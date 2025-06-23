@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Worksona.js Image Analysis Demo</title>
+  <style>
+    body { font-family: sans-serif; background: #f8fafc; color: #1e293b; margin: 0; padding: 0; }
+    .container { max-width: 800px; margin: 40px auto; background: #fff; border-radius: 10px; box-shadow: 0 4px 16px rgba(0,0,0,0.07); padding: 32px; }
+    h1 { color: #2563eb; }
+    label { display: block; margin-bottom: 8px; font-weight: 600; }
+    input[type="text"] { width: 100%; padding: 10px; border: 1px solid #e2e8f0; border-radius: 6px; margin-bottom: 16px; font-size: 1rem; }
+    button { background: #2563eb; color: #fff; border: none; border-radius: 6px; padding: 10px 20px; font-size: 1rem; cursor: pointer; margin-right: 10px; }
+    button:disabled { background: #a5b4fc; }
+    .result-img { display: block; margin: 24px auto 12px; max-width: 100%; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); }
+    .analysis-box { background: #f1f5f9; border-radius: 6px; padding: 16px; margin-top: 16px; font-size: 1.05em; }
+    .loading { color: #059669; font-weight: 600; }
+    .error { color: #dc2626; font-weight: 600; }
+    .settings-panel { background: #f8fafc; border-radius: 8px; padding: 20px; margin-bottom: 20px; }
+    .settings-group { margin-bottom: 15px; }
+    .settings-group label { display: inline-block; margin-right: 10px; }
+    select, input[type="number"] { padding: 8px; border: 1px solid #e2e8f0; border-radius: 4px; }
+    .agent-info { background: #f1f5f9; border-radius: 6px; padding: 16px; margin-bottom: 20px; }
+    .agent-info h3 { margin-top: 0; color: #2563eb; }
+    .agent-traits { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+    .trait-tag { background: #e0e7ff; color: #4338ca; padding: 4px 8px; border-radius: 4px; font-size: 0.9em; }
+    .llm-info { background: #f1f5f9; border-radius: 6px; padding: 16px; margin-bottom: 20px; }
+    .llm-info strong { font-weight: 600; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Image Analysis Demo</h1>
+
+    <div class="agent-info">
+      <h3>Analysis Agent</h3>
+      <p>A specialized agent for detailed image analysis and interpretation</p>
+      <div class="agent-traits">
+        <span class="trait-tag">analytical</span>
+        <span class="trait-tag">detailed</span>
+        <span class="trait-tag">perceptive</span>
+        <span class="trait-tag">thorough</span>
+      </div>
+    </div>
+
+    <div class="llm-info" style="background:#f1f5f9;border-radius:6px;padding:16px;margin-bottom:20px;">
+      <strong>LLM Provider:</strong> <span id="llmProvider"></span><br>
+      <strong>Model:</strong> <span id="llmModel"></span>
+    </div>
+
+    <div class="settings-panel">
+      <h3>Analysis Settings</h3>
+      <div class="settings-group">
+        <label for="detail">Detail Level:</label>
+        <select id="detail">
+          <option value="high">High</option>
+          <option value="medium">Medium</option>
+          <option value="low">Low</option>
+        </select>
+      </div>
+      <div class="settings-group">
+        <label for="focus">Analysis Focus:</label>
+        <select id="focus">
+          <option value="general">General</option>
+          <option value="objects">Objects</option>
+          <option value="text">Text</option>
+          <option value="style">Style</option>
+        </select>
+      </div>
+    </div>
+
+    <p>Enter an image URL to analyze it using <b>gpt-4o</b> and Worksona.js.</p>
+    <label for="imageUrl">Image URL</label>
+    <input type="text" id="imageUrl" placeholder="e.g. https://images.unsplash.com/photo-...">
+    <button id="analyzeBtn">Analyze Image</button>
+    <div id="loading" class="loading" style="display:none"></div>
+    <img id="resultImg" class="result-img" style="display:none"/>
+    <div id="analysis" class="analysis-box" style="display:none"></div>
+    <div id="error" class="error" style="display:none"></div>
+  </div>
+  <script src="worksona.min.js"></script>
+  <script>
+    const worksona = new Worksona({
+      apiKeys: { openai: localStorage.getItem('openai_api_key') || '' }
+    });
+
+    const analysisAgent = {
+      id: "analysis-agent",
+      name: "Analysis Agent",
+      description: "A specialized agent for detailed image analysis and interpretation",
+      traits: {
+        personality: ["analytical", "detailed", "perceptive", "thorough"],
+        knowledge: ["visual analysis", "image interpretation", "object detection", "text recognition"],
+        tone: "professional and precise",
+        background: "Expert in image analysis with deep understanding of visual elements and patterns"
+      },
+      config: {
+        provider: "openai",
+        model: "gpt-4o",
+        temperature: 0.9,
+        maxTokens: 2048,
+        systemPrompt: "You are an expert image analysis agent. Your process involves: 1) Detailed observation of visual elements, 2) Identification of key objects and patterns, 3) Analysis of composition and style, 4) Extraction of text if present, 5) Providing comprehensive insights. Always maintain objectivity and attention to detail in your analysis.",
+        examples: [
+          {
+            user: "Analyze this image",
+            assistant: "I'll provide a detailed analysis of the image, focusing on key visual elements, composition, and any notable features. I'll break down the analysis into clear sections for better understanding."
+          }
+        ]
+      }
+    };
+
+    let agentLoaded = false;
+
+    async function ensureAgent() {
+      if (agentLoaded) return;
+      await worksona.loadAgent(analysisAgent);
+      agentLoaded = true;
+    }
+
+    document.getElementById('analyzeBtn').onclick = async () => {
+      document.getElementById('error').style.display = 'none';
+      document.getElementById('analysis').style.display = 'none';
+      document.getElementById('resultImg').style.display = 'none';
+      
+      const imageUrl = document.getElementById('imageUrl').value.trim();
+      if (!imageUrl) return;
+
+      const options = {
+        detail: document.getElementById('detail').value,
+        focus: document.getElementById('focus').value
+      };
+
+      document.getElementById('loading').textContent = 'Analyzing image...';
+      document.getElementById('loading').style.display = 'block';
+
+      try {
+        await ensureAgent();
+        document.getElementById('resultImg').src = imageUrl;
+        document.getElementById('resultImg').style.display = 'block';
+        
+        const analysis = await worksona.analyzeImage('analysis-agent', imageUrl, options);
+        document.getElementById('analysis').textContent = analysis;
+        document.getElementById('analysis').style.display = 'block';
+      } catch (e) {
+        document.getElementById('error').textContent = e.message;
+        document.getElementById('error').style.display = 'block';
+      } finally {
+        document.getElementById('loading').style.display = 'none';
+      }
+    };
+
+    // Show LLM info
+    document.getElementById('llmProvider').textContent = analysisAgent.config.provider;
+    document.getElementById('llmModel').textContent = analysisAgent.config.model;
+  </script>
+</body>
+</html> 

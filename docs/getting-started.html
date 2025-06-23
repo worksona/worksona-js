@@ -355,10 +355,12 @@
             
             <h3>Resources</h3>
             <ul>
-                <li><a href="../index.html">Home</a></li>
-                <li><a href="../worksona-chatbot-example.html">Chatbot Demo</a></li>
-                <li><a href="../worksona-document-processor.html">Document Processor Demo</a></li>
+                <li><a href="worksona-chatbot-example.html">Chatbot Demo</a></li>
+                <li><a href="worksona-document-processor.html">Document Processor Demo</a></li>
                 <li><a href="prd-creator-app.html">PRD Generator Demo</a></li>
+                <li><a href="chained-image-analysis-demo.html">Chained Image Analysis Demo</a></li>
+                <li><a href="image-analysis-demo.html">Image Analysis Demo</a></li>
+                <li><a href="image-analysis-URL-demo.html">Image Analysis URL Demo</a></li>
                 <li><a href="https://github.com/worksona/worksona-js">GitHub</a></li>
             </ul>
         </nav>
@@ -381,7 +383,7 @@
                 <li><a href="#best-practices">Best Practices</a></li>
             </ul>
         </div>
-
+        
         <p>
             Welcome to Worksona.js! This guide will walk you through everything you need to know to get started with
             creating and managing AI agents in your applications.
@@ -397,7 +399,7 @@
         <h3>Script Tag</h3>
         <p>The simplest way to include Worksona.js in your project is by using a script tag:</p>
         
-        <pre><code>&lt;<span class="keyword">script</span> <span class="property">src</span>=<span class="string">"worksona.js"</span>&gt;&lt;/<span class="keyword">script</span>&gt;</code></pre>
+        <pre><code>&lt;<span class="keyword">script</span> <span class="property">src</span>=<span class="string">"worksona.min.js"</span>&gt;&lt;/<span class="keyword">script</span>&gt;</code></pre>
         
         <h3>Coming Soon: NPM Installation</h3>
         <p>We're working on making Worksona.js available as an NPM package. Stay tuned for updates!</p>
@@ -495,7 +497,7 @@
         <p>You can also define your agents in JSON files and load them at runtime:</p>
         
         <pre><code><span class="comment">// Load an agent from a JSON file</span>
-<span class="keyword">const</span> response = <span class="keyword">await</span> fetch('agents/customer-support.json');
+<span class="keyword">const</span> response = <span class="keyword">await</span> fetch('docs/agents/customer-support.json');
 <span class="keyword">const</span> agentConfig = <span class="keyword">await</span> response.json();
 <span class="keyword">await</span> worksona.loadAgent(agentConfig);</code></pre>
 
@@ -629,8 +631,9 @@ worksona.on(<span class="string">'api-key-update'</span>, (data) => {
         <ul>
             <li>Explore the <a href="api-reference.html">API Reference</a> for detailed information on all methods and properties</li>
             <li>Check out the <a href="use-cases.html">Use Cases</a> for real-world examples and implementation patterns</li>
-            <li>Try the <a href="../worksona-chatbot-example.html">Chatbot Demo</a> to see a multi-agent chat interface in action</li>
-            <li>Experiment with the <a href="../worksona-document-processor.html">Document Processor Demo</a> to see how agents can analyze and process documents</li>
+            <li>Try the <a href="worksona-chatbot-example.html">Chatbot Demo</a> to see a multi-agent chat interface in action</li>
+            <li>Experiment with the <a href="worksona-document-processor.html">Document Processor Demo</a> to see how agents can analyze and process documents</li>
+            <li>Explore the <a href="image-analysis-URL-demo.html">Image Analysis URL Demo</a> to see how agents can analyze images from URLs</li>
         </ul>
 
         <div class="tip-box">
@@ -764,8 +767,22 @@ const generatedImage = await worksona.generateImage('creative-agent', 'A futuris
 console.log('Generated Image URL:', generatedImage);
 </code></pre>
 
+        <div class="content">
+          <h1>Getting Started with Worksona.js</h1>
+          <p>Welcome! Below are interactive demos you can try right now:</p>
+          <ul>
+            <li>🤖 <small><a href="worksona-chatbot-example.html">Multi-Agent Chatbot</a></small><span style="font-size: 0.8em; color: #64748b; display: block; margin-top: 2px;">Chat with multiple AI agents, each with unique personalities and expertise.</span></li>
+            <li>📝 <small><a href="prd-creator-app.html">PRD Generator</a></small><span style="font-size: 0.8em; color: #64748b; display: block; margin-top: 2px;">Step-by-step Product Requirements Document generator using AI agents.</span></li>
+            <li>📄 <small><a href="worksona-document-processor.html">Document Processing Suite</a></small><span style="font-size: 0.8em; color: #64748b; display: block; margin-top: 2px;">Analyze, extract, and process documents with specialized AI agents.</span></li>
+            <li>🔗 <small><a href="chained-image-analysis-demo.html">Chained Image Analysis Demo</a></small><span style="font-size: 0.8em; color: #64748b; display: block; margin-top: 2px;">Chain image analysis and generation for advanced vision workflows.</span></li>
+            <li>🖼️ <small><a href="image-analysis-demo.html">Image Analysis Demo</a></small><span style="font-size: 0.8em; color: #64748b; display: block; margin-top: 2px;">Generate and analyze images using the same AI agent.</span></li>
+            <li>🌐 <small><a href="image-analysis-URL-demo.html">Image Analysis URL Demo</a></small><span style="font-size: 0.8em; color: #64748b; display: block; margin-top: 2px;">Analyze any public image URL for quick insights and OCR.</span></li>
+          </ul>
+        </div>
+
     </main>
 
+    <script src="worksona.min.js"></script>
     <script>
         function toggleSidebar() {
             const sidebar = document.getElementById('sidebar');
@@ -773,4 +790,4 @@ console.log('Generated Image URL:', generatedImage);
         }
     </script>
 </body>
-</html> 
+</html>

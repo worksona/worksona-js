@@ -10,7 +10,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
     <!-- Add Worksona.js -->
-    <script src="worksona.js"></script>
+    <script src="worksona.min.js"></script>
     <style>
         /* Main layout styles */
         body {
@@ -484,10 +484,10 @@
 
                 // Load external JSON agents
                 await Promise.all([
-                    loadAgentFromFile('agents/marketing-agent.json'),
-                    loadAgentFromFile('agents/legal-agent.json'),
-                    loadAgentFromFile('agents/research-analyst.json'),
-                    loadAgentFromFile('agents/interviewer-agent.json')
+                    loadAgentFromFile('docs/agents/marketing-agent.json'),
+                    loadAgentFromFile('docs/agents/legal-agent.json'),
+                    loadAgentFromFile('docs/agents/research-analyst.json'),
+                    loadAgentFromFile('docs/agents/interviewer-agent.json')
                 ]);
 
             // Set up event listeners

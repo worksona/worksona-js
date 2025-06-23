@@ -6,7 +6,7 @@
   <title>Worksona.js Image Generation & Analysis Demo</title>
   <style>
     body { font-family: sans-serif; background: #f8fafc; color: #1e293b; margin: 0; padding: 0; }
-    .container { max-width: 600px; margin: 40px auto; background: #fff; border-radius: 10px; box-shadow: 0 4px 16px rgba(0,0,0,0.07); padding: 32px; }
+    .container { max-width: 800px; margin: 40px auto; background: #fff; border-radius: 10px; box-shadow: 0 4px 16px rgba(0,0,0,0.07); padding: 32px; }
     h1 { color: #2563eb; }
     label { display: block; margin-bottom: 8px; font-weight: 600; }
     input[type="text"] { width: 100%; padding: 10px; border: 1px solid #e2e8f0; border-radius: 6px; margin-bottom: 16px; font-size: 1rem; }
@@ -16,11 +16,64 @@
     .analysis-box { background: #f1f5f9; border-radius: 6px; padding: 16px; margin-top: 16px; font-size: 1.05em; }
     .loading { color: #059669; font-weight: 600; }
     .error { color: #dc2626; font-weight: 600; }
+    .settings-panel { background: #f8fafc; border-radius: 8px; padding: 20px; margin-bottom: 20px; }
+    .settings-group { margin-bottom: 15px; }
+    .settings-group label { display: inline-block; margin-right: 10px; }
+    select, input[type="number"] { padding: 8px; border: 1px solid #e2e8f0; border-radius: 4px; }
+    .agent-info { background: #f1f5f9; border-radius: 6px; padding: 16px; margin-bottom: 20px; }
+    .agent-info h3 { margin-top: 0; color: #2563eb; }
+    .agent-traits { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+    .trait-tag { background: #e0e7ff; color: #4338ca; padding: 4px 8px; border-radius: 4px; font-size: 0.9em; }
+    .llm-info { background: #f1f5f9; border-radius: 6px; padding: 16px; margin-bottom: 20px; }
+    .llm-info strong { font-weight: 600; }
   </style>
 </head>
 <body>
   <div class="container">
     <h1>Image Generation & Analysis Demo</h1>
+    
+    <div class="agent-info">
+      <h3>Creative Agent</h3>
+      <p>A specialized agent for creative image generation and analysis</p>
+      <div class="agent-traits">
+        <span class="trait-tag">creative</span>
+        <span class="trait-tag">artistic</span>
+        <span class="trait-tag">detailed</span>
+        <span class="trait-tag">imaginative</span>
+      </div>
+    </div>
+
+    <div class="llm-info" style="background:#f1f5f9;border-radius:6px;padding:16px;margin-bottom:20px;">
+      <strong>LLM Provider:</strong> <span id="llmProvider"></span><br>
+      <strong>Model:</strong> <span id="llmModel"></span>
+    </div>
+
+    <div class="settings-panel">
+      <h3>Generation Settings</h3>
+      <div class="settings-group">
+        <label for="size">Image Size:</label>
+        <select id="size">
+          <option value="1024x1024">1024x1024</option>
+          <option value="1024x1792">1024x1792</option>
+          <option value="1792x1024">1792x1024</option>
+        </select>
+      </div>
+      <div class="settings-group">
+        <label for="quality">Quality:</label>
+        <select id="quality">
+          <option value="standard">Standard</option>
+          <option value="hd">HD</option>
+        </select>
+      </div>
+      <div class="settings-group">
+        <label for="style">Style:</label>
+        <select id="style">
+          <option value="vivid">Vivid</option>
+          <option value="natural">Natural</option>
+        </select>
+      </div>
+    </div>
+
     <p>Enter a prompt to generate an image using <b>gpt-4o</b>, then analyze the generated image with the same agent.</p>
     <label for="prompt">Image Prompt</label>
     <input type="text" id="prompt" placeholder="e.g. A futuristic cityscape at sunset">
@@ -31,35 +84,69 @@
     <div id="analysis" class="analysis-box" style="display:none"></div>
     <div id="error" class="error" style="display:none"></div>
   </div>
-  <script src="../worksona.js"></script>
+  <script src="worksona.min.js"></script>
   <script>
     const worksona = new Worksona({
       apiKeys: { openai: localStorage.getItem('openai_api_key') || '' }
     });
+
+    const creativeAgent = {
+      id: "creative-agent",
+      name: "Creative Agent",
+      description: "A specialized agent for creative image generation and analysis",
+      traits: {
+        personality: ["creative", "artistic", "detailed", "imaginative"],
+        knowledge: ["visual arts", "design principles", "image composition", "artistic styles"],
+        tone: "creative and inspiring",
+        background: "Expert in visual arts and creative image generation with deep understanding of artistic principles"
+      },
+      config: {
+        provider: "openai",
+        model: "gpt-4o",
+        temperature: 0.7,
+        maxTokens: 1000,
+        systemPrompt: "You are a creative image generation and analysis expert. Your process involves: 1) Understanding the user's vision and requirements, 2) Generating detailed and artistic images, 3) Providing insightful analysis of visual elements, 4) Suggesting improvements and variations. Always maintain high artistic quality and attention to detail in both generation and analysis.",
+        examples: [
+          {
+            user: "Generate an image of a futuristic city",
+            assistant: "I'll create a detailed image of a futuristic cityscape with towering skyscrapers, flying vehicles, and advanced technology. I'll focus on creating a sense of scale and wonder while maintaining realistic lighting and architectural principles."
+          }
+        ]
+      }
+    };
+
     let agentLoaded = false;
     let generatedImageUrl = '';
+
     async function ensureAgent() {
       if (agentLoaded) return;
-      await worksona.loadAgent({
-        id: 'creative-agent',
-        name: 'Creative Agent',
-        config: { provider: 'openai', model: 'gpt-4o' }
-      });
+      await worksona.loadAgent(creativeAgent);
       agentLoaded = true;
     }
+
     document.getElementById('generateBtn').onclick = async () => {
       document.getElementById('error').style.display = 'none';
       document.getElementById('analysis').style.display = 'none';
       document.getElementById('resultImg').style.display = 'none';
       document.getElementById('analyzeBtn').style.display = 'none';
+      
       const prompt = document.getElementById('prompt').value.trim();
       if (!prompt) return;
+
+      const options = {
+        size: document.getElementById('size').value,
+        quality: document.getElementById('quality').value,
+        style: document.getElementById('style').value
+      };
+
       document.getElementById('loading').textContent = 'Generating image...';
       document.getElementById('loading').style.display = 'block';
+
       try {
         await ensureAgent();
-        generatedImageUrl = await worksona.generateImage('creative-agent', prompt);
+        generatedImageUrl = await worksona.generateImage('creative-agent', prompt, options);
         if (!generatedImageUrl) throw new Error('No image URL returned');
+        
         document.getElementById('resultImg').src = generatedImageUrl;
         document.getElementById('resultImg').style.display = 'block';
         document.getElementById('analyzeBtn').style.display = 'inline-block';
@@ -70,11 +157,13 @@
         document.getElementById('loading').style.display = 'none';
       }
     };
+
     document.getElementById('analyzeBtn').onclick = async () => {
       document.getElementById('analysis').style.display = 'none';
       document.getElementById('error').style.display = 'none';
       document.getElementById('loading').textContent = 'Analyzing image...';
       document.getElementById('loading').style.display = 'block';
+
       try {
         await ensureAgent();
         const analysis = await worksona.analyzeImage('creative-agent', generatedImageUrl);
@@ -87,6 +176,10 @@
         document.getElementById('loading').style.display = 'none';
       }
     };
+
+    // Show LLM info
+    document.getElementById('llmProvider').textContent = creativeAgent.config.provider;
+    document.getElementById('llmModel').textContent = creativeAgent.config.model;
   </script>
 </body>
 </html> 
