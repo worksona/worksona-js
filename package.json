@@ -1,0 +1,82 @@
+{
+  "name": "worksona",
+  "version": "0.1.2",
+  "description": "A lightweight, single-file JavaScript library for creating and managing AI agents with distinct personalities across multiple LLM providers. Features comprehensive image processing, real-time control panel, and event-driven architecture.",
+  "main": "worksona.js",
+  "browser": "worksona.min.js",
+  "unpkg": "worksona.min.js",
+  "jsdelivr": "worksona.min.js",
+  "types": "worksona.d.ts",
+  "files": [
+    "worksona.js",
+    "worksona.min.js",
+    "worksona.d.ts",
+    "agents/",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "npm run minify",
+    "minify": "terser worksona.js -o worksona.min.js --compress --mangle",
+    "validate": "node -c worksona.js",
+    "prepare": "npm run build",
+    "prepack": "npm run validate && npm run build"
+  },
+  "keywords": [
+    "ai",
+    "llm",
+    "agents",
+    "openai",
+    "anthropic",
+    "google",
+    "chatgpt",
+    "claude",
+    "gemini",
+    "image-processing",
+    "image-analysis",
+    "image-generation",
+    "dall-e",
+    "gpt-4o",
+    "javascript",
+    "single-file",
+    "lightweight",
+    "agent-management",
+    "multi-provider",
+    "personality",
+    "chatbot",
+    "vision",
+    "control-panel"
+  ],
+  "author": {
+    "name": "Worksona Team",
+    "email": "hello@worksona.com",
+    "url": "https://worksona.com"
+  },
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/worksona/worksona-js.git"
+  },
+  "bugs": {
+    "url": "https://github.com/worksona/worksona-js/issues"
+  },
+  "homepage": "https://github.com/worksona/worksona-js#readme",
+  "engines": {
+    "node": ">=14.0.0"
+  },
+  "devDependencies": {
+    "terser": "^5.24.0"
+  },
+  "funding": {
+    "type": "github",
+    "url": "https://github.com/sponsors/worksona"
+  },
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
+  },
+  "dependencies": {
+    "worksona": "^0.1.2"
+  }
+}

@@ -1,0 +1,59 @@
+# Development files
+.DS_Store
+*.log
+*.tgz
+
+# Documentation that's not needed in npm package
+docs/
+img/
+use-case-implementation-notes.md
+windsurf_deployment.yaml
+netlify.toml
+
+# Development and deployment files
+.github/
+.git/
+.gitignore
+.gitattributes
+
+# Compressed files
+*.zip
+
+# YAML files not needed for npm
+worksona-api.yaml
+
+# Alternative documentation files (keep only README.md and WORKSONA_DOCUMENTATION.md)
+worksona-readme.md
+
+# Node modules (in case they exist)
+node_modules/
+
+# Testing
+test/
+tests/
+*.test.js
+*.spec.js
+
+# Coverage reports
+coverage/
+
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS generated files
+Thumbs.db
+.DS_Store
+
+# Temporary files
+tmp/
+temp/ 
