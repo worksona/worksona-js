@@ -1738,250 +1738,297 @@ class Agent {
 
     // Create a floating control panel with button in the bottom right
     createFloatingControlPanel() {
-      // Create a wrapper for the button and panel
-      const wrapper = document.createElement('div');
-      wrapper.id = 'worksona-floating-control';
-      
-      // Create floating button
-      const button = document.createElement('button');
-      button.id = 'worksona-floating-button';
-      button.innerHTML = '⚙️';
-      button.setAttribute('aria-label', 'Open Worksona Control Panel');
-      wrapper.appendChild(button);
-      
-      // Create control panel container
-      const panelContainer = document.createElement('div');
-      panelContainer.id = 'worksona-modal-container';
-      
-      // Create overlay
-      const overlay = document.createElement('div');
-      overlay.id = 'worksona-overlay';
-      
-      // Add panel and overlay to wrapper
-      wrapper.appendChild(overlay);
-      wrapper.appendChild(panelContainer);
-      
-      // Add wrapper to body
-      document.body.appendChild(wrapper);
-      
-      // Set up the control panel - this will set up basic structure and event listeners
-      this.createControlPanel('worksona-modal-container');
+      // Ensure DOM is ready
+      if (!document.body) {
+        // Wait for DOM to be ready
+        if (document.readyState === 'loading') {
+          document.addEventListener('DOMContentLoaded', () => this.createFloatingControlPanel());
+          return;
+        } else {
+          // Fallback: wait a bit and try again
+          setTimeout(() => this.createFloatingControlPanel(), 100);
+          return;
+        }
+      }
 
-      // Helper function to close the panel
-      const closePanel = () => {
-        overlay.classList.remove('active');
-        panelContainer.classList.remove('active');
-        const panel = panelContainer.querySelector('.worksona-control-panel');
-        if (panel) {
-          panel.style.display = 'none';
-        }
-      };
-      
-      // Add styles for floating button and modal
-      const floatingStyles = document.createElement('style');
-      floatingStyles.textContent = `
-        #worksona-floating-button {
-          position: fixed;
-          bottom: 20px;
-          right: 20px;
-          width: 50px;
-          height: 50px;
-          border-radius: 50%;
-          background: #2563eb;
-          color: white;
-          border: none;
-          font-size: 24px;
-          box-shadow: 0 2px 10px rgba(0,0,0,0.2);
-          cursor: pointer;
-          z-index: 9998;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          transition: all 0.2s ease-in-out;
-        }
+      try {
+        // Create a wrapper for the button and panel
+        const wrapper = document.createElement('div');
+        wrapper.id = 'worksona-floating-control';
         
-        #worksona-floating-button:hover {
-          transform: scale(1.1);
-          background: #1d4ed8;
-          box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-        }
+        // Create floating button
+        const button = document.createElement('button');
+        button.id = 'worksona-floating-button';
+        button.innerHTML = '⚙️';
+        button.setAttribute('aria-label', 'Open Worksona Control Panel');
+        wrapper.appendChild(button);
         
-        #worksona-floating-button:active {
-          transform: scale(0.95);
-        }
+        // Create control panel container
+        const panelContainer = document.createElement('div');
+        panelContainer.id = 'worksona-modal-container';
         
-        @media (max-width: 768px) {
-          #worksona-floating-button {
-            width: 45px;
-            height: 45px;
-            font-size: 20px;
-            bottom: 15px;
-            right: 15px;
-          }
-        }
+        // Create overlay
+        const overlay = document.createElement('div');
+        overlay.id = 'worksona-overlay';
         
-        #worksona-modal-container {
-          position: fixed;
-          top: 50%;
-          left: 50%;
-          transform: translate(-50%, -50%);
-          z-index: 10000;
-          width: 90%;
-          max-width: 800px;
-          max-height: 80vh;
-          overflow: auto;
-          display: none;
-          background: white;
-          border-radius: 8px;
-        }
+        // Add panel and overlay to wrapper
+        wrapper.appendChild(overlay);
+        wrapper.appendChild(panelContainer);
         
-        #worksona-modal-container.active {
-          display: block;
-        }
+        // Add wrapper to body
+        document.body.appendChild(wrapper);
         
-        #worksona-overlay {
-          position: fixed;
-          top: 0;
-          left: 0;
-          width: 100%;
-          height: 100%;
-          background: rgba(0,0,0,0.5);
-          z-index: 9999;
-          display: none;
-        }
+        // Set up the control panel - this will set up basic structure and event listeners
+        this.createControlPanel('worksona-modal-container');
         
-        #worksona-overlay.active {
-          display: block;
-        }
-        
-        .worksona-control-panel {
-          box-shadow: 0 5px 20px rgba(0,0,0,0.2);
-          max-height: 80vh;
-          overflow: auto;
-          background: white;
-          border-radius: 8px;
+        // Verify the control panel was created successfully
+        const controlPanel = panelContainer.querySelector('.worksona-control-panel');
+        if (!controlPanel) {
+          this._log('Failed to create control panel content', 'error');
+          // Retry after a short delay
+          setTimeout(() => {
+            this.createControlPanel('worksona-modal-container');
+          }, 100);
         }
 
-        .worksona-panel-header {
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-          padding: 15px 20px;
-          border-bottom: 1px solid #eee;
-          background: #fff;
-          position: sticky;
-          top: 0;
-          z-index: 1;
-        }
-
-        .worksona-header-buttons {
-          display: flex;
-          gap: 10px;
-          align-items: center;
-        }
-
-        .worksona-expand-button {
-          background: none;
-          border: none;
-          font-size: 20px;
-          cursor: pointer;
-          color: #64748b;
-          padding: 4px;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          transition: color 0.2s;
-        }
-
-        .worksona-expand-button:hover {
-          color: #334155;
-        }
-
-        .worksona-control-panel {
-          box-shadow: 0 5px 20px rgba(0,0,0,0.2);
-          max-height: 80vh;
-          overflow: auto;
-          background: white;
-          border-radius: 8px;
-          transition: all 0.3s ease;
-        }
-
-        .worksona-control-panel.expanded {
-          position: fixed;
-          top: 0;
-          left: 0;
-          width: 100% !important;
-          height: 100vh !important;
-          max-height: 100vh !important;
-          max-width: 100% !important;
-          border-radius: 0;
-          z-index: 10001;
-        }
-
-        #worksona-modal-container.expanded {
-          width: 100%;
-          max-width: 100%;
-          height: 100vh;
-          max-height: 100vh;
-          top: 0;
-          left: 0;
-          transform: none;
-          border-radius: 0;
-        }
-      `;
-      document.head.appendChild(floatingStyles);
-      
-      // Set up additional event listeners specific to floating panel
-      button.addEventListener('click', () => {
-        overlay.classList.add('active');
-        panelContainer.classList.add('active');
-        // Ensure the control panel is visible
-        const panel = panelContainer.querySelector('.worksona-control-panel');
-        if (panel) {
-          panel.style.display = 'block';
-        }
-      });
-      
-      // Add expand/contract functionality
-      const expandButton = panelContainer.querySelector('.worksona-expand-button');
-      if (expandButton) {
-        expandButton.addEventListener('click', () => {
+        // Helper function to close the panel
+        const closePanel = () => {
+          overlay.classList.remove('active');
+          panelContainer.classList.remove('active');
           const panel = panelContainer.querySelector('.worksona-control-panel');
-          const isExpanded = panel.classList.contains('expanded');
+          if (panel) {
+            panel.style.display = 'none';
+          }
+        };
+        
+        // Add styles for floating button and modal
+        const floatingStyles = document.createElement('style');
+        floatingStyles.textContent = `
+          #worksona-floating-button {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: #2563eb;
+            color: white;
+            border: none;
+            font-size: 24px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+            cursor: pointer;
+            z-index: 9998;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease-in-out;
+          }
           
-          if (isExpanded) {
-            panel.classList.remove('expanded');
-            panelContainer.classList.remove('expanded');
-            expandButton.innerHTML = '⛶'; // Expand icon
-            expandButton.title = 'Expand to full screen';
+          #worksona-floating-button:hover {
+            transform: scale(1.1);
+            background: #1d4ed8;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+          }
+          
+          #worksona-floating-button:active {
+            transform: scale(0.95);
+          }
+          
+          @media (max-width: 768px) {
+            #worksona-floating-button {
+              width: 45px;
+              height: 45px;
+              font-size: 20px;
+              bottom: 15px;
+              right: 15px;
+            }
+          }
+          
+          #worksona-modal-container {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 10000;
+            width: 90%;
+            max-width: 800px;
+            max-height: 80vh;
+            overflow: auto;
+            display: none;
+            background: white;
+            border-radius: 8px;
+          }
+          
+          #worksona-modal-container.active {
+            display: block;
+          }
+          
+          #worksona-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 9999;
+            display: none;
+          }
+          
+          #worksona-overlay.active {
+            display: block;
+          }
+          
+          .worksona-control-panel {
+            box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+            max-height: 80vh;
+            overflow: auto;
+            background: white;
+            border-radius: 8px;
+          }
+
+          .worksona-panel-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 20px;
+            border-bottom: 1px solid #eee;
+            background: #fff;
+            position: sticky;
+            top: 0;
+            z-index: 1;
+          }
+
+          .worksona-header-buttons {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+          }
+
+          .worksona-expand-button {
+            background: none;
+            border: none;
+            font-size: 20px;
+            cursor: pointer;
+            color: #64748b;
+            padding: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: color 0.2s;
+          }
+
+          .worksona-expand-button:hover {
+            color: #334155;
+          }
+
+          .worksona-control-panel {
+            box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+            max-height: 80vh;
+            overflow: auto;
+            background: white;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+          }
+
+          .worksona-control-panel.expanded {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100% !important;
+            height: 100vh !important;
+            max-height: 100vh !important;
+            max-width: 100% !important;
+            border-radius: 0;
+            z-index: 10001;
+          }
+
+          #worksona-modal-container.expanded {
+            width: 100%;
+            max-width: 100%;
+            height: 100vh;
+            max-height: 100vh;
+            top: 0;
+            left: 0;
+            transform: none;
+            border-radius: 0;
+          }
+        `;
+        document.head.appendChild(floatingStyles);
+        
+        // Set up additional event listeners specific to floating panel
+        button.addEventListener('click', () => {
+          overlay.classList.add('active');
+          panelContainer.classList.add('active');
+          // Ensure the control panel is visible
+          const panel = panelContainer.querySelector('.worksona-control-panel');
+          if (panel) {
+            panel.style.display = 'block';
           } else {
-            panel.classList.add('expanded');
-            panelContainer.classList.add('expanded');
-            expandButton.innerHTML = '⛾'; // Contract icon
-            expandButton.title = 'Return to normal size';
+            // If panel doesn't exist, try to recreate it
+            this._log('Control panel not found, attempting to recreate', 'warn');
+            this.createControlPanel('worksona-modal-container');
+            const newPanel = panelContainer.querySelector('.worksona-control-panel');
+            if (newPanel) {
+              newPanel.style.display = 'block';
+            } else {
+              this._log('Failed to recreate control panel', 'error');
+            }
           }
         });
-      }
-
-      // Close panel when clicking overlay
-      overlay.addEventListener('click', closePanel);
-      
-      // Close panel when clicking close button
-      const closeButton = panelContainer.querySelector('.worksona-close-button');
-      if (closeButton) {
-        closeButton.addEventListener('click', (e) => {
-          e.preventDefault();
-          e.stopPropagation();
-          closePanel();
-        });
-      }
-
-      // Add keyboard event listener for Escape key
-      document.addEventListener('keydown', (e) => {
-        if (e.key === 'Escape' && overlay.classList.contains('active')) {
-          closePanel();
+        
+        // Add expand/contract functionality
+        const expandButton = panelContainer.querySelector('.worksona-expand-button');
+        if (expandButton) {
+          expandButton.addEventListener('click', () => {
+            const panel = panelContainer.querySelector('.worksona-control-panel');
+            const isExpanded = panel.classList.contains('expanded');
+            
+            if (isExpanded) {
+              panel.classList.remove('expanded');
+              panelContainer.classList.remove('expanded');
+              expandButton.innerHTML = '⛶'; // Expand icon
+              expandButton.title = 'Expand to full screen';
+            } else {
+              panel.classList.add('expanded');
+              panelContainer.classList.add('expanded');
+              expandButton.innerHTML = '⛾'; // Contract icon
+              expandButton.title = 'Return to normal size';
+            }
+          });
         }
-      });
+
+        // Close panel when clicking overlay
+        overlay.addEventListener('click', closePanel);
+        
+        // Close panel when clicking close button
+        const closeButton = panelContainer.querySelector('.worksona-close-button');
+        if (closeButton) {
+          closeButton.addEventListener('click', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            closePanel();
+          });
+        }
+
+        // Add keyboard event listener for Escape key
+        document.addEventListener('keydown', (e) => {
+          if (e.key === 'Escape' && overlay.classList.contains('active')) {
+            closePanel();
+          }
+        });
+        
+      } catch (error) {
+        this._log(`Error creating floating control panel: ${error.message}`, 'error');
+        // Retry after a delay
+        setTimeout(() => this.createFloatingControlPanel(), 1000);
+      }
+    }
+
+    // Add method to check if control panel is ready
+    isControlPanelReady() {
+      const container = document.getElementById(this.controlPanelId);
+      const panel = container?.querySelector('.worksona-control-panel');
+      return !!(container && panel);
     }
 
     /**
