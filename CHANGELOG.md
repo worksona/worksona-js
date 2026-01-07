@@ -5,6 +5,38 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.2.0] - 2026-01-06
+
+### Changed
+- **Package Renamed**: Changed package name from `worksona` to `worksona-js`
+- **NPM Publishing**: Published to npm at https://www.npmjs.com/package/worksona-js
+- Updated all documentation with new package name and installation instructions
+- Updated CDN links to use unpkg.com/worksona-js
+
+### Fixed
+- Removed circular self-dependency from package.json
+- Fixed CDN and installation references across all documentation
+
+### Documentation
+- Updated README.md with new package name
+- Updated TECH-SPEC.md with version 0.2.0
+- Updated PUBLISHING.md with correct package information
+- Created PACKAGE_INFO.md as quick reference guide
+
+### Installation
+```bash
+npm i worksona-js
+```
+
+**CDN:**
+```html
+<script src="https://unpkg.com/worksona-js@latest/worksona.min.js"></script>
+```
+
+**NPM Package:** https://www.npmjs.com/package/worksona-js
+
+---
+
 ## [0.1.2] - 2024-12-19
 
 ### Added

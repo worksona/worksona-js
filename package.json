@@ -1,6 +1,6 @@
 {
-  "name": "worksona",
-  "version": "0.1.2",
+  "name": "worksona-js",
+  "version": "0.2.0",
   "description": "A lightweight, single-file JavaScript library for creating and managing AI agents with distinct personalities across multiple LLM providers. Features comprehensive image processing, real-time control panel, and event-driven architecture.",
   "main": "worksona.js",
   "browser": "worksona.min.js",
@@ -77,6 +77,7 @@
     "registry": "https://registry.npmjs.org/"
   },
   "dependencies": {
-    "worksona": "^0.1.2"
+    "@sodanovels/worksona": "^0.2.0",
+    "worksona-js": "^0.2.0"
   }
 }

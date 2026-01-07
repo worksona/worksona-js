@@ -1,6 +1,7 @@
 # Worksona.js Documentation
 
-**Version:** 0.1.2  
+**Last Updated:** January 6, 2026  
+**Version:** 0.2.0  
 **Type:** Single-file JavaScript library  
 **License:** MIT  
 
@@ -43,15 +44,17 @@ Worksona.js is a lightweight, single-file JavaScript library that enables you to
 <script src="worksona.js"></script>
 ```
 
-### Option 2: CDN (when available)
+### Option 2: CDN
 ```html
-<script src="https://cdn.jsdelivr.net/npm/worksona@latest/worksona.min.js"></script>
+<script src="https://unpkg.com/worksona-js@latest/worksona.min.js"></script>
 ```
 
-### Option 3: NPM (when published)
+### Option 3: NPM
 ```bash
-npm install worksona
+npm i worksona-js
 ```
+
+**NPM Package:** https://www.npmjs.com/package/worksona-js
 
 ---
 

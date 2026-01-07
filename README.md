@@ -1,8 +1,10 @@
 # Worksona.js
 
-[![npm version](https://badge.fury.io/js/worksona.svg)](https://badge.fury.io/js/worksona)
+**Last Updated:** January 6, 2026
+
+[![npm version](https://badge.fury.io/js/worksona-js.svg)](https://badge.fury.io/js/worksona-js)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Downloads](https://img.shields.io/npm/dm/worksona.svg)](https://npmjs.com/package/worksona)
+[![Downloads](https://img.shields.io/npm/dm/worksona-js.svg)](https://npmjs.com/package/worksona-js)
 
 A lightweight, single-file JavaScript library for creating and managing AI agents with distinct personalities across multiple LLM providers. Features comprehensive image processing, real-time control panel, and event-driven architecture.
 
@@ -20,14 +22,17 @@ A lightweight, single-file JavaScript library for creating and managing AI agent
 
 ### Installation
 
+**Via NPM:**
 ```bash
-npm install worksona
+npm i worksona-js
 ```
 
-Or include directly in HTML:
+**Via CDN:**
 ```html
-<script src="https://unpkg.com/worksona@latest/worksona.min.js"></script>
+<script src="https://unpkg.com/worksona-js@latest/worksona.min.js"></script>
 ```
+
+**NPM Package:** https://www.npmjs.com/package/worksona-js
 
 ### Basic Usage
 
@@ -257,7 +262,7 @@ const factCheck = await worksona.chat('fact-checker', `Verify: ${article}`);
 TypeScript definitions are included:
 
 ```typescript
-import Worksona from 'worksona';
+import Worksona from 'worksona-js';
 
 const worksona = new Worksona({
   apiKeys: { openai: 'your-key' }
@@ -287,7 +292,7 @@ Contributions welcome! Please read our [contributing guidelines](CONTRIBUTING.md
 ## 🔗 Links
 
 - [GitHub Repository](https://github.com/worksona/worksona-js)
-- [NPM Package](https://www.npmjs.com/package/worksona)
+- [NPM Package](https://www.npmjs.com/package/worksona-js)
 - [Documentation](https://worksona.dev/docs)
 - [Examples](https://worksona.dev/examples)
 

@@ -666,7 +666,7 @@ class Agent {
       const container = document.getElementById(containerId);
       if (!container) {
         this._log('Control panel container not found', 'error');
-        return;
+        return false;
       }
       
       // Store the container reference for other methods to use
@@ -798,14 +798,6 @@ class Agent {
 
         .worksona-expand-button:hover {
           color: #334155;
-        }
-
-        .worksona-close-button {
-          background: none;
-          border: none;
-          font-size: 24px;
-          cursor: pointer;
-          color: #64748b;
         }
 
         .worksona-llm-status-bar {
@@ -1080,7 +1072,6 @@ class Agent {
         
         .worksona-agent-tab-content {
           display: none;
-          padding: 10px 0;
         }
         
         .worksona-agent-tab-content.active {
@@ -1266,6 +1257,8 @@ class Agent {
 
       // Initial update
       this.updateControlPanel();
+      
+      return true;
     }
 
     _setupEventListeners(container) {
@@ -1775,22 +1768,24 @@ class Agent {
         wrapper.appendChild(overlay);
         wrapper.appendChild(panelContainer);
         
-        // Add wrapper to body
+        // Append wrapper to body first to ensure all elements are in DOM
         document.body.appendChild(wrapper);
         
-        // Set up the control panel - this will set up basic structure and event listeners
-        this.createControlPanel('worksona-modal-container');
+        // Small delay to ensure DOM is updated, then set up the control panel
+        setTimeout(() => {
+          this.createControlPanel('worksona-modal-container');
+          
+          // Verify the control panel was created successfully
+          const controlPanel = panelContainer.querySelector('.worksona-control-panel');
+          if (!controlPanel) {
+            this._log('Failed to create control panel content, retrying...', 'warn');
+            // Retry after a short delay
+            setTimeout(() => {
+              this.createControlPanel('worksona-modal-container');
+            }, 100);
+          }
+        }, 10);
         
-        // Verify the control panel was created successfully
-        const controlPanel = panelContainer.querySelector('.worksona-control-panel');
-        if (!controlPanel) {
-          this._log('Failed to create control panel content', 'error');
-          // Retry after a short delay
-          setTimeout(() => {
-            this.createControlPanel('worksona-modal-container');
-          }, 100);
-        }
-
         // Helper function to close the panel
         const closePanel = () => {
           overlay.classList.remove('active');
@@ -1884,6 +1879,7 @@ class Agent {
             overflow: auto;
             background: white;
             border-radius: 8px;
+            transition: all 0.3s ease;
           }
 
           .worksona-panel-header {
@@ -1919,15 +1915,6 @@ class Agent {
 
           .worksona-expand-button:hover {
             color: #334155;
-          }
-
-          .worksona-control-panel {
-            box-shadow: 0 5px 20px rgba(0,0,0,0.2);
-            max-height: 80vh;
-            overflow: auto;
-            background: white;
-            border-radius: 8px;
-            transition: all 0.3s ease;
           }
 
           .worksona-control-panel.expanded {
@@ -1966,12 +1953,22 @@ class Agent {
           } else {
             // If panel doesn't exist, try to recreate it
             this._log('Control panel not found, attempting to recreate', 'warn');
-            this.createControlPanel('worksona-modal-container');
-            const newPanel = panelContainer.querySelector('.worksona-control-panel');
-            if (newPanel) {
-              newPanel.style.display = 'block';
+            const success = this.createControlPanel('worksona-modal-container');
+            if (success !== false) {
+              // Wait a moment for DOM to update, then try again
+              setTimeout(() => {
+                const newPanel = panelContainer.querySelector('.worksona-control-panel');
+                if (newPanel) {
+                  newPanel.style.display = 'block';
+                  this._log('Control panel recreated successfully', 'info');
+                } else {
+                  this._log('Failed to recreate control panel - panel element not found after creation', 'error');
+                  // Try to update the control panel content
+                  this.updateControlPanel();
+                }
+              }, 50);
             } else {
-              this._log('Failed to recreate control panel', 'error');
+              this._log('Failed to recreate control panel - container not found', 'error');
             }
           }
         });
