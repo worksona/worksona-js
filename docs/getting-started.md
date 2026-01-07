@@ -1,12 +1,25 @@
 # Getting Started with Worksona.js
-**Version:** 0.1.2  
-**Date:** 2025-05-11
+**Version:** 0.2.0  
+**Last Updated:** January 6, 2026
 
 ## Installation
-Include the Worksona.js file in your project:
+
+### Via NPM
+```bash
+npm i worksona-js
+```
+
+### Via CDN
+```html
+<script src="https://unpkg.com/worksona-js@latest/worksona.min.js"></script>
+```
+
+### Local File
 ```html
 <script src="path/to/worksona.js"></script>
 ```
+
+**NPM Package:** https://www.npmjs.com/package/worksona-js
 
 ## Configuration
 Initialize Worksona with your API keys and options:
