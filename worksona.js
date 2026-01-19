@@ -1,9 +1,14 @@
 /**
  * Worksona.js - LLM Agent Management API
- * Version: 0.1.2
- * 
+ * Version: 0.2.0
+ *
  * A lightweight, single-file solution for deploying and managing AI agents
  * with distinct personalities across multiple LLM providers.
+ *
+ * Supports latest frontier models:
+ * - OpenAI: GPT-5, GPT-5-mini, GPT-5-nano, o1, o3, DALL-E 3, GPT-4o
+ * - Anthropic: Claude Opus 4.5, Claude Sonnet 4.5, Claude 3.5 Sonnet
+ * - Backward compatible with all previous models
  */
 
 'use strict';
@@ -98,7 +103,7 @@ class Agent {
       this.options = {
         debug: false,
         defaultProvider: 'openai',
-        defaultModel: 'gpt-3.5-turbo',
+        defaultModel: 'gpt-4o', // Updated default to latest stable model
         apiKeys: {},
         ...options
       };
@@ -110,8 +115,8 @@ class Agent {
       
       this._initializeProviders();
 
-      // Initialize control panel if enabled
-      if (options.controlPanel !== false) {
+      // Initialize control panel if enabled (browser only)
+      if (options.controlPanel !== false && typeof document !== 'undefined') {
         // Create floating control panel by default
         this.createFloatingControlPanel();
       }
@@ -125,6 +130,7 @@ class Agent {
             try {
               // Determine if this is a vision request
               const isVisionRequest = message.content && message.content.type === 'image';
+              // Support for latest OpenAI models with backward compatibility
               const modelName = (agent.config.model || this.options.defaultModel || 'gpt-4o').trim();
               
               this._log(`Making OpenAI request with model: ${modelName}`, 'info');
@@ -220,11 +226,15 @@ class Agent {
                 ];
               }
 
+              // GPT-5 and reasoning models only support temperature=1
+              const supportsCustomTemp = !modelName.startsWith('gpt-5') && !modelName.startsWith('o1') && !modelName.startsWith('o3');
+              const temperature = supportsCustomTemp ? (agent.config.temperature || 0.7) : 1;
+
               const requestBody = {
                 model: modelName,
                 messages: messages,
-                temperature: agent.config.temperature || 0.7,
-                max_tokens: agent.config.maxTokens || 500,
+                temperature: temperature,
+                max_completion_tokens: agent.config.maxTokens || 500,
                 top_p: agent.config.topP || 1,
                 frequency_penalty: agent.config.frequencyPenalty || 0,
                 presence_penalty: agent.config.presencePenalty || 0,
@@ -266,13 +276,37 @@ class Agent {
           },
           defaultModels: {
             chat: 'gpt-4o',
-            vision: 'gpt-4o'
-          }
+            vision: 'gpt-4o',
+            // Latest frontier models
+            reasoning: 'o3',
+            reasoningMini: 'o3-mini',
+            // GPT-5 series (when available)
+            gpt5: 'gpt-5',
+            gpt5Mini: 'gpt-5-mini',
+            gpt5Nano: 'gpt-5-nano'
+          },
+          supportedModels: [
+            // GPT-5 series (frontier models)
+            'gpt-5', 'gpt-5-mini', 'gpt-5-nano',
+            // o-series reasoning models
+            'o1', 'o1-mini', 'o1-preview',
+            'o3', 'o3-mini',
+            // GPT-4 series
+            'gpt-4o', 'gpt-4o-mini', 'gpt-4-turbo', 'gpt-4-turbo-preview',
+            'gpt-4', 'gpt-4-32k', 'gpt-4-vision-preview',
+            // GPT-3.5 series (legacy)
+            'gpt-3.5-turbo', 'gpt-3.5-turbo-16k',
+            // Vision models
+            'gpt-4o-vision', 'gpt-4-turbo-vision'
+          ]
         } : null,
 
         anthropic: this.options.apiKeys.anthropic ? {
           chat: async (agent, message) => {
             try {
+              // Support for latest Claude models with backward compatibility
+              const modelName = agent.config.model || 'claude-sonnet-4-5-20250929';
+
               const response = await fetch('https://api.anthropic.com/v1/messages', {
                 method: 'POST',
                 headers: {
@@ -281,7 +315,7 @@ class Agent {
                   'anthropic-version': '2023-06-01'
                 },
                 body: JSON.stringify({
-                  model: agent.config.model || 'claude-3-opus-20240229',
+                  model: modelName,
                   max_tokens: agent.config.maxTokens || 500,
                   temperature: agent.config.temperature || 0.7,
                   system: agent.config.systemPrompt,
@@ -308,9 +342,32 @@ class Agent {
             }
           },
           defaultModels: {
-            chat: 'claude-3-opus-20240229',
-            completion: 'claude-3-sonnet-20240229'
-          }
+            chat: 'claude-sonnet-4-5-20250929',
+            completion: 'claude-sonnet-4-5-20250929',
+            // Latest frontier models
+            opus45: 'claude-opus-4-5-20251101',
+            sonnet45: 'claude-sonnet-4-5-20250929',
+            // Claude 3.5 series
+            sonnet35: 'claude-3-5-sonnet-20241022',
+            haiku35: 'claude-3-5-haiku-20241022'
+          },
+          supportedModels: [
+            // Claude 4.5 series (latest frontier models)
+            'claude-opus-4-5-20251101',
+            'claude-sonnet-4-5-20250929',
+            // Claude 3.5 series
+            'claude-3-5-sonnet-20241022',
+            'claude-3-5-sonnet-20240620',
+            'claude-3-5-haiku-20241022',
+            // Claude 3 series (legacy but still supported)
+            'claude-3-opus-20240229',
+            'claude-3-sonnet-20240229',
+            'claude-3-haiku-20240307',
+            // Older models for backward compatibility
+            'claude-2.1',
+            'claude-2.0',
+            'claude-instant-1.2'
+          ]
         } : null,
 
         google: this.options.apiKeys.google ? {
@@ -2050,11 +2107,15 @@ class Agent {
               { type: 'image_url', image_url: { url: imageData, detail: options.detail || 'high' } }
             ] }
           ];
+          // GPT-5 and reasoning models only support temperature=1
+          const supportsCustomTemp = !modelName.startsWith('gpt-5') && !modelName.startsWith('o1') && !modelName.startsWith('o3');
+          const temperature = supportsCustomTemp ? (agent.config.temperature || 0.7) : 1;
+
           const requestBody = {
             model: modelName,
             messages,
-            temperature: agent.config.temperature || 0.7,
-            max_tokens: agent.config.maxTokens || 500,
+            temperature: temperature,
+            max_completion_tokens: agent.config.maxTokens || 500,
             top_p: agent.config.topP || 1,
             frequency_penalty: agent.config.frequencyPenalty || 0,
             presence_penalty: agent.config.presencePenalty || 0,
@@ -2088,9 +2149,9 @@ class Agent {
     }
 
     /**
-     * Generate an image from a text prompt using the agent's provider (OpenAI DALL-E/gpt-4o)
-     * Supports models: 'dalle-3', 'gpt-4o', 'gpt-4o-vision-preview'.
-     * Model selection order: options.model > agent.config.model > 'dalle-3'
+     * Generate an image from a text prompt using the agent's provider (OpenAI DALL-E)
+     * Supports models: 'dall-e-3', 'dall-e-2' (legacy)
+     * Model selection order: options.model > agent.config.imageGenerationModel > 'dall-e-3'
      */
     async generateImage(agentId, prompt, options = {}) {
       const agent = this.agents.get(agentId);
@@ -2102,7 +2163,7 @@ class Agent {
       this._emit('image-generation-start', { agentId, provider, prompt, options });
       try {
         if (provider === 'openai') {
-          // Model selection logic
+          // Model selection logic - DALL-E 3 is the latest stable image generation model
           const modelName = (options.model || agent.config.imageGenerationModel || 'dall-e-3').trim();
           // DALL-E endpoint supports model param for dalle-3
           const requestBody = {
@@ -2137,8 +2198,8 @@ class Agent {
 
     /**
      * Edit an image based on a prompt using the agent's provider (OpenAI DALL-E)
-     * Supports models: 'dalle-3', 'gpt-4o', 'gpt-4o-vision-preview'.
-     * Model selection order: options.model > agent.config.model > 'dalle-3'
+     * Supports models: 'dall-e-3', 'dall-e-2' (legacy)
+     * Model selection order: options.model > agent.config.model > 'dall-e-3'
      */
     async editImage(agentId, imageData, prompt, options = {}) {
       const agent = this.agents.get(agentId);
@@ -2185,8 +2246,8 @@ class Agent {
 
     /**
      * Create a variation of an image using the agent's provider (OpenAI DALL-E)
-     * Supports models: 'dalle-3', 'gpt-4o', 'gpt-4o-vision-preview'.
-     * Model selection order: options.model > agent.config.model > 'dalle-3'
+     * Supports models: 'dall-e-3', 'dall-e-2' (legacy)
+     * Model selection order: options.model > agent.config.model > 'dall-e-3'
      */
     async variationImage(agentId, imageData, options = {}) {
       const agent = this.agents.get(agentId);

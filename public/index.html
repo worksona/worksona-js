@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Worksona API Console</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header>
+            <h1>🤖 Worksona API Console</h1>
+            <div class="server-status">
+                <span id="status-indicator" class="status-dot"></span>
+                <span id="status-text">Checking...</span>
+            </div>
+        </header>
+
+        <!-- Provider Status -->
+        <section class="providers">
+            <h2>Provider Status</h2>
+            <div id="provider-status" class="provider-grid">
+                <div class="provider-card">
+                    <span class="provider-name">OpenAI</span>
+                    <span id="openai-status" class="status-badge">...</span>
+                </div>
+                <div class="provider-card">
+                    <span class="provider-name">Anthropic</span>
+                    <span id="anthropic-status" class="status-badge">...</span>
+                </div>
+                <div class="provider-card">
+                    <span class="provider-name">Google</span>
+                    <span id="google-status" class="status-badge">...</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- Agents List -->
+        <section class="agents">
+            <h2>Available Agents</h2>
+            <div id="agents-list" class="agents-grid">
+                <div class="loading">Loading agents...</div>
+            </div>
+        </section>
+
+        <!-- API Tester Tabs -->
+        <section class="api-tester">
+            <h2>API Endpoint Tester</h2>
+
+            <div class="tabs">
+                <button class="tab-btn active" data-tab="query">Simple Query</button>
+                <button class="tab-btn" data-tab="agent">Agent Query</button>
+                <button class="tab-btn" data-tab="batch">Batch</button>
+                <button class="tab-btn" data-tab="translate">Translate</button>
+                <button class="tab-btn" data-tab="upload">File Upload</button>
+            </div>
+
+            <!-- Tab: Simple Query -->
+            <div class="tab-content active" id="query-tab">
+                <form id="query-form">
+                    <div class="form-group">
+                        <label>Question:</label>
+                        <textarea name="q" rows="3" placeholder="What is quantum computing?" required></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>Model:</label>
+                        <select name="model">
+                            <option value="gpt-5">GPT-5</option>
+                            <option value="gpt-5-mini">GPT-5 Mini</option>
+                            <option value="gpt-5-nano">GPT-5 Nano</option>
+                            <option value="gpt-4o" selected>GPT-4o</option>
+                            <option value="claude-3-5-sonnet-20241022">Claude 3.5 Sonnet</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="btn-primary">Send Query</button>
+                </form>
+            </div>
+
+            <!-- Tab: Agent Query -->
+            <div class="tab-content" id="agent-tab">
+                <form id="agent-form">
+                    <div class="form-group">
+                        <label>Agent:</label>
+                        <select name="agent" id="agent-select" required>
+                            <option value="">Select an agent...</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Question:</label>
+                        <textarea name="q" rows="3" placeholder="Ask your question..." required></textarea>
+                    </div>
+                    <button type="submit" class="btn-primary">Send to Agent</button>
+                </form>
+            </div>
+
+            <!-- Tab: Batch -->
+            <div class="tab-content" id="batch-tab">
+                <form id="batch-form">
+                    <div class="form-group">
+                        <label>Queries (one per line, max 10):</label>
+                        <textarea name="queries" rows="6" placeholder="What is AI?&#10;What is ML?&#10;What is DL?" required></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>Model:</label>
+                        <select name="model">
+                            <option value="gpt-4o" selected>GPT-4o</option>
+                            <option value="gpt-5">GPT-5</option>
+                            <option value="gpt-5-nano">GPT-5 Nano</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="btn-primary">Run Batch</button>
+                </form>
+            </div>
+
+            <!-- Tab: Translate -->
+            <div class="tab-content" id="translate-tab">
+                <form id="translate-form">
+                    <div class="form-group">
+                        <label>Text:</label>
+                        <textarea name="text" rows="3" placeholder="Hello world" required></textarea>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>From:</label>
+                            <input type="text" name="from" value="auto" placeholder="auto">
+                        </div>
+                        <div class="form-group">
+                            <label>To:</label>
+                            <input type="text" name="to" value="spanish" placeholder="spanish" required>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn-primary">Translate</button>
+                </form>
+            </div>
+
+            <!-- Tab: File Upload -->
+            <div class="tab-content" id="upload-tab">
+                <form id="upload-form" enctype="multipart/form-data">
+                    <div class="form-group">
+                        <label>Upload File:</label>
+                        <input type="file" name="file" accept="image/*,.txt,.md,.csv,.pdf,.doc,.docx,.xlsx,.xls" required>
+                        <small>Supported: Images (jpg, png, gif, webp), Documents (docx, xlsx, pdf), Text (txt, md, csv)</small>
+                    </div>
+                    <div class="form-group">
+                        <label>Agent (optional):</label>
+                        <select name="agent" id="upload-agent-select">
+                            <option value="">Auto-detect</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Prompt (optional):</label>
+                        <textarea name="prompt" rows="2" placeholder="What do you want to know about this file?"></textarea>
+                    </div>
+                    <button type="submit" class="btn-primary">Upload & Analyze</button>
+                </form>
+            </div>
+        </section>
+
+        <!-- Response Display -->
+        <section class="response">
+            <h2>Response</h2>
+            <div class="response-header">
+                <span id="response-time"></span>
+                <button id="copy-btn" class="btn-secondary" style="display:none;">Copy JSON</button>
+            </div>
+            <pre id="response-output" class="response-output">No response yet. Try an endpoint above!</pre>
+        </section>
+
+        <!-- Code Examples -->
+        <section class="code-examples">
+            <h2>Code Examples</h2>
+            <div class="tabs">
+                <button class="tab-btn active" data-tab="curl-ex">cURL</button>
+                <button class="tab-btn" data-tab="js-ex">JavaScript</button>
+                <button class="tab-btn" data-tab="py-ex">Python</button>
+            </div>
+            <div class="tab-content active" id="curl-ex">
+                <pre id="curl-example">curl "http://localhost:3000/api/query?q=Hello&model=gpt-5"</pre>
+            </div>
+            <div class="tab-content" id="js-ex">
+                <pre id="js-example">const response = await fetch('http://localhost:3000/api/query?q=Hello&model=gpt-5');
+const data = await response.json();
+console.log(data.answer);</pre>
+            </div>
+            <div class="tab-content" id="py-ex">
+                <pre id="py-example">import requests
+response = requests.get('http://localhost:3000/api/query', params={'q': 'Hello', 'model': 'gpt-5'})
+print(response.json()['answer'])</pre>
+            </div>
+        </section>
+
+        <footer>
+            <p>Worksona API v0.3.0 | <a href="https://github.com/worksona/worksona-js" target="_blank">Documentation</a></p>
+        </footer>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>

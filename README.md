@@ -1,12 +1,23 @@
 # Worksona.js
 
-**Last Updated:** January 6, 2026
+**Last Updated:** January 19, 2026
+**Version:** 0.3.0
 
 [![npm version](https://badge.fury.io/js/worksona-js.svg)](https://badge.fury.io/js/worksona-js)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Downloads](https://img.shields.io/npm/dm/worksona-js.svg)](https://npmjs.com/package/worksona-js)
 
-A lightweight, single-file JavaScript library for creating and managing AI agents with distinct personalities across multiple LLM providers. Features comprehensive image processing, real-time control panel, and event-driven architecture.
+A lightweight, single-file JavaScript library for creating and managing AI agents with distinct personalities across multiple LLM providers. Now supporting the latest frontier models including GPT-5, Claude Opus 4.5, and Claude Sonnet 4.5.
+
+## 🆕 What's New in v0.3.0
+
+- 📚 **Complete Documentation Suite** - Interactive demos, code examples, visual workflow builder
+- 🔌 **REST API Server** - Production-ready Express server with 32+ endpoints
+- 🛠️ **Tool System** - DALL-E image generation, web scraper, text-to-speech
+- 🎨 **Agent Personality System** - Rich configuration with traits, knowledge, tone
+- 📄 **Document Processing** - OCR, PDF/DOCX/XLSX parsing built-in
+- ✨ **Latest Frontier Models** - Full support for GPT-5, Claude Opus 4.5, o3
+- 🔗 **Multi-Agent Workflows** - Build and execute complex agent delegation chains
 
 ## ✨ Features
 
@@ -45,7 +56,7 @@ const worksona = new Worksona({
   }
 });
 
-// Load an agent
+// Load an agent with latest GPT-5 model
 await worksona.loadAgent({
   id: 'customer-service',
   name: 'Sarah',
@@ -57,9 +68,22 @@ await worksona.loadAgent({
   },
   config: {
     provider: 'openai',
-    model: 'gpt-4o',
+    model: 'gpt-5', // Or 'gpt-5-mini', 'gpt-5-nano', 'o3', 'gpt-4o'
     temperature: 0.7,
     systemPrompt: 'You are Sarah, a helpful customer service representative...'
+  }
+});
+
+// Load an agent with Claude Opus 4.5
+await worksona.loadAgent({
+  id: 'technical-writer',
+  name: 'Alex',
+  description: 'Technical documentation specialist',
+  config: {
+    provider: 'anthropic',
+    model: 'claude-opus-4-5-20251101', // Or 'claude-sonnet-4-5-20250929'
+    temperature: 0.5,
+    systemPrompt: 'You are Alex, an expert technical writer...'
   }
 });
 
@@ -96,11 +120,31 @@ const editedUrl = await worksona.editImage('agent-id', imageData,
 
 ## 🔧 Provider Support
 
-| Provider | Chat | Vision | Image Generation |
-|----------|------|---------|-----------------|
-| OpenAI | ✅ GPT-4, GPT-4o | ✅ GPT-4o | ✅ DALL-E 3 |
-| Anthropic | ✅ Claude-3 | ❌ | ❌ |
-| Google | ✅ Gemini Pro | ❌ | ❌ |
+### Latest Frontier Models
+
+| Provider | Latest Models | Chat | Vision | Image Generation |
+|----------|--------------|------|---------|-----------------|
+| **OpenAI** | GPT-5, GPT-5-mini, GPT-5-nano, o3, o1, GPT-4o | ✅ | ✅ | ✅ DALL-E 3 |
+| **Anthropic** | Claude Opus 4.5, Claude Sonnet 4.5, Claude 3.5 Sonnet | ✅ | ❌ | ❌ |
+| **Google** | Gemini Pro | ✅ | ❌ | ❌ |
+
+### Supported Models by Provider
+
+**OpenAI:**
+- GPT-5 series: `gpt-5`, `gpt-5-mini`, `gpt-5-nano` 🆕
+- Reasoning models: `o3`, `o3-mini`, `o1`, `o1-mini`, `o1-preview` 🆕
+- GPT-4 series: `gpt-4o`, `gpt-4o-mini`, `gpt-4-turbo`, `gpt-4`, `gpt-4-32k`
+- GPT-3.5 series: `gpt-3.5-turbo`, `gpt-3.5-turbo-16k`
+- Image generation: `dall-e-3`, `dall-e-2`
+
+**Anthropic:**
+- Claude 4.5: `claude-opus-4-5-20251101`, `claude-sonnet-4-5-20250929` 🆕
+- Claude 3.5: `claude-3-5-sonnet-20241022`, `claude-3-5-haiku-20241022`
+- Claude 3: `claude-3-opus-20240229`, `claude-3-sonnet-20240229`, `claude-3-haiku-20240307`
+- Legacy: `claude-2.1`, `claude-2.0`, `claude-instant-1.2`
+
+**Google:**
+- Gemini: `gemini-pro`, `gemini-pro-vision`
 
 ## 📖 API Reference
 
@@ -285,9 +329,24 @@ Contributions welcome! Please read our [contributing guidelines](CONTRIBUTING.md
 
 ## 📚 Documentation
 
-- [Full Documentation](WORKSONA_DOCUMENTATION.md)
-- [API Reference](docs/api-reference.html)
-- [Live Examples](docs/)
+### 🎯 Quick Links
+- **[📖 Documentation Hub](docs/index.html)** - Central documentation portal
+- **[🔌 API Reference (Swagger)](docs/api-reference-swagger.html)** - Interactive API documentation
+- **[🎮 Try Live Demo](docs/endpoint-api-demo.html)** - Test all API endpoints
+- **[💻 Code Examples](docs/code-examples-hub.html)** - 60+ copy/paste examples
+- **[🔗 Workflow Builder](docs/delegation-demo.html)** - Visual multi-agent workflows
+- **[🎵 Vibe Coding](vibe-coding/index.html)** - AI-assisted coding (NEW!)
+- **[🚀 Marketing Site](marketing/index.html)** - Product overview
+
+### 📖 Complete Documentation Suite
+We've created a comprehensive documentation system with:
+- **Interactive Demos**: Test all features directly in your browser
+- **Code Examples**: 60+ examples in JavaScript, Node.js, Python, and cURL
+- **Visual Workflow Builder**: Build and execute multi-agent workflows
+- **API Reference**: Complete OpenAPI/Swagger documentation
+- **Getting Started Guides**: Multiple learning paths for different use cases
+
+**→ Start here: [docs/index.html](docs/index.html)**
 
 ## 🔗 Links
 

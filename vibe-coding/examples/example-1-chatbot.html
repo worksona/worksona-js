@@ -1,0 +1,533 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Example 1: AI Chatbot - Worksona Vibe Coding</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      padding: 2rem;
+    }
+
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+      background: white;
+      border-radius: 16px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+      overflow: hidden;
+    }
+
+    .header {
+      background: linear-gradient(135deg, #2563eb 0%, #7c3aed 100%);
+      color: white;
+      padding: 2rem;
+      text-align: center;
+    }
+
+    .header h1 {
+      font-size: 2rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .header p {
+      opacity: 0.9;
+      font-size: 0.9rem;
+    }
+
+    .config-section {
+      padding: 1.5rem;
+      background: #f8fafc;
+      border-bottom: 1px solid #e2e8f0;
+    }
+
+    .config-row {
+      display: flex;
+      gap: 1rem;
+      margin-bottom: 1rem;
+      align-items: center;
+    }
+
+    .config-row label {
+      min-width: 100px;
+      font-weight: 600;
+      color: #334155;
+    }
+
+    .config-row select,
+    .config-row input {
+      flex: 1;
+      padding: 0.5rem;
+      border: 2px solid #e2e8f0;
+      border-radius: 6px;
+      font-size: 0.9rem;
+    }
+
+    .config-row button {
+      padding: 0.5rem 1.5rem;
+      background: #2563eb;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: background 0.2s;
+    }
+
+    .config-row button:hover {
+      background: #1d4ed8;
+    }
+
+    .config-row button:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .status {
+      padding: 0.5rem 1rem;
+      border-radius: 6px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      text-align: center;
+    }
+
+    .status.loading {
+      background: #fef3c7;
+      color: #92400e;
+    }
+
+    .status.ready {
+      background: #d1fae5;
+      color: #065f46;
+    }
+
+    .status.error {
+      background: #fee2e2;
+      color: #991b1b;
+    }
+
+    .chat-container {
+      height: 500px;
+      overflow-y: auto;
+      padding: 1.5rem;
+      background: #f8fafc;
+    }
+
+    .message {
+      display: flex;
+      gap: 1rem;
+      margin-bottom: 1rem;
+      animation: slideIn 0.3s ease;
+    }
+
+    @keyframes slideIn {
+      from {
+        opacity: 0;
+        transform: translateY(10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .message.user {
+      flex-direction: row-reverse;
+    }
+
+    .message-avatar {
+      flex-shrink: 0;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.2rem;
+    }
+
+    .message.user .message-avatar {
+      background: #2563eb;
+      color: white;
+    }
+
+    .message.assistant .message-avatar {
+      background: #7c3aed;
+      color: white;
+    }
+
+    .message-bubble {
+      max-width: 70%;
+      padding: 1rem;
+      border-radius: 12px;
+      line-height: 1.5;
+    }
+
+    .message.user .message-bubble {
+      background: #2563eb;
+      color: white;
+      border-bottom-right-radius: 4px;
+    }
+
+    .message.assistant .message-bubble {
+      background: white;
+      color: #1e293b;
+      border-bottom-left-radius: 4px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+
+    .message-time {
+      font-size: 0.75rem;
+      opacity: 0.7;
+      margin-top: 0.25rem;
+    }
+
+    .typing-indicator {
+      display: none;
+      padding: 1rem;
+      background: white;
+      border-radius: 12px;
+      width: fit-content;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+
+    .typing-indicator.active {
+      display: block;
+    }
+
+    .typing-dot {
+      display: inline-block;
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #94a3b8;
+      margin: 0 2px;
+      animation: typing 1.4s infinite;
+    }
+
+    .typing-dot:nth-child(2) {
+      animation-delay: 0.2s;
+    }
+
+    .typing-dot:nth-child(3) {
+      animation-delay: 0.4s;
+    }
+
+    @keyframes typing {
+      0%, 60%, 100% {
+        transform: translateY(0);
+        opacity: 0.7;
+      }
+      30% {
+        transform: translateY(-10px);
+        opacity: 1;
+      }
+    }
+
+    .input-container {
+      padding: 1.5rem;
+      background: white;
+      border-top: 1px solid #e2e8f0;
+      display: flex;
+      gap: 1rem;
+    }
+
+    .input-container textarea {
+      flex: 1;
+      padding: 0.75rem;
+      border: 2px solid #e2e8f0;
+      border-radius: 8px;
+      resize: none;
+      font-family: inherit;
+      font-size: 1rem;
+      line-height: 1.5;
+    }
+
+    .input-container textarea:focus {
+      outline: none;
+      border-color: #2563eb;
+    }
+
+    .input-container button {
+      padding: 0.75rem 1.5rem;
+      background: #2563eb;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: all 0.2s;
+    }
+
+    .input-container button:hover {
+      background: #1d4ed8;
+      transform: translateY(-2px);
+    }
+
+    .input-container button:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .info-box {
+      background: #dbeafe;
+      padding: 1rem;
+      margin: 1rem 1.5rem;
+      border-radius: 8px;
+      border-left: 4px solid #2563eb;
+      font-size: 0.9rem;
+      line-height: 1.6;
+    }
+
+    .info-box strong {
+      color: #1e40af;
+    }
+
+    .code-snippet {
+      background: #1e293b;
+      color: #e2e8f0;
+      padding: 0.5rem;
+      border-radius: 4px;
+      font-family: monospace;
+      font-size: 0.85rem;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>🤖 AI Chatbot</h1>
+      <p>Example 1: Simple chat interface using Worksona.js Library</p>
+    </div>
+
+    <div class="config-section">
+      <div class="config-row">
+        <label>API Key:</label>
+        <input type="password" id="apiKeyInput" placeholder="Enter your OpenAI API key">
+      </div>
+      <div class="config-row">
+        <label>Model:</label>
+        <select id="modelSelect">
+          <option value="gpt-4o" selected>GPT-4o (Fast & Smart)</option>
+          <option value="gpt-4o-mini">GPT-4o Mini (Fast)</option>
+          <option value="o1">o1 (Reasoning)</option>
+          <option value="o3-mini">o3-mini (Reasoning)</option>
+        </select>
+      </div>
+      <div class="config-row">
+        <label>Temperature:</label>
+        <input type="range" id="tempSlider" min="0" max="2" step="0.1" value="0.7">
+        <span id="tempValue">0.7</span>
+      </div>
+      <div class="config-row">
+        <button id="initBtn" onclick="initializeAgent()">Initialize Agent</button>
+        <div id="status" class="status">Click Initialize to start</div>
+      </div>
+    </div>
+
+    <div class="info-box">
+      <strong>💡 How this works:</strong> This example uses the <span class="code-snippet">Worksona</span> class directly
+      from worksona.js library. It creates an agent with <span class="code-snippet">loadAgent()</span>
+      and sends messages with <span class="code-snippet">chat()</span>.
+    </div>
+
+    <div class="chat-container" id="chatContainer">
+      <div class="message assistant">
+        <div class="message-avatar">🤖</div>
+        <div>
+          <div class="message-bubble">
+            Hello! I'm your AI assistant. Initialize me above and let's chat!
+          </div>
+          <div class="message-time">Ready to start</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="input-container">
+      <textarea
+        id="messageInput"
+        placeholder="Type your message here... (Press Enter to send, Shift+Enter for new line)"
+        rows="2"
+        disabled
+      ></textarea>
+      <button id="sendBtn" onclick="sendMessage()" disabled>Send</button>
+    </div>
+  </div>
+
+  <!-- Load Worksona.js Library -->
+  <script src="https://unpkg.com/worksona-js@latest/worksona.min.js"></script>
+
+  <script>
+    let worksona = null;
+    let agentId = 'chatbot';
+    let isInitialized = false;
+
+    // Update temperature display
+    document.getElementById('tempSlider').addEventListener('input', (e) => {
+      document.getElementById('tempValue').textContent = e.target.value;
+    });
+
+    // Initialize agent
+    async function initializeAgent() {
+      const status = document.getElementById('status');
+      const initBtn = document.getElementById('initBtn');
+
+      try {
+        status.textContent = 'Initializing...';
+        status.className = 'status loading';
+        initBtn.disabled = true;
+
+        const apiKey = document.getElementById('apiKeyInput').value.trim();
+        const model = document.getElementById('modelSelect').value;
+        const temperature = parseFloat(document.getElementById('tempSlider').value);
+
+        if (!apiKey) {
+          throw new Error('Please enter your OpenAI API key');
+        }
+
+        // Initialize Worksona instance
+        worksona = new Worksona({
+          apiKeys: {
+            openai: apiKey
+          }
+        });
+
+        // Load the chatbot agent
+        await worksona.loadAgent({
+          id: agentId,
+          name: 'Chatbot Assistant',
+          config: {
+            provider: 'openai',
+            model: model,
+            temperature: temperature,
+            systemPrompt: 'You are a helpful, friendly AI assistant. Provide clear, concise, and helpful responses.'
+          }
+        });
+
+        status.textContent = 'Ready! Agent initialized';
+        status.className = 'status ready';
+        isInitialized = true;
+
+        // Enable chat
+        document.getElementById('messageInput').disabled = false;
+        document.getElementById('sendBtn').disabled = false;
+        document.getElementById('messageInput').focus();
+
+        // Add system message
+        addMessage('assistant', `Great! I'm now running on ${model}. How can I help you today?`);
+
+      } catch (error) {
+        status.textContent = 'Error: ' + error.message;
+        status.className = 'status error';
+        initBtn.disabled = false;
+        console.error('Initialization error:', error);
+      }
+    }
+
+    // Send message
+    async function sendMessage() {
+      if (!isInitialized) return;
+
+      const input = document.getElementById('messageInput');
+      const message = input.value.trim();
+
+      if (!message) return;
+
+      // Clear input
+      input.value = '';
+      input.disabled = true;
+      document.getElementById('sendBtn').disabled = true;
+
+      // Add user message
+      addMessage('user', message);
+
+      // Show typing indicator
+      const typingIndicator = document.createElement('div');
+      typingIndicator.className = 'typing-indicator active';
+      typingIndicator.innerHTML = `
+        <div class="typing-dot"></div>
+        <div class="typing-dot"></div>
+        <div class="typing-dot"></div>
+      `;
+      document.getElementById('chatContainer').appendChild(typingIndicator);
+      scrollToBottom();
+
+      try {
+        // Get response from agent using Worksona library
+        const response = await worksona.chat(agentId, message);
+
+        // Remove typing indicator
+        typingIndicator.remove();
+
+        // Add assistant message
+        addMessage('assistant', response);
+
+      } catch (error) {
+        typingIndicator.remove();
+        addMessage('assistant', '❌ Error: ' + error.message);
+        console.error('Chat error:', error);
+      } finally {
+        input.disabled = false;
+        document.getElementById('sendBtn').disabled = false;
+        input.focus();
+      }
+    }
+
+    // Add message to chat
+    function addMessage(role, content) {
+      const chatContainer = document.getElementById('chatContainer');
+      const messageDiv = document.createElement('div');
+      messageDiv.className = `message ${role}`;
+
+      const avatar = role === 'user' ? '👤' : '🤖';
+      const time = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+      messageDiv.innerHTML = `
+        <div class="message-avatar">${avatar}</div>
+        <div>
+          <div class="message-bubble">${escapeHtml(content)}</div>
+          <div class="message-time">${time}</div>
+        </div>
+      `;
+
+      chatContainer.appendChild(messageDiv);
+      scrollToBottom();
+    }
+
+    // Scroll to bottom
+    function scrollToBottom() {
+      const chatContainer = document.getElementById('chatContainer');
+      chatContainer.scrollTop = chatContainer.scrollHeight;
+    }
+
+    // Escape HTML
+    function escapeHtml(text) {
+      const div = document.createElement('div');
+      div.textContent = text;
+      return div.innerHTML;
+    }
+
+    // Handle Enter key
+    document.getElementById('messageInput').addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' && !e.shiftKey) {
+        e.preventDefault();
+        sendMessage();
+      }
+    });
+
+    // Log ready state
+    console.log('🤖 Worksona.js library loaded');
+    console.log('💡 Get started by entering your API key and clicking Initialize');
+  </script>
+</body>
+</html>
