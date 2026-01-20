@@ -1313,12 +1313,27 @@ graph TB
     });
 
     // Load workflow visualization
-    function loadWorkflowVisualization() {
+    async function loadWorkflowVisualization() {
       document.getElementById('workflowTitle').textContent = currentWorkflow.name;
-      document.getElementById('mermaidDiagram').textContent = currentWorkflow.mermaid;
 
-      // Re-render mermaid
-      mermaid.init(undefined, document.getElementById('mermaidDiagram'));
+      const mermaidContainer = document.getElementById('mermaidDiagram');
+
+      // Clear previous diagram
+      mermaidContainer.innerHTML = '';
+      mermaidContainer.removeAttribute('data-processed');
+
+      // Set new mermaid code
+      mermaidContainer.textContent = currentWorkflow.mermaid;
+
+      // Re-render mermaid using the modern API
+      try {
+        const { svg } = await mermaid.render('mermaid-' + Date.now(), currentWorkflow.mermaid);
+        mermaidContainer.innerHTML = svg;
+      } catch (error) {
+        console.error('Mermaid rendering error:', error);
+        // Fallback: show the raw mermaid code if rendering fails
+        mermaidContainer.innerHTML = '<pre>' + currentWorkflow.mermaid + '</pre>';
+      }
     }
 
     // Execute workflow
@@ -1407,27 +1422,56 @@ graph TB
       document.getElementById('executeBtn').disabled = false;
     }
 
-    // Simulate agent call (replace with actual API call in production)
+    // Map workflow agent names to actual agent IDs
+    const agentMapping = {
+      'research-analyst': 'research-analyst',
+      'content-writer': 'marketing-agent',  // Use marketing agent for content writing
+      'editor-agent': 'prd-editor-agent',   // Use PRD editor for editing
+      'marketing-agent': 'marketing-agent',
+      'legal-agent': 'legal-agent',
+      'ocr-agent': 'marketing-agent',       // Fallback to marketing agent
+      'data-extraction-agent': 'research-analyst', // Use research analyst
+      'summarizer-agent': 'prd-editor-agent',
+      'classifier-agent': 'marketing-agent',
+      'routing-agent': 'marketing-agent',
+      'support-agent': 'marketing-agent'
+    };
+
+    // Real API call to worksona-server
     async function simulateAgentCall(agent, prompt, temperature) {
-      // Simulate network delay
-      await new Promise(resolve => setTimeout(resolve, 2000 + Math.random() * 2000));
+      try {
+        // Map workflow agent name to actual agent ID
+        const agentId = agentMapping[agent] || 'marketing-agent';
 
-      // Generate mock response based on agent type
-      const responses = {
-        'research-analyst': `[Research Output] Based on analysis of current trends and data, here are the key findings regarding "${prompt.substring(0, 50)}..."`,
-        'content-writer': `[Draft Content] This is a well-structured article about the topic, incorporating the research findings with engaging narrative...`,
-        'editor-agent': `[Edited Content] The content has been refined for clarity, flow, and engagement. Key improvements include...`,
-        'marketing-agent': `[Marketing Content] Compelling marketing message targeting the identified audience with strong calls-to-action...`,
-        'legal-agent': `[Legal Analysis] Analysis of clauses reveals standard terms with minor risk factors in sections 3.2 and 5.1...`,
-        'ocr-agent': `[Extracted Text] Successfully extracted all text from the document. Total characters: 5,432...`,
-        'data-extraction-agent': `[Structured Data] Extracted: Name: John Doe, Date: 2026-01-15, Amount: $5,000...`,
-        'summarizer-agent': `[Summary] In summary, the analysis reveals three key insights that warrant immediate attention...`,
-        'classifier-agent': `[Classification] Category: Technical Support | Priority: Medium | Sentiment: Neutral`,
-        'routing-agent': `[Routing Info] Assigned to: Technical Team | Priority Level: 2 | Est. Response Time: 4 hours`,
-        'support-agent': `[Response] Thank you for contacting us. I understand your concern and here's how we can help...`
-      };
+        const response = await fetch(`http://localhost:3000/api/agents/${agentId}/chat`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            message: prompt,
+            options: {
+              temperature: temperature
+            }
+          })
+        });
 
-      return responses[agent] || `[${agent}] Processed the prompt with temperature ${temperature}. Generated comprehensive response based on the input provided.`;
+        if (!response.ok) {
+          const errorData = await response.json();
+          throw new Error(errorData.error?.message || `API request failed: ${response.status}`);
+        }
+
+        const data = await response.json();
+
+        if (data.success && data.data && data.data.result) {
+          return data.data.result;
+        } else {
+          throw new Error(data.error?.message || 'Invalid API response format');
+        }
+      } catch (error) {
+        console.error('API call error:', error);
+        throw new Error(`Failed to call ${agent}: ${error.message}`);
+      }
     }
 
     // Add log entry
