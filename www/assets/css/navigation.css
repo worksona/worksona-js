@@ -79,33 +79,7 @@ body {
 }
 
 .worksona-header-links {
-  display: flex;
-  gap: 0.5rem;
-  align-items: center;
-}
-
-.worksona-header-links a {
-  padding: 0.5rem 1rem;
-  color: var(--gray-700);
-  text-decoration: none;
-  font-weight: 500;
-  font-size: 0.95rem;
-  border-radius: 0;
-  transition: all 0.2s;
-}
-
-.worksona-header-links a:hover {
-  background: var(--gray-100);
-  color: var(--primary);
-}
-
-.worksona-header-links a.btn-primary {
-  background: var(--primary);
-  color: white;
-}
-
-.worksona-header-links a.btn-primary:hover {
-  background: var(--primary-dark);
+  display: none;
 }
 
 /* Hamburger Menu Button */
@@ -220,10 +194,6 @@ body {
 @media (max-width: 1024px) {
   .worksona-hamburger {
     display: flex;
-  }
-
-  .worksona-header-links {
-    display: none;
   }
 
   /* Nav becomes overlay on mobile */

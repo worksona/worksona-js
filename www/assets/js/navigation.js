@@ -10,55 +10,50 @@
         title: 'Overview',
         links: [
           { label: 'Home', href: '/index.html' },
-          { label: 'Project Overview', href: '/overview.html' },
-          { label: 'GitHub Repository', href: 'https://github.com/worksona/worksona-js', external: true },
-          { label: 'NPM Package', href: 'https://www.npmjs.com/package/worksona-js', external: true }
+          { label: 'GitHub', href: 'https://github.com/worksona/worksona-js', external: true },
+          { label: 'NPM', href: 'https://www.npmjs.com/package/worksona-js', external: true }
         ]
       },
       {
         title: 'Documentation',
         links: [
-          { label: 'Documentation Hub', href: '/docs/index.html' },
-          { label: 'API Reference', href: '/docs/api-reference-swagger.html' },
-          { label: 'Code Examples', href: '/docs/code-examples-hub.html' }
+          { label: 'Core Documentation', href: '/docs/index.html' },
+          { label: 'API', href: '/docs/api-reference-swagger.html' }
         ]
       },
       {
-        title: 'Interactive Demos',
+        title: 'Demos',
         links: [
-          { label: 'Demos Home', href: '/demos/index.html' },
           { label: 'Endpoint API Demo', href: '/demos/endpoint-api-demo.html' },
           { label: 'Library Demo', href: '/demos/library-internal-demo.html' },
-          { label: 'Delegation Workflow', href: '/demos/delegation-demo.html' },
-          { label: 'Dual Mode Demo', href: '/demos/examples/dual-mode-demo.html' },
-          { label: 'Frontier Models', href: '/demos/examples/frontier-models-demo.html' }
+          { label: 'Delegation Demo', href: '/demos/delegation-demo.html' },
+          { label: 'Workflow Builder', href: '/demos/workflow-builder.html' }
         ]
       },
       {
-        title: 'Vibe Coding',
+        title: 'AI Engineering',
         links: [
-          { label: 'Vibe Coding Home', href: '/vibe-coding/index.html' },
-          { label: 'LLM.txt', href: '/llm.txt' },
+          { label: 'Reference', href: '/vibe-coding/index.html' },
           { label: 'AI Coding Prompt', href: '/vibe-coding/AI_CODING_PROMPT.md' },
+          { label: 'LLM.txt', href: '/llm.txt' },
           { label: 'Example Chatbot', href: '/vibe-coding/examples/example-1-chatbot.html' },
-          { label: 'Content Pipeline', href: '/vibe-coding/examples/example-2-content-pipeline.html' },
-          { label: 'Workflow Builder', href: '/vibe-coding/examples/example-3-workflow-builder.html' }
-        ]
-      },
-      {
-        title: 'Marketing',
-        links: [
-          { label: 'Marketing Site', href: '/marketing/index.html' }
+          { label: 'Content Pipeline', href: '/vibe-coding/examples/example-2-content-pipeline.html' }
         ]
       },
       {
         title: 'Downloads',
         links: [
+          { label: 'worksona.js', href: '/downloads/worksona.js', download: true },
           { label: 'worksona.min.js', href: '/downloads/worksona.min.js', download: true },
           { label: 'worksona.min.js.zip', href: '/downloads/worksona.min.js.zip', download: true },
-          { label: 'worksona.js', href: '/downloads/worksona.js', download: true },
           { label: 'worksona-server.js', href: '/downloads/worksona-server.js', download: true },
           { label: 'Type Definitions', href: '/downloads/worksona.d.ts', download: true }
+        ]
+      },
+      {
+        title: 'About',
+        links: [
+          { label: 'About', href: '/about.html' }
         ]
       }
     ]
@@ -134,12 +129,6 @@
           <div class="worksona-logo-icon">W</div>
           <span class="worksona-logo-text">WORKSONA</span>
         </a>
-        <div class="worksona-header-links">
-          <a href="${basePath}/docs/index.html">Docs</a>
-          <a href="${basePath}/demos/index.html">Demos</a>
-          <a href="${basePath}/vibe-coding/index.html">Vibe Coding</a>
-          <a href="https://github.com/worksona/worksona-js" target="_blank" rel="noopener noreferrer" class="btn-primary">GitHub</a>
-        </div>
         <button class="worksona-hamburger" id="worksonaHamburger" aria-label="Toggle navigation">
           <span></span>
           <span></span>

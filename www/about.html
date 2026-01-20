@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>About - Worksona.js</title>
+  <meta name="description" content="Learn more about Worksona.js, created by Atomic 47 Labs">
+
+  <link rel="stylesheet" href="./assets/css/navigation.css">
+
+  <style>
+    :root {
+      --primary: #2563eb;
+      --secondary: #7c3aed;
+      --gray-50: #f8fafc;
+      --gray-100: #f1f5f9;
+      --gray-200: #e2e8f0;
+      --gray-700: #334155;
+      --gray-800: #1e293b;
+      --gray-900: #0f172a;
+    }
+
+    body {
+      margin: 0;
+      background: white;
+    }
+
+    .about-hero {
+      background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+      color: white;
+      padding: 5rem 2rem;
+      text-align: center;
+    }
+
+    .about-hero h1 {
+      font-size: 3rem;
+      font-weight: 800;
+      margin-bottom: 1rem;
+    }
+
+    .about-hero p {
+      font-size: 1.25rem;
+      opacity: 0.95;
+      max-width: 700px;
+      margin: 0 auto;
+    }
+
+    .content-section {
+      max-width: 900px;
+      margin: 4rem auto;
+      padding: 0 2rem;
+    }
+
+    .content-section h2 {
+      font-size: 2rem;
+      color: var(--gray-900);
+      margin-bottom: 1.5rem;
+      padding-bottom: 0.75rem;
+      border-bottom: 3px solid var(--primary);
+    }
+
+    .content-section p {
+      font-size: 1.1rem;
+      line-height: 1.8;
+      color: var(--gray-700);
+      margin-bottom: 1.5rem;
+    }
+
+    .contact-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 2rem;
+      margin-top: 3rem;
+    }
+
+    .contact-card {
+      background: var(--gray-50);
+      padding: 2rem;
+      border-radius: 0;
+      border: 2px solid var(--gray-200);
+      transition: all 0.3s;
+    }
+
+    .contact-card:hover {
+      border-color: var(--primary);
+      box-shadow: 0 8px 16px rgba(37, 99, 235, 0.1);
+      transform: translateY(-4px);
+    }
+
+    .contact-card h3 {
+      font-size: 1.5rem;
+      color: var(--gray-900);
+      margin-bottom: 1rem;
+    }
+
+    .contact-card p {
+      font-size: 1rem;
+      margin-bottom: 1rem;
+    }
+
+    .contact-card a {
+      color: var(--primary);
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 1.1rem;
+      display: inline-block;
+      margin-top: 0.5rem;
+    }
+
+    .contact-card a:hover {
+      text-decoration: underline;
+    }
+
+    .stats {
+      background: var(--gray-900);
+      color: white;
+      padding: 4rem 2rem;
+      text-align: center;
+      margin-top: 4rem;
+    }
+
+    .stats h2 {
+      font-size: 2rem;
+      margin-bottom: 2rem;
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 2rem;
+      max-width: 1000px;
+      margin: 0 auto;
+    }
+
+    .stat-item {
+      padding: 1.5rem;
+    }
+
+    .stat-number {
+      font-size: 3rem;
+      font-weight: 800;
+      color: var(--primary);
+      margin-bottom: 0.5rem;
+    }
+
+    .stat-label {
+      font-size: 1rem;
+      opacity: 0.9;
+    }
+
+    @media (max-width: 768px) {
+      .about-hero h1 {
+        font-size: 2rem;
+      }
+
+      .content-section h2 {
+        font-size: 1.5rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="worksona-content">
+    <!-- Hero Section -->
+    <section class="about-hero">
+      <h1>About Worksona.js</h1>
+      <p>Built by Atomic 47 Labs to simplify AI agent development and deployment</p>
+    </section>
+
+    <!-- About Content -->
+    <section class="content-section">
+      <h2>The Project</h2>
+      <p>
+        Worksona.js is an open-source JavaScript library that makes it easy to build, manage, and deploy AI agent systems.
+        With support for the latest models from OpenAI, Anthropic, and Google, you can create sophisticated multi-agent
+        workflows with minimal code.
+      </p>
+      <p>
+        The library is designed to work both as a lightweight client-side solution and as a production-ready API server,
+        giving you the flexibility to choose the deployment model that fits your needs.
+      </p>
+
+      <h2>Contact</h2>
+      <div class="contact-grid">
+        <div class="contact-card">
+          <h3>🏢 Atomic 47 Labs</h3>
+          <p>Innovation studio specializing in AI-powered solutions and developer tools.</p>
+          <a href="https://atomic47.co" target="_blank" rel="noopener noreferrer">Visit Website →</a>
+        </div>
+
+        <div class="contact-card">
+          <h3>👤 David Olsson</h3>
+          <p>Creator and lead developer of Worksona.js</p>
+          <a href="mailto:david@atomic47.co">david@atomic47.co</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- Stats Section -->
+    <section class="stats">
+      <h2>Project Stats</h2>
+      <div class="stats-grid">
+        <div class="stat-item">
+          <div class="stat-number">2,241</div>
+          <div class="stat-label">Lines of Code</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-number">0</div>
+          <div class="stat-label">Dependencies</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-number">32+</div>
+          <div class="stat-label">API Endpoints</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-number">3</div>
+          <div class="stat-label">LLM Providers</div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script src="./assets/js/navigation.js"></script>
+</body>
+</html>
