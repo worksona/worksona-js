@@ -1,0 +1,159 @@
+# Netlify Configuration for Worksona.js Documentation Site
+# Deploy directory: www
+
+[build]
+  # Publish directory (relative to repository root when deploying from monorepo)
+  # Or just "." if deploying www-api as standalone
+  publish = "."
+
+  # No build command needed - static site
+  command = "echo 'No build required - static site'"
+
+# Production context (main branch)
+[context.production]
+  publish = "."
+
+# Deploy Preview context (pull requests)
+[context.deploy-preview]
+  publish = "."
+
+# Branch deploys
+[context.branch-deploy]
+  publish = "."
+
+# Custom headers for security and performance
+[[headers]]
+  for = "/*"
+  [headers.values]
+    # Security headers
+    X-Frame-Options = "SAMEORIGIN"
+    X-Content-Type-Options = "nosniff"
+    X-XSS-Protection = "1; mode=block"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+
+    # Performance headers
+    Cache-Control = "public, max-age=0, must-revalidate"
+
+# Cache static assets (JS, CSS, images)
+[[headers]]
+  for = "/assets/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+[[headers]]
+  for = "/*.js"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+    Content-Type = "application/javascript; charset=utf-8"
+
+[[headers]]
+  for = "/*.css"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+    Content-Type = "text/css; charset=utf-8"
+
+[[headers]]
+  for = "/downloads/*"
+  [headers.values]
+    Cache-Control = "public, max-age=86400"
+    Content-Disposition = "attachment"
+
+# HTML pages - no cache, always revalidate
+[[headers]]
+  for = "/*.html"
+  [headers.values]
+    Cache-Control = "public, max-age=0, must-revalidate"
+
+# Images
+[[headers]]
+  for = "/img/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+# JSON files
+[[headers]]
+  for = "/*.json"
+  [headers.values]
+    Cache-Control = "public, max-age=0, must-revalidate"
+    Content-Type = "application/json; charset=utf-8"
+
+# YAML files
+[[headers]]
+  for = "/*.yaml"
+  [headers.values]
+    Cache-Control = "public, max-age=0, must-revalidate"
+    Content-Type = "text/yaml; charset=utf-8"
+
+# Markdown files
+[[headers]]
+  for = "/*.md"
+  [headers.values]
+    Cache-Control = "public, max-age=0, must-revalidate"
+    Content-Type = "text/markdown; charset=utf-8"
+
+# LLM.txt
+[[headers]]
+  for = "/llm.txt"
+  [headers.values]
+    Cache-Control = "public, max-age=3600"
+    Content-Type = "text/plain; charset=utf-8"
+
+# Redirects
+[[redirects]]
+  from = "/home.html"
+  to = "/index.html"
+  status = 301
+  force = true
+
+# Old documentation paths redirect to new structure
+[[redirects]]
+  from = "/api-reference-swagger.html"
+  to = "/docs/api-reference-swagger.html"
+  status = 301
+
+[[redirects]]
+  from = "/code-examples-hub.html"
+  to = "/docs/code-examples-hub.html"
+  status = 301
+
+[[redirects]]
+  from = "/endpoint-api-demo.html"
+  to = "/demos/endpoint-api-demo.html"
+  status = 301
+
+[[redirects]]
+  from = "/library-internal-demo.html"
+  to = "/demos/library-internal-demo.html"
+  status = 301
+
+[[redirects]]
+  from = "/delegation-demo.html"
+  to = "/demos/delegation-demo.html"
+  status = 301
+
+# Pretty URLs - serve .html files without extension
+[[redirects]]
+  from = "/docs"
+  to = "/docs/index.html"
+  status = 200
+
+[[redirects]]
+  from = "/demos"
+  to = "/demos/index.html"
+  status = 200
+
+[[redirects]]
+  from = "/vibe-coding"
+  to = "/vibe-coding/index.html"
+  status = 200
+
+[[redirects]]
+  from = "/marketing"
+  to = "/marketing/index.html"
+  status = 200
+
+# 404 handling
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 404

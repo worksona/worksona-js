@@ -21,7 +21,9 @@
     "minify": "terser worksona.js -o worksona.min.js --compress --mangle",
     "validate": "node -c worksona.js",
     "prepare": "npm run build",
-    "prepack": "npm run validate && npm run build"
+    "prepack": "npm run validate && npm run build",
+    "start": "node worksona-server.js",
+    "dev": "node worksona-server.js"
   },
   "keywords": [
     "ai",
