@@ -1,0 +1,1385 @@
+openapi: 3.0.0
+info:
+  title: Worksona.js API
+  version: 0.3.0
+  description: |
+    AI Agent Management API with multi-provider support for OpenAI, Anthropic, and Google.
+
+    ## Features
+    - Multi-agent management
+    - File upload & processing (images, PDFs, documents)
+    - OCR with Tesseract
+    - Document parsing (PDF, DOCX, XLSX, CSV)
+    - Image generation with DALL-E 3
+    - Web scraping tools
+    - Text-to-speech capabilities
+    - Batch processing
+    - Webhook integrations
+
+    ## Dual-Mode Operation
+    Worksona.js operates in two modes:
+    1. **Library Mode**: Direct JavaScript integration
+    2. **API Server Mode**: RESTful HTTP API (documented here)
+
+  contact:
+    name: Worksona.js Support
+    url: https://github.com/worksona/worksona-js
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+
+servers:
+  - url: http://localhost:3000
+    description: Local development server
+  - url: https://api.worksona.com
+    description: Production API (if deployed)
+
+tags:
+  - name: Health
+    description: Server health and information
+  - name: Agents
+    description: Agent management operations
+  - name: Query
+    description: Query and chat operations
+  - name: Files
+    description: File upload and processing
+  - name: Images
+    description: Image analysis and generation
+  - name: Documents
+    description: Document processing and OCR
+  - name: Tools
+    description: Tool system (DALL-E, scraper, TTS)
+  - name: Convenience
+    description: Shortcut endpoints
+  - name: Slash Commands
+    description: Quick action commands
+  - name: Webhooks
+    description: Webhook integrations
+
+paths:
+  /health:
+    get:
+      summary: Health check
+      description: Check if the API server is running and healthy
+      tags: [Health]
+      responses:
+        '200':
+          description: Server is healthy
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: healthy
+                  version:
+                    type: string
+                    example: 0.3.0-alpha
+                  timestamp:
+                    type: string
+                    format: date-time
+
+  /api/info:
+    get:
+      summary: API information
+      description: Get API info and available endpoints
+      tags: [Health]
+      responses:
+        '200':
+          description: API information
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiInfo'
+
+  /api/agents/load:
+    post:
+      summary: Load a new agent
+      description: Load and register a new agent with specified configuration
+      tags: [Agents]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AgentConfig'
+      responses:
+        '200':
+          description: Agent loaded successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '500':
+          $ref: '#/components/responses/InternalError'
+
+  /api/agents:
+    get:
+      summary: List all agents
+      description: Get list of all loaded agents
+      tags: [Agents]
+      responses:
+        '200':
+          description: List of agents
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    type: object
+                    properties:
+                      count:
+                        type: integer
+                      agents:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/Agent'
+
+  /api/agents/{agentId}:
+    get:
+      summary: Get agent details
+      description: Get detailed information about a specific agent
+      tags: [Agents]
+      parameters:
+        - $ref: '#/components/parameters/AgentId'
+      responses:
+        '200':
+          description: Agent details
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    $ref: '#/components/schemas/Agent'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+    delete:
+      summary: Remove agent
+      description: Remove an agent from the system
+      tags: [Agents]
+      parameters:
+        - $ref: '#/components/parameters/AgentId'
+      responses:
+        '200':
+          description: Agent removed successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /api/agents/{agentId}/chat:
+    post:
+      summary: Chat with agent (POST)
+      description: Send a message to an agent and get a response
+      tags: [Agents]
+      parameters:
+        - $ref: '#/components/parameters/AgentId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [message]
+              properties:
+                message:
+                  type: string
+                  description: The message to send
+                  example: "What is quantum computing?"
+                options:
+                  type: object
+                  properties:
+                    temperature:
+                      type: number
+                      minimum: 0
+                      maximum: 2
+                      example: 0.7
+                    maxTokens:
+                      type: integer
+                      example: 1000
+      responses:
+        '200':
+          description: Chat response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ChatResponse'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+    get:
+      summary: Chat with agent (GET)
+      description: Send a message to an agent via query parameters
+      tags: [Agents]
+      parameters:
+        - $ref: '#/components/parameters/AgentId'
+        - name: q
+          in: query
+          schema:
+            type: string
+          description: Query text (alias for message)
+        - name: query
+          in: query
+          schema:
+            type: string
+          description: Query text (alias for message)
+        - name: message
+          in: query
+          schema:
+            type: string
+          description: Message text
+        - name: context
+          in: query
+          schema:
+            type: string
+          description: Additional context
+      responses:
+        '200':
+          description: Chat response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ChatResponse'
+
+  /api/query:
+    get:
+      summary: Generic query (GET)
+      description: Send a query via GET request with query parameters
+      tags: [Query]
+      parameters:
+        - name: agent
+          in: query
+          required: true
+          schema:
+            type: string
+          description: Agent ID
+          example: research-analyst
+        - name: q
+          in: query
+          schema:
+            type: string
+          description: Query text
+        - name: query
+          in: query
+          schema:
+            type: string
+          description: Query text (alias for q)
+        - name: model
+          in: query
+          schema:
+            type: string
+          example: gpt-4o
+        - name: temperature
+          in: query
+          schema:
+            type: number
+          example: 0.7
+        - name: max_tokens
+          in: query
+          schema:
+            type: integer
+          example: 1000
+      responses:
+        '200':
+          description: Query response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/QueryResponse'
+
+    post:
+      summary: Generic query (POST)
+      description: Send a query via POST with JSON body
+      tags: [Query]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/QueryRequest'
+      responses:
+        '200':
+          description: Query response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/QueryResponse'
+
+  /api/query/batch:
+    post:
+      summary: Batch query processing
+      description: Process multiple queries in parallel (max 10)
+      tags: [Query]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [queries]
+              properties:
+                queries:
+                  type: array
+                  maxItems: 10
+                  items:
+                    $ref: '#/components/schemas/QueryRequest'
+      responses:
+        '200':
+          description: Batch results
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: object
+                    properties:
+                      results:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/QueryResponse'
+                      metadata:
+                        type: object
+                        properties:
+                          totalQueries:
+                            type: integer
+                          successCount:
+                            type: integer
+                          errorCount:
+                            type: integer
+                          duration:
+                            type: integer
+
+  /api/agents/{agentId}/query:
+    get:
+      summary: Agent-specific query (GET)
+      description: Query a specific agent via GET
+      tags: [Query]
+      parameters:
+        - $ref: '#/components/parameters/AgentId'
+        - name: q
+          in: query
+          schema:
+            type: string
+        - name: query
+          in: query
+          schema:
+            type: string
+        - name: temperature
+          in: query
+          schema:
+            type: number
+        - name: maxTokens
+          in: query
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Query response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/QueryResponse'
+
+    post:
+      summary: Agent-specific query (POST)
+      description: Query a specific agent via POST
+      tags: [Query]
+      parameters:
+        - $ref: '#/components/parameters/AgentId'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                query:
+                  type: string
+                document:
+                  type: string
+                text:
+                  type: string
+                options:
+                  type: object
+      responses:
+        '200':
+          description: Query response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/QueryResponse'
+
+  /api/agents/{agentId}/upload:
+    post:
+      summary: Upload and analyze file
+      description: Upload a file and analyze it with an agent
+      tags: [Files]
+      parameters:
+        - $ref: '#/components/parameters/AgentId'
+        - name: prompt
+          in: query
+          schema:
+            type: string
+          description: Analysis prompt
+        - name: context
+          in: query
+          schema:
+            type: string
+        - name: task
+          in: query
+          schema:
+            type: string
+          enum: [summarize, extract, translate, review, improve]
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                file:
+                  type: string
+                  format: binary
+                  description: File to upload (max 10MB)
+                prompt:
+                  type: string
+                context:
+                  type: string
+                task:
+                  type: string
+      responses:
+        '200':
+          description: Analysis result
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FileProcessingResponse'
+
+  /api/agents/{agentId}/analyze:
+    post:
+      summary: Analyze content
+      description: Analyze file or text content
+      tags: [Files]
+      parameters:
+        - $ref: '#/components/parameters/AgentId'
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                file:
+                  type: string
+                  format: binary
+
+          application/json:
+            schema:
+              type: object
+              properties:
+                text:
+                  type: string
+                prompt:
+                  type: string
+      responses:
+        '200':
+          description: Analysis result
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FileProcessingResponse'
+
+  /api/agents/{agentId}/process:
+    post:
+      summary: Process file with schema
+      description: Process file with structured schema
+      tags: [Files]
+      parameters:
+        - $ref: '#/components/parameters/AgentId'
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                file:
+                  type: string
+                  format: binary
+                schema:
+                  type: string
+                  description: JSON schema for extraction
+                operation:
+                  type: string
+      responses:
+        '200':
+          description: Processed result
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FileProcessingResponse'
+
+  /api/images/analyze:
+    post:
+      summary: Analyze image
+      description: Analyze image using vision capabilities
+      tags: [Images]
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                file:
+                  type: string
+                  format: binary
+                agentId:
+                  type: string
+                prompt:
+                  type: string
+      responses:
+        '200':
+          description: Image analysis
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ImageAnalysisResponse'
+
+  /api/images/generate:
+    post:
+      summary: Generate image
+      description: Generate image from text prompt using DALL-E
+      tags: [Images]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [agentId, prompt]
+              properties:
+                agentId:
+                  type: string
+                prompt:
+                  type: string
+                  example: "A futuristic city at sunset"
+                options:
+                  type: object
+                  properties:
+                    size:
+                      type: string
+                      enum: [1024x1024, 1792x1024, 1024x1792]
+                      default: 1024x1024
+                    quality:
+                      type: string
+                      enum: [standard, hd]
+                      default: standard
+                    style:
+                      type: string
+                      enum: [natural, vivid]
+                      default: natural
+      responses:
+        '200':
+          description: Generated image
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: object
+                    properties:
+                      imageUrl:
+                        type: string
+                        format: uri
+                      prompt:
+                        type: string
+
+  /api/documents/ocr:
+    post:
+      summary: Extract text from image
+      description: Perform OCR on image file
+      tags: [Documents]
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                file:
+                  type: string
+                  format: binary
+                agentId:
+                  type: string
+                language:
+                  type: string
+                  default: eng
+      responses:
+        '200':
+          description: OCR result
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OCRResponse'
+
+  /api/documents/analyze:
+    post:
+      summary: Analyze document
+      description: Analyze document with optional task
+      tags: [Documents]
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                file:
+                  type: string
+                  format: binary
+                agentId:
+                  type: string
+                agent:
+                  type: string
+                task:
+                  type: string
+                  enum: [summarize, extract, analyze]
+                prompt:
+                  type: string
+      responses:
+        '200':
+          description: Document analysis
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DocumentAnalysisResponse'
+
+  /api/tools:
+    get:
+      summary: List all tools
+      description: Get list of available tools
+      tags: [Tools]
+      responses:
+        '200':
+          description: List of tools
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: object
+                    properties:
+                      count:
+                        type: integer
+                      tools:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/Tool'
+                      categories:
+                        type: array
+                        items:
+                          type: string
+
+  /api/tools/{toolName}/info:
+    get:
+      summary: Get tool info
+      description: Get detailed information about a specific tool
+      tags: [Tools]
+      parameters:
+        - name: toolName
+          in: path
+          required: true
+          schema:
+            type: string
+          example: dalle
+      responses:
+        '200':
+          description: Tool details
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    $ref: '#/components/schemas/Tool'
+
+  /api/tools/{toolName}/{action}:
+    get:
+      summary: Execute tool (GET)
+      description: Execute a tool action via GET parameters
+      tags: [Tools]
+      parameters:
+        - name: toolName
+          in: path
+          required: true
+          schema:
+            type: string
+          example: dalle
+        - name: action
+          in: path
+          required: true
+          schema:
+            type: string
+          example: generate
+        - name: prompt
+          in: query
+          schema:
+            type: string
+          description: For dalle/generate - image description
+        - name: url
+          in: query
+          schema:
+            type: string
+          description: For scraper - URL to scrape
+        - name: text
+          in: query
+          schema:
+            type: string
+          description: For tts - text to speak
+        - name: voice
+          in: query
+          schema:
+            type: string
+            enum: [alloy, echo, fable, onyx, nova, shimmer]
+          description: For tts - voice selection
+      responses:
+        '200':
+          description: Tool execution result
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ToolResponse'
+
+    post:
+      summary: Execute tool (POST)
+      description: Execute a tool action via POST body
+      tags: [Tools]
+      parameters:
+        - name: toolName
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: action
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '200':
+          description: Tool execution result
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ToolResponse'
+
+  /api/agents/{agentId}/tools/{toolName}/{action}:
+    get:
+      summary: Execute tool with agent context (GET)
+      description: Execute tool with agent enhancement
+      tags: [Tools]
+      parameters:
+        - $ref: '#/components/parameters/AgentId'
+        - name: toolName
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: action
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Tool execution with agent enhancement
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ToolResponse'
+
+  /api/ask:
+    get:
+      summary: Quick query
+      description: Convenience endpoint that forwards to /api/query
+      tags: [Convenience]
+      parameters:
+        - name: agent
+          in: query
+          schema:
+            type: string
+        - name: q
+          in: query
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Query response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/QueryResponse'
+
+  /api/translate:
+    get:
+      summary: Quick translate
+      description: Quick translation shortcut
+      tags: [Convenience]
+      parameters:
+        - name: text
+          in: query
+          required: true
+          schema:
+            type: string
+        - name: to
+          in: query
+          schema:
+            type: string
+            default: spanish
+        - name: from
+          in: query
+          schema:
+            type: string
+            default: auto
+      responses:
+        '200':
+          description: Translation result
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TranslationResponse'
+
+  /api/slash/ocr:
+    post:
+      summary: Quick OCR
+      description: Quick OCR command
+      tags: [Slash Commands]
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                file:
+                  type: string
+                  format: binary
+      responses:
+        '200':
+          description: OCR result
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OCRResponse'
+
+  /api/slash/summarize:
+    post:
+      summary: Quick summarize
+      description: Quick document summarization
+      tags: [Slash Commands]
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                file:
+                  type: string
+                  format: binary
+      responses:
+        '200':
+          description: Summary result
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SummaryResponse'
+
+  /api/slash/translate:
+    post:
+      summary: Quick translate (POST)
+      description: Quick translation via POST
+      tags: [Slash Commands]
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [text]
+              properties:
+                text:
+                  type: string
+                to:
+                  type: string
+                  default: spanish
+                from:
+                  type: string
+                  default: auto
+      responses:
+        '200':
+          description: Translation result
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TranslationResponse'
+
+  /api/slash/extract-data:
+    post:
+      summary: Extract structured data
+      description: Extract structured data from document
+      tags: [Slash Commands]
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                file:
+                  type: string
+                  format: binary
+                schema:
+                  type: string
+                  enum: [general, invoice, receipt]
+                  default: general
+      responses:
+        '200':
+          description: Extracted data
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExtractDataResponse'
+
+  /api/webhook/{agentId}:
+    post:
+      summary: Webhook handler
+      description: Handle incoming webhook for agent
+      tags: [Webhooks]
+      parameters:
+        - $ref: '#/components/parameters/AgentId'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                text:
+                  type: string
+                message:
+                  type: string
+                query:
+                  type: string
+                data:
+                  type: object
+                trigger:
+                  type: string
+      responses:
+        '200':
+          description: Webhook processed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WebhookResponse'
+
+components:
+  parameters:
+    AgentId:
+      name: agentId
+      in: path
+      required: true
+      schema:
+        type: string
+      description: Unique agent identifier
+      example: research-analyst
+
+  schemas:
+    ApiInfo:
+      type: object
+      properties:
+        success:
+          type: boolean
+        data:
+          type: object
+          properties:
+            version:
+              type: string
+            endpoints:
+              type: array
+              items:
+                type: string
+
+    AgentConfig:
+      type: object
+      required: [id, name, config]
+      properties:
+        id:
+          type: string
+          description: Unique agent identifier
+          example: research-analyst
+        name:
+          type: string
+          description: Agent display name
+          example: Research Analyst
+        description:
+          type: string
+          example: Expert in research and analysis
+        config:
+          type: object
+          required: [provider, model]
+          properties:
+            provider:
+              type: string
+              enum: [openai, anthropic, google]
+              example: openai
+            model:
+              type: string
+              example: gpt-4o
+            temperature:
+              type: number
+              minimum: 0
+              maximum: 2
+              default: 0.7
+            maxTokens:
+              type: integer
+              example: 1000
+            systemPrompt:
+              type: string
+            traits:
+              type: object
+              properties:
+                personality:
+                  type: array
+                  items:
+                    type: string
+                knowledge:
+                  type: array
+                  items:
+                    type: string
+                tone:
+                  type: string
+
+    Agent:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+        config:
+          type: object
+        metrics:
+          type: object
+          properties:
+            totalQueries:
+              type: integer
+            avgResponseTime:
+              type: integer
+            successRate:
+              type: number
+            errorCount:
+              type: integer
+        state:
+          type: object
+          properties:
+            isActive:
+              type: boolean
+            currentProvider:
+              type: string
+            currentModel:
+              type: string
+
+    QueryRequest:
+      type: object
+      required: [agent, query]
+      properties:
+        agent:
+          type: string
+          example: research-analyst
+        query:
+          type: string
+          example: "What is quantum computing?"
+        context:
+          type: string
+        options:
+          type: object
+          properties:
+            provider:
+              type: string
+              enum: [openai, anthropic, google]
+            model:
+              type: string
+            temperature:
+              type: number
+            maxTokens:
+              type: integer
+
+    QueryResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+        data:
+          type: object
+          properties:
+            response:
+              type: string
+            agent:
+              type: string
+            provider:
+              type: string
+            model:
+              type: string
+        metadata:
+          type: object
+          properties:
+            duration:
+              type: integer
+              description: Response time in milliseconds
+            timestamp:
+              type: string
+              format: date-time
+
+    ChatResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+        data:
+          type: object
+          properties:
+            response:
+              type: string
+            agent:
+              type: string
+        metadata:
+          type: object
+          properties:
+            duration:
+              type: integer
+
+    FileProcessingResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+        data:
+          type: object
+          properties:
+            result:
+              type: string
+            agent:
+              type: string
+            task:
+              type: string
+            metadata:
+              type: object
+
+    ImageAnalysisResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+        data:
+          type: object
+          properties:
+            analysis:
+              type: string
+            imageUrl:
+              type: string
+
+    OCRResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+        data:
+          type: object
+          properties:
+            text:
+              type: string
+            confidence:
+              type: number
+
+    DocumentAnalysisResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+        data:
+          type: object
+          properties:
+            analysis:
+              type: string
+            metadata:
+              type: object
+
+    Tool:
+      type: object
+      properties:
+        id:
+          type: string
+          example: dalle
+        name:
+          type: string
+          example: DALL-E Image Generator
+        description:
+          type: string
+        category:
+          type: string
+          example: generation
+        actions:
+          type: array
+          items:
+            type: string
+        enabled:
+          type: boolean
+        endpoints:
+          type: object
+          properties:
+            direct:
+              type: string
+            withAgent:
+              type: string
+
+    ToolResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+        tool:
+          type: string
+        action:
+          type: string
+        data:
+          type: object
+        metadata:
+          type: object
+
+    TranslationResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+        data:
+          type: object
+          properties:
+            translation:
+              type: string
+            from:
+              type: string
+            to:
+              type: string
+
+    SummaryResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+        data:
+          type: object
+          properties:
+            summary:
+              type: string
+
+    ExtractDataResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+        data:
+          type: object
+          properties:
+            extracted:
+              type: object
+
+    WebhookResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+        data:
+          type: object
+
+    SuccessResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: true
+        data:
+          type: object
+        message:
+          type: string
+
+    ErrorResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: false
+        error:
+          type: object
+          properties:
+            code:
+              type: string
+              example: AGENT_NOT_FOUND
+            message:
+              type: string
+              example: Agent with ID 'xyz' not found
+
+  responses:
+    BadRequest:
+      description: Bad request - invalid parameters
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+
+    NotFound:
+      description: Resource not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+
+    InternalError:
+      description: Internal server error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+
+  securitySchemes:
+    ApiKeyAuth:
+      type: apiKey
+      in: header
+      name: X-API-Key
+      description: Optional API key for authentication
+
+security:
+  - ApiKeyAuth: []
+  - {}

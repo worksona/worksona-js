@@ -1,0 +1,1516 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Library Internal Demo - Worksona.js</title>
+  <meta name="description" content="Direct worksona.js library usage with chat, image generation, and file processing">
+
+  <!-- Load Worksona.js Library -->
+  <script src="../worksona.js"></script>
+
+  <!-- Prism.js for syntax highlighting -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/themes/prism-tomorrow.min.css">
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    :root {
+      --bg-light: #ffffff;
+      --bg-card: #ffffff;
+      --bg-card-hover: #f8fafc;
+      --text-primary: #0f172a;
+      --text-secondary: #64748b;
+      --accent-blue: #2563eb;
+      --accent-purple: #7c3aed;
+      --accent-pink: #10b981;
+      --border-color: #0f172a;
+      --primary-500: #3b82f6;
+      --primary-600: #2563eb;
+      --secondary-500: #8b5cf6;
+      --success: #10b981;
+      --warning: #f59e0b;
+      --error: #ef4444;
+      --gray-50: #1a1f3a;
+      --gray-100: #1e2438;
+      --gray-200: #252b45;
+      --gray-500: #94a3b8;
+      --gray-700: #cbd5e1;
+      --gray-900: #0a0e27;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+      background: white;
+      color: var(--gray-900);
+    }
+
+    /* Header */
+    .header {
+      background: var(--primary);
+      color: white;
+      padding: 2rem;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .header::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: var(--primary);
+      animation: shimmer 3s infinite;
+    }
+
+    @keyframes shimmer {
+      0%, 100% { transform: translateX(-100%); }
+      50% { transform: translateX(100%); }
+    }
+
+    .header h1 {
+      font-size: 2rem;
+      margin-bottom: 0.5rem;
+      position: relative;
+      z-index: 1;
+      text-shadow: 0 2px 10px rgba(0,0,0,0.3);
+    }
+
+    .header p {
+      opacity: 0.95;
+      margin-bottom: 1rem;
+      position: relative;
+      z-index: 1;
+    }
+
+    .header-nav a {
+      color: white;
+      text-decoration: none;
+      margin-right: 1.5rem;
+      padding: 0.75rem 1.5rem;
+      background: rgba(255,255,255,0.15);
+      border-radius: 0;
+      display: inline-block;
+      margin-top: 0.5rem;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255,255,255,0.2);
+      position: relative;
+      z-index: 1;
+    }
+
+    .header-nav a:hover {
+      background: rgba(255,255,255,0.25);
+      transform: translateY(-3px);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    }
+
+    /* Container */
+    .container {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 2rem;
+    }
+
+    /* Initialization Panel */
+    .init-panel {
+      background: white;
+      border-radius: 0;
+      padding: 2rem;
+      margin-bottom: 2rem;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+      border: 1px solid var(--border-color);
+      transition: all 0.3s ease;
+    }
+
+    .init-panel:hover {
+      border-color: var(--accent-blue);
+      box-shadow: 0 12px 32px rgba(59, 130, 246, 0.15);
+    }
+
+    .init-panel h2 {
+      color: var(--accent-blue);
+      margin-bottom: 1.5rem;
+      padding-bottom: 0.75rem;
+      border-bottom: 3px solid;
+      border-image: linear-gradient(90deg, var(--accent-blue), var(--accent-purple)) 1;
+    }
+
+    .init-form {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 1rem;
+      margin-bottom: 1rem;
+    }
+
+    .form-group {
+      margin-bottom: 1rem;
+    }
+
+    .form-group label {
+      display: block;
+      margin-bottom: 0.5rem;
+      font-weight: 600;
+      color: var(--gray-900);
+      font-size: 0.9rem;
+    }
+
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+      width: 100%;
+      padding: 0.75rem;
+      border: 2px solid var(--border-color);
+      border-radius: 0;
+      font-size: 0.95rem;
+      font-family: inherit;
+      transition: border-color 0.2s;
+      background: var(--bg-card-hover);
+      color: var(--gray-900);
+    }
+
+    .form-group input:focus,
+    .form-group select:focus,
+    .form-group textarea:focus {
+      outline: none;
+      border-color: var(--accent-blue);
+      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+    }
+
+    .form-group textarea {
+      min-height: 100px;
+      resize: vertical;
+      font-family: 'Fira Code', monospace;
+    }
+
+    /* Status indicators */
+    .status-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1rem;
+      margin-top: 1rem;
+    }
+
+    .status-item {
+      padding: 1rem;
+      background: var(--bg-card-hover);
+      border-radius: 0;
+      border-left: 4px solid var(--border-color);
+    }
+
+    .status-item.ready {
+      border-left-color: var(--success);
+    }
+
+    .status-item label {
+      display: block;
+      font-size: 0.85rem;
+      color: var(--gray-600);
+      margin-bottom: 0.25rem;
+    }
+
+    .status-item .value {
+      font-weight: 600;
+      color: var(--gray-900);
+    }
+
+    /* Buttons */
+    .btn {
+      padding: 0.75rem 1.5rem;
+      border: none;
+      border-radius: 0;
+      font-size: 0.95rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      display: inline-block;
+    }
+
+    .btn-primary {
+      background: var(--primary);
+      color: white;
+      box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(59, 130, 246, 0.4);
+    }
+
+    .btn-primary:disabled {
+      background: var(--bg-card-hover);
+      cursor: not-allowed;
+      transform: none;
+      box-shadow: none;
+      opacity: 0.5;
+    }
+
+    .btn-secondary {
+      background: var(--bg-card-hover);
+      color: var(--gray-900);
+      border: 1px solid var(--border-color);
+    }
+
+    .btn-secondary:hover {
+      background: white;
+      border-color: var(--accent-blue);
+    }
+
+    .btn-success {
+      background: var(--success);
+      color: white;
+      box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+    }
+
+    .btn-success:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(16, 185, 129, 0.4);
+    }
+
+    .btn-small {
+      padding: 0.5rem 1rem;
+      font-size: 0.85rem;
+    }
+
+    /* Tabs */
+    .tabs {
+      display: flex;
+      gap: 0.5rem;
+      margin-bottom: 1.5rem;
+      flex-wrap: wrap;
+      background: white;
+      padding: 1rem;
+      border-radius: 0;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+      border: 1px solid var(--border-color);
+    }
+
+    .tab {
+      padding: 0.75rem 1.5rem;
+      background: var(--bg-card-hover);
+      border: none;
+      border-radius: 0;
+      cursor: pointer;
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: var(--gray-600);
+      transition: all 0.2s;
+      border: 1px solid transparent;
+    }
+
+    .tab:hover {
+      background: white;
+      border-color: var(--accent-blue);
+      color: var(--gray-900);
+    }
+
+    .tab.active {
+      background: var(--primary);
+      color: white;
+      border-color: transparent;
+    }
+
+    .tab-content {
+      display: none;
+    }
+
+    .tab-content.active {
+      display: block;
+    }
+
+    /* Grid Layout */
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2rem;
+    }
+
+    /* Panel */
+    .panel {
+      background: white;
+      border-radius: 0;
+      padding: 2rem;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+      border: 1px solid var(--border-color);
+      transition: all 0.3s ease;
+    }
+
+    .panel:hover {
+      border-color: var(--accent-blue);
+      box-shadow: 0 12px 32px rgba(59, 130, 246, 0.15);
+    }
+
+    .panel h3 {
+      color: var(--accent-blue);
+      margin-bottom: 1.5rem;
+      padding-bottom: 0.75rem;
+      border-bottom: 3px solid;
+      border-image: linear-gradient(90deg, var(--accent-blue), var(--accent-purple)) 1;
+    }
+
+    /* Chat Interface */
+    .chat-container {
+      height: 400px;
+      overflow-y: auto;
+      border: 2px solid var(--border-color);
+      border-radius: 0;
+      padding: 1rem;
+      margin-bottom: 1rem;
+      background: var(--bg-card-hover);
+    }
+
+    .message {
+      margin-bottom: 1rem;
+      padding: 1rem;
+      border-radius: 0;
+      max-width: 80%;
+    }
+
+    .message.user {
+      background: var(--primary);
+      color: white;
+      margin-left: auto;
+      box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+    }
+
+    .message.assistant {
+      background: white;
+      border: 2px solid var(--border-color);
+      color: var(--gray-900);
+    }
+
+    .message-meta {
+      font-size: 0.75rem;
+      opacity: 0.7;
+      margin-bottom: 0.5rem;
+    }
+
+    .chat-input-group {
+      display: flex;
+      gap: 1rem;
+    }
+
+    .chat-input-group input {
+      flex: 1;
+    }
+
+    /* Image Display */
+    .image-display {
+      border: 2px solid var(--border-color);
+      border-radius: 0;
+      padding: 1rem;
+      min-height: 200px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--bg-card-hover);
+      margin: 1rem 0;
+    }
+
+    .image-display img {
+      max-width: 100%;
+      border-radius: 0;
+    }
+
+    .image-display .placeholder {
+      text-align: center;
+      color: var(--gray-600);
+    }
+
+    /* Event Log */
+    .event-log {
+      height: 300px;
+      overflow-y: auto;
+      border: 2px solid var(--border-color);
+      border-radius: 0;
+      padding: 1rem;
+      background: #1a1f3a;
+      color: #e2e8f0;
+      font-family: 'Fira Code', monospace;
+      font-size: 0.85rem;
+      line-height: 1.6;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    }
+
+    .event-entry {
+      margin-bottom: 0.5rem;
+      padding: 0.5rem;
+      border-radius: 0;
+      background: rgba(255,255,255,0.05);
+    }
+
+    .event-entry .timestamp {
+      color: var(--gray-600);
+    }
+
+    .event-entry .event-name {
+      color: var(--success);
+      font-weight: 600;
+    }
+
+    .event-entry.error .event-name {
+      color: var(--error);
+    }
+
+    /* Agent Grid */
+    .agent-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+      gap: 1rem;
+      margin: 1rem 0;
+    }
+
+    .agent-card {
+      border: 2px solid var(--border-color);
+      border-radius: 0;
+      padding: 1rem;
+      transition: all 0.2s;
+      background: var(--bg-card-hover);
+    }
+
+    .agent-card:hover {
+      border-color: var(--accent-blue);
+      box-shadow: 0 8px 16px rgba(59, 130, 246, 0.2);
+      transform: translateY(-2px);
+    }
+
+    .agent-card h4 {
+      color: var(--accent-blue);
+      margin-bottom: 0.5rem;
+    }
+
+    .agent-card .agent-id {
+      font-family: 'Fira Code', monospace;
+      font-size: 0.85rem;
+      color: var(--gray-600);
+      margin-bottom: 0.5rem;
+    }
+
+    .agent-card .agent-provider {
+      display: inline-block;
+      padding: 0.25rem 0.75rem;
+      background: var(--primary);
+      color: white;
+      border-radius: 0;
+      font-size: 0.75rem;
+      margin-top: 0.5rem;
+      box-shadow: 0 2px 8px rgba(59, 130, 246, 0.3);
+    }
+
+    /* File Upload */
+    .file-upload {
+      border: 2px dashed var(--border-color);
+      border-radius: 0;
+      padding: 2rem;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.3s;
+      margin: 1rem 0;
+      background: var(--bg-card-hover);
+    }
+
+    .file-upload:hover {
+      border-color: var(--accent-blue);
+      background: white;
+    }
+
+    .file-upload.dragover {
+      border-color: var(--accent-blue);
+      background: var(--accent-blue);
+      color: white;
+    }
+
+    /* Loading */
+    .loading {
+      display: inline-block;
+      width: 20px;
+      height: 20px;
+      border: 3px solid rgba(255,255,255,0.3);
+      border-radius: 50%;
+      border-top-color: white;
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    /* Helper text */
+    .helper-text {
+      font-size: 0.85rem;
+      color: var(--gray-500);
+      margin-top: 0.25rem;
+    }
+
+    /* Alert */
+    .alert {
+      padding: 1rem;
+      border-radius: 0;
+      margin-bottom: 1rem;
+    }
+
+    .alert.info {
+      background: rgba(59, 130, 246, 0.15);
+      border-left: 4px solid var(--accent-blue);
+      color: var(--gray-900);
+      border: 1px solid rgba(59, 130, 246, 0.3);
+    }
+
+    .alert.warning {
+      background: rgba(245, 158, 11, 0.15);
+      border-left: 4px solid var(--warning);
+      color: var(--gray-900);
+      border: 1px solid rgba(245, 158, 11, 0.3);
+    }
+
+    .alert.error {
+      background: rgba(239, 68, 68, 0.15);
+      border-left: 4px solid var(--error);
+      color: var(--gray-900);
+      border: 1px solid rgba(239, 68, 68, 0.3);
+    }
+
+    /* Custom scrollbar */
+    ::-webkit-scrollbar {
+      width: 12px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: white;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: white;
+      border-radius: 0;
+      border: 2px solid var(--bg-dark);
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+      background: var(--bg-card-hover);
+    }
+
+    /* Responsive */
+    @media (max-width: 1024px) {
+      .grid-2 {
+        grid-template-columns: 1fr;
+      }
+
+      .init-form {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .header h1 {
+        font-size: 1.5rem;
+      }
+
+      .tabs {
+        overflow-x: auto;
+      }
+
+      .tab {
+        white-space: nowrap;
+      }
+
+      .agent-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+  <link rel="stylesheet" href="/docs/shared-header.css">
+</head>
+<body>
+  <!-- Worksona Header -->
+  <header class="worksona-header">
+    <div class="worksona-header-content">
+      <a href="/" class="worksona-logo">
+        <div class="worksona-logo-icon">W</div>
+        <span class="worksona-logo-text">WORKSONA</span>
+      </a>
+      <button class="worksona-hamburger" id="worksonaHamburger" aria-label="Toggle navigation">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+    </div>
+  </header>
+
+  <nav class="worksona-nav-overlay" id="worksonaNavOverlay">
+    <div class="worksona-nav-content">
+      <div class="worksona-nav-section">
+        <h3>Overview</h3>
+        <ul class="worksona-nav-links">
+          <li><a href="/docs/overview.html">Project Overview</a></li>
+          <li><a href="https://github.com/worksona/worksona-js" target="_blank">GitHub Repository</a></li>
+          <li><a href="https://www.npmjs.com/package/worksona-js" target="_blank">NPM Package</a></li>
+        </ul>
+      </div>
+
+      <div class="worksona-nav-section">
+        <h3>Documentation</h3>
+        <ul class="worksona-nav-links">
+          <li><a href="/docs/index.html">Documentation Hub</a></li>
+          <li><a href="/docs/api-reference-swagger.html">API Reference</a></li>
+          <li><a href="/docs/code-examples-hub.html">Code Examples</a></li>
+        </ul>
+      </div>
+
+
+      <div class="worksona-nav-section">
+        <h3>Interactive Demos</h3>
+        <ul class="worksona-nav-links">
+          <li><a href="/docs/endpoint-api-demo.html">Endpoint API Demo</a></li>
+          <li><a href="/docs/library-internal-demo.html">Library Demo</a></li>
+          <li><a href="/docs/delegation-demo.html">Delegation Workflow Builder</a></li>
+          <li><a href="/examples/dual-mode-demo.html">Dual Mode Demo</a></li>
+          <li><a href="/examples/frontier-models-demo.html">Frontier Models Demo</a></li>
+        </ul>
+      </div>
+
+      <div class="worksona-nav-section">
+        <h3>Examples & Tutorials</h3>
+        <ul class="worksona-nav-links">
+          <li><a href="/examples/index.html">Examples Directory</a></li>
+          <li><a href="/examples/dual-mode-demo.js">Node.js Demo Script</a></li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Header -->
+  <header class="header">
+    <h1>Library Internal Demo</h1>
+    <p>Direct worksona.js library usage - no API server required</p>
+    <nav class="header-nav">
+      <a href="./index.html">← Documentation Hub</a>
+      <a href="./api-reference-swagger.html">API Reference</a>
+      <a href="./endpoint-api-demo.html">Endpoint Demo</a>
+      <a href="./code-examples-hub.html">Code Examples</a>
+    </nav>
+  </header>
+
+  <div class="container">
+    <!-- Initialization Panel -->
+    <div class="init-panel">
+      <h2>🔧 Initialize Worksona</h2>
+
+      <div class="alert info">
+        <strong>ℹ️ Library Mode:</strong> This demo uses the Worksona.js library directly in the browser. Enter your API keys to get started.
+      </div>
+
+      <div class="init-form">
+        <div class="form-group">
+          <label for="openai-key">OpenAI API Key</label>
+          <input type="password" id="openai-key" placeholder="sk-...">
+          <div class="helper-text">For GPT-5, GPT-4o, DALL-E 3</div>
+        </div>
+
+        <div class="form-group">
+          <label for="anthropic-key">Anthropic API Key (Optional)</label>
+          <input type="password" id="anthropic-key" placeholder="sk-ant-...">
+          <div class="helper-text">For Claude Opus 4.5</div>
+        </div>
+
+        <div class="form-group">
+          <label for="google-key">Google API Key (Optional)</label>
+          <input type="password" id="google-key" placeholder="AIza...">
+          <div class="helper-text">For Gemini Pro</div>
+        </div>
+      </div>
+
+      <button class="btn btn-primary" onclick="initialize()" id="initBtn">
+        Initialize Worksona
+      </button>
+      <button class="btn btn-secondary btn-small" onclick="loadSavedKeys()" style="margin-left: 1rem;">
+        Load Saved Keys
+      </button>
+
+      <div class="status-grid" id="statusGrid" style="display: none;">
+        <div class="status-item" id="status-openai">
+          <label>OpenAI</label>
+          <div class="value">Not configured</div>
+        </div>
+        <div class="status-item" id="status-anthropic">
+          <label>Anthropic</label>
+          <div class="value">Not configured</div>
+        </div>
+        <div class="status-item" id="status-google">
+          <label>Google</label>
+          <div class="value">Not configured</div>
+        </div>
+        <div class="status-item" id="status-agents">
+          <label>Loaded Agents</label>
+          <div class="value">0</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tabs -->
+    <div class="tabs">
+      <button class="tab active" onclick="switchTab('chat', this)">💬 Chat</button>
+      <button class="tab" onclick="switchTab('images', this)">🎨 Images</button>
+      <button class="tab" onclick="switchTab('files', this)">📄 Files</button>
+      <button class="tab" onclick="switchTab('agents', this)">🤖 Agents</button>
+      <button class="tab" onclick="switchTab('events', this)">📊 Events</button>
+    </div>
+
+    <!-- Chat Tab -->
+    <div id="chat" class="tab-content active">
+      <div class="grid-2">
+        <div class="panel">
+          <h3>Chat Interface</h3>
+
+          <div class="form-group">
+            <label for="chat-agent">Select Agent</label>
+            <select id="chat-agent">
+              <option value="">-- Initialize first --</option>
+            </select>
+          </div>
+
+          <div class="chat-container" id="chatMessages">
+            <div style="text-align: center; color: var(--gray-500); padding: 2rem;">
+              Initialize Worksona and send a message to start chatting
+            </div>
+          </div>
+
+          <div class="chat-input-group">
+            <input type="text" id="chatInput" placeholder="Type your message..." onkeypress="if(event.key==='Enter') sendMessage()">
+            <button class="btn btn-primary" onclick="sendMessage()">Send</button>
+            <button class="btn btn-secondary" onclick="clearChat()">Clear</button>
+          </div>
+
+          <div class="form-group" style="margin-top: 1rem;">
+            <label>
+              <input type="checkbox" id="streamEnabled"> Enable streaming (if supported)
+            </label>
+          </div>
+        </div>
+
+        <div class="panel">
+          <h3>Chat Options</h3>
+
+          <div class="form-group">
+            <label for="chat-temperature">Temperature</label>
+            <input type="number" id="chat-temperature" value="0.7" min="0" max="2" step="0.1">
+            <div class="helper-text">Controls randomness (0 = focused, 2 = creative)</div>
+          </div>
+
+          <div class="form-group">
+            <label for="chat-max-tokens">Max Tokens</label>
+            <input type="number" id="chat-max-tokens" value="1000" min="100" max="4000" step="100">
+            <div class="helper-text">Maximum response length</div>
+          </div>
+
+          <div class="form-group">
+            <label for="chat-model-override">Model Override (Optional)</label>
+            <select id="chat-model-override">
+              <option value="">Use agent default</option>
+              <option value="gpt-4o">GPT-4o</option>
+              <option value="gpt-5">GPT-5</option>
+              <option value="claude-opus-4-5-20251101">Claude Opus 4.5</option>
+              <option value="o3">o3 (reasoning)</option>
+            </select>
+          </div>
+
+          <h4 style="margin-top: 2rem; margin-bottom: 1rem;">Agent Metrics</h4>
+          <div id="agentMetrics" style="font-size: 0.9rem; color: var(--gray-700);">
+            <p>Select an agent and chat to see metrics</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Images Tab -->
+    <div id="images" class="tab-content">
+      <div class="grid-2">
+        <div class="panel">
+          <h3>Image Generation</h3>
+
+          <div class="form-group">
+            <label for="img-prompt">Image Description</label>
+            <textarea id="img-prompt" placeholder="A futuristic city at sunset with flying cars"></textarea>
+          </div>
+
+          <div class="form-group">
+            <label for="img-size">Size</label>
+            <select id="img-size">
+              <option value="1024x1024">Square (1024x1024)</option>
+              <option value="1792x1024">Landscape (1792x1024)</option>
+              <option value="1024x1792">Portrait (1024x1792)</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="img-quality">Quality</label>
+            <select id="img-quality">
+              <option value="standard">Standard</option>
+              <option value="hd">HD</option>
+            </select>
+          </div>
+
+          <button class="btn btn-primary" onclick="generateImage()">Generate Image</button>
+
+          <div class="image-display" id="generatedImage">
+            <div class="placeholder">
+              <div style="font-size: 3rem; margin-bottom: 1rem;">🎨</div>
+              <p>Generated image will appear here</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel">
+          <h3>Image Analysis</h3>
+
+          <div class="form-group">
+            <label for="img-url">Image URL</label>
+            <input type="text" id="img-url" placeholder="https://example.com/image.jpg">
+            <div class="helper-text">Or upload a file below</div>
+          </div>
+
+          <div class="file-upload" id="imageUploadZone">
+            <p>📷 Drag & drop image or click to browse</p>
+            <input type="file" id="imageFileInput" accept="image/*" style="display: none;">
+          </div>
+          <div id="imageFileName"></div>
+
+          <div class="form-group">
+            <label for="img-analyze-prompt">Analysis Prompt</label>
+            <textarea id="img-analyze-prompt" placeholder="What's in this image? Describe it in detail."></textarea>
+          </div>
+
+          <button class="btn btn-primary" onclick="analyzeImage()">Analyze Image</button>
+
+          <div id="imageAnalysisResult" style="margin-top: 1rem; padding: 1rem; background: var(--gray-50); border-radius: 0; display: none;">
+            <strong>Analysis:</strong>
+            <p id="analysisText"></p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Files Tab -->
+    <div id="files" class="tab-content">
+      <div class="grid-2">
+        <div class="panel">
+          <h3>File Upload & Processing</h3>
+
+          <div class="file-upload" id="fileUploadZone">
+            <p>📄 Drag & drop file here</p>
+            <p style="margin-top: 0.5rem; font-size: 0.85rem; color: var(--gray-500);">
+              Supported: PDF, DOCX, XLSX, CSV, TXT, Images
+            </p>
+            <input type="file" id="fileInput" style="display: none;">
+          </div>
+          <div id="uploadedFileName"></div>
+
+          <div class="form-group">
+            <label for="file-agent">Processing Agent</label>
+            <select id="file-agent">
+              <option value="">-- Select agent --</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="file-prompt">Processing Prompt</label>
+            <textarea id="file-prompt" placeholder="Summarize this document"></textarea>
+          </div>
+
+          <button class="btn btn-primary" onclick="processFile()">Process File</button>
+
+          <div id="filePreview" style="margin-top: 1rem; display: none;">
+            <h4>Extracted Text Preview:</h4>
+            <div style="max-height: 200px; overflow-y: auto; padding: 1rem; background: var(--gray-50); border-radius: 0; font-size: 0.85rem; margin-top: 0.5rem;">
+              <pre id="extractedText"></pre>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel">
+          <h3>Processing Result</h3>
+
+          <div id="fileResult" style="display: none;">
+            <div style="padding: 1rem; background: var(--gray-50); border-radius: 0;">
+              <p id="fileResultText"></p>
+            </div>
+          </div>
+
+          <div id="fileEmpty" style="text-align: center; padding: 3rem; color: var(--gray-500);">
+            <div style="font-size: 3rem; margin-bottom: 1rem;">📋</div>
+            <p>Upload and process a file to see results here</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Agents Tab -->
+    <div id="agents" class="tab-content">
+      <div class="panel">
+        <h3>Agent Management</h3>
+
+        <div class="alert info">
+          <strong>Loaded Agents:</strong> <span id="agentCount">0</span>
+        </div>
+
+        <div class="agent-grid" id="agentGrid">
+          <div style="text-align: center; padding: 2rem; color: var(--gray-500); grid-column: 1 / -1;">
+            Initialize Worksona to see agents
+          </div>
+        </div>
+
+        <h4 style="margin-top: 2rem; margin-bottom: 1rem;">Load Custom Agent</h4>
+
+        <div class="form-group">
+          <label for="agent-json">Agent JSON Configuration</label>
+          <textarea id="agent-json" rows="10" placeholder='{\n  "id": "custom-agent",\n  "name": "Custom Agent",\n  "config": {\n    "provider": "openai",\n    "model": "gpt-4o",\n    "temperature": 0.7\n  }\n}'></textarea>
+        </div>
+
+        <button class="btn btn-primary" onclick="loadCustomAgent()">Load Agent</button>
+        <button class="btn btn-secondary" onclick="loadDefaultAgents()" style="margin-left: 1rem;">Load Default Agents</button>
+      </div>
+    </div>
+
+    <!-- Events Tab -->
+    <div id="events" class="tab-content">
+      <div class="panel">
+        <h3>Event Monitor</h3>
+
+        <div class="alert info">
+          <strong>17 Event Types:</strong> Worksona emits events for all major operations (chat, images, errors, etc.)
+        </div>
+
+        <div style="margin-bottom: 1rem;">
+          <button class="btn btn-secondary btn-small" onclick="clearEvents()">Clear Log</button>
+          <label style="margin-left: 1rem;">
+            <input type="checkbox" id="autoScroll" checked> Auto-scroll
+          </label>
+        </div>
+
+        <div class="event-log" id="eventLog">
+          <div class="event-entry">
+            <span class="timestamp">[--:--:--]</span>
+            <span class="event-name">system</span>
+            Events will appear here when actions occur
+          </div>
+        </div>
+
+        <h4 style="margin-top: 2rem; margin-bottom: 1rem;">Event Types</h4>
+        <div style="font-size: 0.9rem; color: var(--gray-700); line-height: 1.8;">
+          <strong>Agent Events:</strong> agent-loaded, agent-removed<br>
+          <strong>Chat Events:</strong> chat-start, chat-complete<br>
+          <strong>Image Events:</strong> image-generation-start, image-generation-complete, image-analysis-start, image-analysis-complete<br>
+          <strong>Error Events:</strong> error, image-processing-error, image-generation-error<br>
+          <strong>Config Events:</strong> api-keys-updated
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Prism.js -->
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/prism.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-javascript.min.js"></script>
+
+  <script>
+    let worksona;
+    let selectedFile = null;
+    let selectedImageFile = null;
+    let chatMessages = [];
+
+    // Initialize Worksona
+    async function initialize() {
+      const openaiKey = document.getElementById('openai-key').value;
+      const anthropicKey = document.getElementById('anthropic-key').value;
+      const googleKey = document.getElementById('google-key').value;
+
+      if (!openaiKey && !anthropicKey && !googleKey) {
+        alert('Please enter at least one API key');
+        return;
+      }
+
+      try {
+        // Initialize Worksona
+        worksona = new Worksona({
+          apiKeys: {
+            openai: openaiKey || undefined,
+            anthropic: anthropicKey || undefined,
+            google: googleKey || undefined
+          },
+          controlPanel: false // Don't show default control panel
+        });
+
+        // Save keys to localStorage
+        if (openaiKey) localStorage.setItem('openai_key', openaiKey);
+        if (anthropicKey) localStorage.setItem('anthropic_key', anthropicKey);
+        if (googleKey) localStorage.setItem('google_key', googleKey);
+
+        // Set up event listeners
+        setupEventListeners();
+
+        // Update status
+        updateStatus();
+
+        // Load default agents
+        await loadDefaultAgents();
+
+        // Update UI
+        document.getElementById('statusGrid').style.display = 'grid';
+        document.getElementById('initBtn').textContent = 'Re-initialize';
+
+        logEvent('system', 'Worksona initialized successfully');
+
+        alert('Worksona initialized! You can now use all features.');
+      } catch (error) {
+        alert('Initialization failed: ' + error.message);
+        logEvent('error', 'Initialization failed: ' + error.message);
+      }
+    }
+
+    // Load saved keys
+    function loadSavedKeys() {
+      const openaiKey = localStorage.getItem('openai_key');
+      const anthropicKey = localStorage.getItem('anthropic_key');
+      const googleKey = localStorage.getItem('google_key');
+
+      if (openaiKey) document.getElementById('openai-key').value = openaiKey;
+      if (anthropicKey) document.getElementById('anthropic-key').value = anthropicKey;
+      if (googleKey) document.getElementById('google-key').value = googleKey;
+
+      if (openaiKey || anthropicKey || googleKey) {
+        alert('Saved keys loaded! Click "Initialize Worksona" to continue.');
+      } else {
+        alert('No saved keys found');
+      }
+    }
+
+    // Setup event listeners
+    function setupEventListeners() {
+      worksona.on('agent-loaded', (data) => {
+        logEvent('agent-loaded', `Agent loaded: ${data.agentId}`);
+        updateAgentList();
+      });
+
+      worksona.on('chat-start', (data) => {
+        logEvent('chat-start', `Chat started with ${data.agentId}`);
+      });
+
+      worksona.on('chat-complete', (data) => {
+        logEvent('chat-complete', `Chat completed (${data.duration}ms)`);
+      });
+
+      worksona.on('image-generation-start', (data) => {
+        logEvent('image-generation-start', 'Image generation started');
+      });
+
+      worksona.on('image-generation-complete', (data) => {
+        logEvent('image-generation-complete', 'Image generated successfully');
+      });
+
+      worksona.on('image-analysis-start', (data) => {
+        logEvent('image-analysis-start', 'Image analysis started');
+      });
+
+      worksona.on('image-analysis-complete', (data) => {
+        logEvent('image-analysis-complete', 'Image analysis completed');
+      });
+
+      worksona.on('error', (error) => {
+        logEvent('error', `Error: ${error.message}`);
+      });
+
+      worksona.on('api-keys-updated', () => {
+        logEvent('api-keys-updated', 'API keys updated');
+      });
+    }
+
+    // Update status
+    function updateStatus() {
+      const apiKeys = worksona.apiKeys || {};
+
+      if (apiKeys.openai) {
+        document.getElementById('status-openai').classList.add('ready');
+        document.querySelector('#status-openai .value').textContent = 'Ready';
+      }
+
+      if (apiKeys.anthropic) {
+        document.getElementById('status-anthropic').classList.add('ready');
+        document.querySelector('#status-anthropic .value').textContent = 'Ready';
+      }
+
+      if (apiKeys.google) {
+        document.getElementById('status-google').classList.add('ready');
+        document.querySelector('#status-google .value').textContent = 'Ready';
+      }
+
+      const agents = worksona.getAgents();
+      document.querySelector('#status-agents .value').textContent = agents.length;
+    }
+
+    // Load default agents
+    async function loadDefaultAgents() {
+      if (!worksona) {
+        alert('Please initialize Worksona first');
+        return;
+      }
+
+      try {
+        // Load pre-configured agents
+        const agents = [
+          {
+            id: 'research-analyst',
+            name: 'Research Analyst',
+            config: {
+              provider: 'openai',
+              model: 'gpt-4o',
+              temperature: 0.7
+            }
+          },
+          {
+            id: 'content-writer',
+            name: 'Content Writer',
+            config: {
+              provider: 'openai',
+              model: 'gpt-4o',
+              temperature: 0.8
+            }
+          },
+          {
+            id: 'dalle-agent',
+            name: 'DALL-E Agent',
+            config: {
+              provider: 'openai',
+              model: 'gpt-4o',
+              temperature: 0.7
+            }
+          }
+        ];
+
+        for (const agent of agents) {
+          await worksona.loadAgent(agent);
+        }
+
+        updateAgentList();
+        logEvent('system', `${agents.length} default agents loaded`);
+      } catch (error) {
+        alert('Failed to load agents: ' + error.message);
+      }
+    }
+
+    // Update agent list
+    function updateAgentList() {
+      const agents = worksona.getAgents();
+
+      // Update agent count
+      document.getElementById('agentCount').textContent = agents.length;
+      document.querySelector('#status-agents .value').textContent = agents.length;
+
+      // Update agent selectors
+      const chatAgentSelect = document.getElementById('chat-agent');
+      const fileAgentSelect = document.getElementById('file-agent');
+
+      const options = agents.map(agent =>
+        `<option value="${agent.id}">${agent.name || agent.id}</option>`
+      ).join('');
+
+      chatAgentSelect.innerHTML = options;
+      fileAgentSelect.innerHTML = options;
+
+      // Update agent grid
+      const agentGrid = document.getElementById('agentGrid');
+      agentGrid.innerHTML = agents.map(agent => `
+        <div class="agent-card">
+          <h4>${agent.name || agent.id}</h4>
+          <div class="agent-id">${agent.id}</div>
+          <div class="agent-provider">${agent.config.provider} - ${agent.config.model}</div>
+        </div>
+      `).join('');
+    }
+
+    // Load custom agent
+    async function loadCustomAgent() {
+      if (!worksona) {
+        alert('Please initialize Worksona first');
+        return;
+      }
+
+      try {
+        const agentJson = document.getElementById('agent-json').value;
+        const agentConfig = JSON.parse(agentJson);
+
+        await worksona.loadAgent(agentConfig);
+        updateAgentList();
+
+        alert(`Agent "${agentConfig.id}" loaded successfully!`);
+      } catch (error) {
+        alert('Failed to load agent: ' + error.message);
+      }
+    }
+
+    // Send chat message
+    async function sendMessage() {
+      if (!worksona) {
+        alert('Please initialize Worksona first');
+        return;
+      }
+
+      const agentId = document.getElementById('chat-agent').value;
+      const message = document.getElementById('chatInput').value.trim();
+
+      if (!message) return;
+
+      // Add user message to chat
+      addMessageToChat('user', message);
+      document.getElementById('chatInput').value = '';
+
+      try {
+        // Get options
+        const temperature = parseFloat(document.getElementById('chat-temperature').value);
+        const maxTokens = parseInt(document.getElementById('chat-max-tokens').value);
+        const model = document.getElementById('chat-model-override').value;
+
+        const options = { temperature, maxTokens };
+        if (model) options.model = model;
+
+        // Send message
+        const response = await worksona.chat(agentId, message, options);
+
+        // Add assistant message
+        addMessageToChat('assistant', response);
+
+        // Update metrics
+        updateAgentMetrics(agentId);
+      } catch (error) {
+        addMessageToChat('error', `Error: ${error.message}`);
+      }
+    }
+
+    // Add message to chat
+    function addMessageToChat(role, content) {
+      const chatContainer = document.getElementById('chatMessages');
+
+      // Clear placeholder if present
+      if (chatContainer.children.length === 1 && chatContainer.children[0].tagName === 'DIV') {
+        chatContainer.innerHTML = '';
+      }
+
+      const messageEl = document.createElement('div');
+      messageEl.className = `message ${role}`;
+
+      const meta = document.createElement('div');
+      meta.className = 'message-meta';
+      meta.textContent = new Date().toLocaleTimeString();
+
+      const text = document.createElement('div');
+      text.textContent = content;
+
+      messageEl.appendChild(meta);
+      messageEl.appendChild(text);
+      chatContainer.appendChild(messageEl);
+
+      // Scroll to bottom
+      chatContainer.scrollTop = chatContainer.scrollHeight;
+    }
+
+    // Clear chat
+    function clearChat() {
+      const chatContainer = document.getElementById('chatMessages');
+      chatContainer.innerHTML = '<div style="text-align: center; color: var(--gray-500); padding: 2rem;">Chat cleared</div>';
+    }
+
+    // Update agent metrics
+    function updateAgentMetrics(agentId) {
+      const metrics = worksona.getAgentMetrics(agentId);
+      const metricsEl = document.getElementById('agentMetrics');
+
+      metricsEl.innerHTML = `
+        <p><strong>Total Queries:</strong> ${metrics.totalQueries || 0}</p>
+        <p><strong>Avg Response Time:</strong> ${metrics.avgResponseTime || 0}ms</p>
+        <p><strong>Success Rate:</strong> ${metrics.successRate || 100}%</p>
+        <p><strong>Error Count:</strong> ${metrics.errorCount || 0}</p>
+      `;
+    }
+
+    // Generate image
+    async function generateImage() {
+      if (!worksona) {
+        alert('Please initialize Worksona first');
+        return;
+      }
+
+      const prompt = document.getElementById('img-prompt').value.trim();
+      if (!prompt) {
+        alert('Please enter an image description');
+        return;
+      }
+
+      try {
+        const size = document.getElementById('img-size').value;
+        const quality = document.getElementById('img-quality').value;
+
+        const displayEl = document.getElementById('generatedImage');
+        displayEl.innerHTML = '<div class="loading"></div>';
+
+        const imageUrl = await worksona.generateImage('dalle-agent', prompt, {
+          size,
+          quality
+        });
+
+        displayEl.innerHTML = `<img src="${imageUrl}" alt="Generated image">`;
+      } catch (error) {
+        alert('Image generation failed: ' + error.message);
+        document.getElementById('generatedImage').innerHTML = `
+          <div class="placeholder">
+            <div style="font-size: 3rem; margin-bottom: 1rem;">❌</div>
+            <p>Generation failed: ${error.message}</p>
+          </div>
+        `;
+      }
+    }
+
+    // Analyze image
+    async function analyzeImage() {
+      if (!worksona) {
+        alert('Please initialize Worksona first');
+        return;
+      }
+
+      const imageUrl = document.getElementById('img-url').value.trim();
+      const prompt = document.getElementById('img-analyze-prompt').value.trim() || 'Describe this image';
+
+      if (!imageUrl && !selectedImageFile) {
+        alert('Please provide an image URL or upload a file');
+        return;
+      }
+
+      try {
+        // TODO: Process image file if uploaded
+        const imageData = imageUrl;
+
+        const analysis = await worksona.processImage('research-analyst', imageData, { prompt });
+
+        document.getElementById('imageAnalysisResult').style.display = 'block';
+        document.getElementById('analysisText').textContent = analysis;
+      } catch (error) {
+        alert('Image analysis failed: ' + error.message);
+      }
+    }
+
+    // Process file (placeholder - would need actual implementation)
+    async function processFile() {
+      if (!worksona) {
+        alert('Please initialize Worksona first');
+        return;
+      }
+
+      if (!selectedFile) {
+        alert('Please select a file');
+        return;
+      }
+
+      const agentId = document.getElementById('file-agent').value;
+      const prompt = document.getElementById('file-prompt').value.trim();
+
+      if (!agentId) {
+        alert('Please select an agent');
+        return;
+      }
+
+      alert('File processing would require reading file content and sending to agent. This is a simplified demo.');
+    }
+
+    // Tab switching
+    function switchTab(tabName, clickedButton) {
+      document.querySelectorAll('.tab-content').forEach(tab => {
+        tab.classList.remove('active');
+      });
+      document.querySelectorAll('.tab').forEach(tab => {
+        tab.classList.remove('active');
+      });
+
+      document.getElementById(tabName).classList.add('active');
+      if (clickedButton) {
+        clickedButton.classList.add('active');
+      }
+    }
+
+    // Log event
+    function logEvent(eventName, message) {
+      const logEl = document.getElementById('eventLog');
+      const timestamp = new Date().toLocaleTimeString();
+
+      const entry = document.createElement('div');
+      entry.className = `event-entry ${eventName === 'error' ? 'error' : ''}`;
+      entry.innerHTML = `
+        <span class="timestamp">[${timestamp}]</span>
+        <span class="event-name">${eventName}</span>
+        ${message}
+      `;
+
+      logEl.appendChild(entry);
+
+      // Auto-scroll if enabled
+      if (document.getElementById('autoScroll').checked) {
+        logEl.scrollTop = logEl.scrollHeight;
+      }
+    }
+
+    // Clear events
+    function clearEvents() {
+      document.getElementById('eventLog').innerHTML = '';
+      logEvent('system', 'Event log cleared');
+    }
+
+    // File upload handlers
+    const fileUploadZone = document.getElementById('fileUploadZone');
+    const fileInput = document.getElementById('fileInput');
+
+    if (fileUploadZone && fileInput) {
+      fileUploadZone.addEventListener('click', () => fileInput.click());
+      fileInput.addEventListener('change', (e) => {
+        selectedFile = e.target.files[0];
+        document.getElementById('uploadedFileName').textContent = `Selected: ${selectedFile.name}`;
+      });
+
+      fileUploadZone.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        fileUploadZone.classList.add('dragover');
+      });
+
+      fileUploadZone.addEventListener('dragleave', () => {
+        fileUploadZone.classList.remove('dragover');
+      });
+
+      fileUploadZone.addEventListener('drop', (e) => {
+        e.preventDefault();
+        fileUploadZone.classList.remove('dragover');
+        selectedFile = e.dataTransfer.files[0];
+        document.getElementById('uploadedFileName').textContent = `Selected: ${selectedFile.name}`;
+      });
+    }
+
+    // Image upload handlers
+    const imageUploadZone = document.getElementById('imageUploadZone');
+    const imageFileInput = document.getElementById('imageFileInput');
+
+    if (imageUploadZone && imageFileInput) {
+      imageUploadZone.addEventListener('click', () => imageFileInput.click());
+      imageFileInput.addEventListener('change', (e) => {
+        selectedImageFile = e.target.files[0];
+        document.getElementById('imageFileName').textContent = `Selected: ${selectedImageFile.name}`;
+      });
+    }
+
+    // Initialize on load
+    window.addEventListener('load', () => {
+      logEvent('system', 'Library Internal Demo loaded');
+    });
+  </script>
+  <script src="/docs/shared-header.js"></script>
+</body>
+</html>

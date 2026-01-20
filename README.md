@@ -1,12 +1,23 @@
 # Worksona.js
 
-**Last Updated:** January 6, 2026
+**Last Updated:** January 19, 2026
+**Version:** 0.3.0
 
 [![npm version](https://badge.fury.io/js/worksona-js.svg)](https://badge.fury.io/js/worksona-js)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Downloads](https://img.shields.io/npm/dm/worksona-js.svg)](https://npmjs.com/package/worksona-js)
 
-A lightweight, single-file JavaScript library for creating and managing AI agents with distinct personalities across multiple LLM providers. Features comprehensive image processing, real-time control panel, and event-driven architecture.
+A lightweight, single-file JavaScript library for creating and managing AI agents with distinct personalities across multiple LLM providers. Now supporting the latest frontier models including GPT-5, Claude Opus 4.5, and Claude Sonnet 4.5.
+
+## 🆕 What's New in v0.3.0
+
+- 📚 **Complete Documentation Suite** - Interactive demos, code examples, visual workflow builder
+- 🔌 **REST API Server** - Production-ready Express server with 32+ endpoints
+- 🛠️ **Tool System** - DALL-E image generation, web scraper, text-to-speech
+- 🎨 **Agent Personality System** - Rich configuration with traits, knowledge, tone
+- 📄 **Document Processing** - OCR, PDF/DOCX/XLSX parsing built-in
+- ✨ **Latest Frontier Models** - Full support for GPT-5, Claude Opus 4.5, o3
+- 🔗 **Multi-Agent Workflows** - Build and execute complex agent delegation chains
 
 ## ✨ Features
 
@@ -34,6 +45,8 @@ npm i worksona-js
 
 **NPM Package:** https://www.npmjs.com/package/worksona-js
 
+**Live Documentation:** The complete documentation site is available at `docs/www-api/` and can be deployed to any static hosting provider (Netlify, Vercel, GitHub Pages, etc.)
+
 ### Basic Usage
 
 ```javascript
@@ -45,7 +58,7 @@ const worksona = new Worksona({
   }
 });
 
-// Load an agent
+// Load an agent with latest GPT-5 model
 await worksona.loadAgent({
   id: 'customer-service',
   name: 'Sarah',
@@ -57,9 +70,22 @@ await worksona.loadAgent({
   },
   config: {
     provider: 'openai',
-    model: 'gpt-4o',
+    model: 'gpt-5', // Or 'gpt-5-mini', 'gpt-5-nano', 'o3', 'gpt-4o'
     temperature: 0.7,
     systemPrompt: 'You are Sarah, a helpful customer service representative...'
+  }
+});
+
+// Load an agent with Claude Opus 4.5
+await worksona.loadAgent({
+  id: 'technical-writer',
+  name: 'Alex',
+  description: 'Technical documentation specialist',
+  config: {
+    provider: 'anthropic',
+    model: 'claude-opus-4-5-20251101', // Or 'claude-sonnet-4-5-20250929'
+    temperature: 0.5,
+    systemPrompt: 'You are Alex, an expert technical writer...'
   }
 });
 
@@ -96,11 +122,31 @@ const editedUrl = await worksona.editImage('agent-id', imageData,
 
 ## 🔧 Provider Support
 
-| Provider | Chat | Vision | Image Generation |
-|----------|------|---------|-----------------|
-| OpenAI | ✅ GPT-4, GPT-4o | ✅ GPT-4o | ✅ DALL-E 3 |
-| Anthropic | ✅ Claude-3 | ❌ | ❌ |
-| Google | ✅ Gemini Pro | ❌ | ❌ |
+### Latest Frontier Models
+
+| Provider | Latest Models | Chat | Vision | Image Generation |
+|----------|--------------|------|---------|-----------------|
+| **OpenAI** | GPT-5, GPT-5-mini, GPT-5-nano, o3, o1, GPT-4o | ✅ | ✅ | ✅ DALL-E 3 |
+| **Anthropic** | Claude Opus 4.5, Claude Sonnet 4.5, Claude 3.5 Sonnet | ✅ | ❌ | ❌ |
+| **Google** | Gemini Pro | ✅ | ❌ | ❌ |
+
+### Supported Models by Provider
+
+**OpenAI:**
+- GPT-5 series: `gpt-5`, `gpt-5-mini`, `gpt-5-nano` 🆕
+- Reasoning models: `o3`, `o3-mini`, `o1`, `o1-mini`, `o1-preview` 🆕
+- GPT-4 series: `gpt-4o`, `gpt-4o-mini`, `gpt-4-turbo`, `gpt-4`, `gpt-4-32k`
+- GPT-3.5 series: `gpt-3.5-turbo`, `gpt-3.5-turbo-16k`
+- Image generation: `dall-e-3`, `dall-e-2`
+
+**Anthropic:**
+- Claude 4.5: `claude-opus-4-5-20251101`, `claude-sonnet-4-5-20250929` 🆕
+- Claude 3.5: `claude-3-5-sonnet-20241022`, `claude-3-5-haiku-20241022`
+- Claude 3: `claude-3-opus-20240229`, `claude-3-sonnet-20240229`, `claude-3-haiku-20240307`
+- Legacy: `claude-2.1`, `claude-2.0`, `claude-instant-1.2`
+
+**Google:**
+- Gemini: `gemini-pro`, `gemini-pro-vision`
 
 ## 📖 API Reference
 
@@ -283,11 +329,112 @@ MIT License - see [LICENSE](LICENSE) file for details.
 
 Contributions welcome! Please read our [contributing guidelines](CONTRIBUTING.md) first.
 
-## 📚 Documentation
+## 📚 Documentation & Resources
 
-- [Full Documentation](WORKSONA_DOCUMENTATION.md)
-- [API Reference](docs/api-reference.html)
-- [Live Examples](docs/)
+The complete documentation site is available in `docs/www-api/` and includes:
+
+### 🎯 Quick Links
+
+**Documentation**
+- **[📖 Documentation Hub](docs/www-api/docs/index.html)** - Central documentation portal
+- **[🔌 API Reference (Swagger)](docs/www-api/docs/api-reference-swagger.html)** - Interactive API documentation
+- **[💻 Code Examples](docs/www-api/docs/code-examples-hub.html)** - 60+ copy/paste examples
+
+**Interactive Demos**
+- **[🎮 Demos Home](docs/www-api/demos/index.html)** - All interactive demos
+- **[🔌 Endpoint API Demo](docs/www-api/demos/endpoint-api-demo.html)** - Test all REST endpoints
+- **[📚 Library Demo](docs/www-api/demos/library-internal-demo.html)** - Direct library usage
+- **[🔗 Delegation Workflow](docs/www-api/demos/delegation-demo.html)** - Visual multi-agent workflows
+
+**Vibe Coding (AI-Assisted Development)**
+- **[🎵 Vibe Coding Home](docs/www-api/vibe-coding/index.html)** - AI coding assistant support
+- **[📝 AI Coding Prompt](docs/www-api/vibe-coding/AI_CODING_PROMPT.md)** - Prompts for Claude, ChatGPT, Copilot
+- **[💡 Examples](docs/www-api/vibe-coding/examples/)** - Chatbot, content pipeline, workflow builder
+
+**Downloads**
+- **[📦 worksona.min.js](docs/www-api/downloads/worksona.min.js)** - Minified library (51KB)
+- **[📦 worksona.js](docs/www-api/downloads/worksona.js)** - Full source (80KB)
+- **[📦 worksona-server.js](docs/www-api/downloads/worksona-server.js)** - REST API server
+- **[📦 worksona.d.ts](docs/www-api/downloads/worksona.d.ts)** - TypeScript definitions
+- **[📦 Complete Package (.zip)](docs/www-api/downloads/worksona-complete.zip)** - All files bundled
+
+### 🌐 Deploying the Documentation Site
+
+The documentation site in `docs/www-api/` is a standalone static site that can be deployed anywhere:
+
+**Netlify (Recommended)**
+```bash
+# Deploy from repository root
+netlify deploy --dir=docs/www-api --prod
+
+# Or use the included netlify.toml configuration
+cd docs/www-api
+netlify deploy --prod
+```
+
+**Vercel**
+```bash
+cd docs/www-api
+vercel --prod
+```
+
+**GitHub Pages**
+```bash
+# Push to gh-pages branch
+git subtree push --prefix docs/www-api origin gh-pages
+```
+
+**Any Static Host**
+Simply upload the contents of `docs/www-api/` to your web server or CDN.
+
+### 📖 Documentation Structure
+
+```
+docs/www-api/
+├── index.html              # Landing page
+├── overview.html           # Project overview
+├── assets/                 # Shared CSS and JS
+│   ├── css/
+│   │   └── navigation.css  # Unified navigation styles
+│   └── js/
+│       └── navigation.js   # Navigation functionality
+├── docs/                   # Documentation section
+│   ├── index.html
+│   ├── api-reference-swagger.html
+│   └── code-examples-hub.html
+├── demos/                  # Interactive demos
+│   ├── index.html
+│   ├── endpoint-api-demo.html
+│   ├── library-internal-demo.html
+│   ├── delegation-demo.html
+│   └── examples/
+├── vibe-coding/           # AI coding assistant support
+│   ├── index.html
+│   ├── AI_CODING_PROMPT.md
+│   ├── README.md
+│   └── examples/
+├── marketing/             # Marketing site
+│   └── index.html
+├── downloads/             # Downloadable files
+│   ├── worksona.min.js
+│   ├── worksona.js
+│   ├── worksona-server.js
+│   ├── worksona.d.ts
+│   └── *.zip
+└── netlify.toml           # Netlify configuration
+```
+
+### 🎨 Features of the Documentation Site
+
+- **Unified Left Rail Navigation** - Persistent navigation on desktop, hamburger menu on mobile
+- **Responsive Design** - Optimized for all screen sizes
+- **Interactive Demos** - Test all features directly in browser
+- **Code Examples** - Copy/paste ready examples in multiple languages
+- **AI Coding Support** - Full Vibe Coding integration for AI assistants
+- **Downloadable Files** - All library files available for offline use
+- **SEO Optimized** - Proper meta tags and structure
+
+**→ Start here: [docs/index.html](docs/index.html)**
 
 ## 🔗 Links
 

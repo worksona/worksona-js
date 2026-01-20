@@ -5,7 +5,76 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [0.2.0] - 2026-01-06
+## [0.2.0] - 2026-01-18
+
+### Added - Frontier Models Support 🚀
+
+#### OpenAI Models
+- **GPT-5 series support**
+  - `gpt-5` - Latest flagship model for most complex tasks
+  - `gpt-5-mini` - Balanced performance and cost
+  - `gpt-5-nano` - Fast and efficient for simple tasks
+- **o-series reasoning models**
+  - `o3` - Advanced reasoning capabilities
+  - `o3-mini` - Efficient reasoning
+  - `o1`, `o1-mini`, `o1-preview` - Previous generation reasoning models
+- Complete model list with categorization in provider configuration
+- Added `supportedModels` array to OpenAI provider
+
+#### Anthropic Models
+- **Claude 4.5 series support**
+  - `claude-opus-4-5-20251101` - Most capable Claude model
+  - `claude-sonnet-4-5-20250929` - Balanced performance (new default)
+- **Claude 3.5 series**
+  - `claude-3-5-sonnet-20241022` - Updated Sonnet 3.5
+  - `claude-3-5-haiku-20241022` - Fast and efficient
+- Added `supportedModels` array to Anthropic provider
+- Maintained backward compatibility with all Claude 3 and Claude 2 models
+
+#### Documentation & Examples
+- Created `llm.txt` for AI-friendly documentation
+  - Comprehensive API reference optimized for LLMs
+  - Model selection guidelines by use case
+  - Common patterns and best practices
+  - Error handling examples
+  - Performance optimization tips
+- Added `examples/frontier-models-demo.html`
+  - Interactive testing for all new models
+  - Multi-agent system demonstration
+  - Real-time response comparison
+  - Side-by-side model testing
+- Updated README.md with:
+  - "What's New in v0.2.0" section
+  - Comprehensive model support table
+  - Updated examples using latest models
+  - Model selection guidelines
+
+### Changed
+- Updated default OpenAI model from `gpt-3.5-turbo` to `gpt-4o`
+- Updated default Anthropic model from `claude-3-opus-20240229` to `claude-sonnet-4-5-20250929`
+- Enhanced version documentation throughout codebase
+- Improved package.json keywords for better discoverability:
+  - Added: `gpt-5`, `claude-opus-4.5`, `claude-sonnet-4.5`, `o1`, `o3`
+  - Added: `frontier-models`, `agentic-orchestration`, `entrepreneurial-prototyping`
+- Updated image generation documentation to clarify DALL-E 3 support
+
+### Maintained
+- **Full backward compatibility** with all previous model versions
+  - All GPT-4, GPT-3.5 models still supported
+  - All Claude 3, Claude 2 models still supported
+  - Existing agent configurations work without changes
+- No breaking changes to public APIs
+- All existing features continue to work as expected
+
+### Technical
+- Enhanced model selection logic with better fallbacks
+- Improved error messages for unsupported models
+- Added comprehensive model lists for validation
+- Optimized for fast entrepreneurial prototyping and agentic orchestration
+
+---
+
+## [0.2.0] - 2026-01-06 (Previous Release)
 
 ### Changed
 - **Package Renamed**: Changed package name from `worksona` to `worksona-js`
@@ -16,12 +85,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 - Removed circular self-dependency from package.json
 - Fixed CDN and installation references across all documentation
-
-### Documentation
-- Updated README.md with new package name
-- Updated TECH-SPEC.md with version 0.2.0
-- Updated PUBLISHING.md with correct package information
-- Created PACKAGE_INFO.md as quick reference guide
 
 ### Installation
 ```bash

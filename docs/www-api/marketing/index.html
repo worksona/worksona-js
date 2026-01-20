@@ -1,0 +1,1171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Worksona.js - Build AI Agent Systems in Minutes</title>
+  <meta name="description" content="Dual-mode AI orchestration library supporting GPT-5, Claude Opus 4.5, and o3. Build powerful AI agent systems with zero licensing fees.">
+
+  <!-- Open Graph / Social Media -->
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Worksona.js - Build AI Agent Systems in Minutes">
+  <meta property="og:description" content="Free, open-source AI agent management. Use as a library or deploy as an API server.">
+  <meta property="og:image" content="https://worksona.js.org/og-image.png">
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    :root {
+      --primary: #2563eb;
+      --secondary: #7c3aed;
+      --success: #10b981;
+      --warning: #f59e0b;
+      --danger: #ef4444;
+      --gray-50: #f8fafc;
+      --gray-100: #f1f5f9;
+      --gray-200: #e2e8f0;
+      --gray-300: #cbd5e1;
+      --gray-400: #94a3b8;
+      --gray-500: #64748b;
+      --gray-600: #475569;
+      --gray-700: #334155;
+      --gray-800: #1e293b;
+      --gray-900: #0f172a;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+      color: var(--gray-800);
+      line-height: 1.6;
+      overflow-x: hidden;
+    }
+
+    /* Hero Section */
+    .hero {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 6rem 2rem 8rem 2rem;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: url('data:image/svg+xml,<svg width="60" height="60" viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg"><g fill="none" fill-rule="evenodd"><g fill="%23ffffff" fill-opacity="0.05"><path d="M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z"/></g></g></svg>');
+      opacity: 0.3;
+    }
+
+    .hero-content {
+      max-width: 1200px;
+      margin: 0 auto;
+      position: relative;
+      z-index: 1;
+    }
+
+    .hero h1 {
+      font-size: 3.5rem;
+      font-weight: 800;
+      margin-bottom: 1.5rem;
+      line-height: 1.2;
+      text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+
+    .hero .subtitle {
+      font-size: 1.5rem;
+      margin-bottom: 3rem;
+      opacity: 0.95;
+      font-weight: 400;
+    }
+
+    .cta-buttons {
+      display: flex;
+      gap: 1rem;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin-bottom: 2rem;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 1rem 2rem;
+      border-radius: 8px;
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 1.1rem;
+      transition: all 0.3s ease;
+      border: none;
+      cursor: pointer;
+    }
+
+    .btn-primary {
+      background: white;
+      color: var(--primary);
+      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 12px rgba(0,0,0,0.15);
+    }
+
+    .btn-secondary {
+      background: rgba(255, 255, 255, 0.2);
+      color: white;
+      border: 2px solid white;
+    }
+
+    .btn-secondary:hover {
+      background: rgba(255, 255, 255, 0.3);
+      transform: translateY(-2px);
+    }
+
+    .btn-tertiary {
+      background: transparent;
+      color: white;
+      border: 2px solid rgba(255, 255, 255, 0.5);
+    }
+
+    .btn-tertiary:hover {
+      background: rgba(255, 255, 255, 0.1);
+      border-color: white;
+    }
+
+    .trust-indicators {
+      display: flex;
+      gap: 1.5rem;
+      justify-content: center;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .trust-indicators img {
+      height: 20px;
+    }
+
+    .badge {
+      padding: 0.5rem 1rem;
+      background: rgba(255, 255, 255, 0.2);
+      border-radius: 20px;
+      font-size: 0.9rem;
+      font-weight: 600;
+    }
+
+    /* Section Styles */
+    section {
+      padding: 5rem 2rem;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    section h2 {
+      font-size: 2.5rem;
+      text-align: center;
+      margin-bottom: 1rem;
+      color: var(--gray-900);
+    }
+
+    section .section-subtitle {
+      text-align: center;
+      font-size: 1.2rem;
+      color: var(--gray-600);
+      margin-bottom: 3rem;
+    }
+
+    /* Feature Grid */
+    .feature-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 2rem;
+      margin-top: 3rem;
+    }
+
+    .feature-card {
+      background: white;
+      padding: 2rem;
+      border-radius: 12px;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.07);
+      transition: all 0.3s ease;
+      border: 2px solid var(--gray-100);
+    }
+
+    .feature-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 12px 24px rgba(0,0,0,0.1);
+      border-color: var(--primary);
+    }
+
+    .feature-icon {
+      font-size: 3rem;
+      margin-bottom: 1rem;
+    }
+
+    .feature-card h3 {
+      font-size: 1.3rem;
+      margin-bottom: 0.75rem;
+      color: var(--gray-900);
+    }
+
+    .feature-card p {
+      color: var(--gray-600);
+      line-height: 1.7;
+    }
+
+    /* Alternating Sections */
+    .section-alt {
+      background: var(--gray-50);
+    }
+
+    /* Use Cases */
+    .use-case-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+      gap: 2.5rem;
+      margin-top: 3rem;
+    }
+
+    .use-case-card {
+      background: white;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.07);
+      transition: all 0.3s ease;
+    }
+
+    .use-case-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 12px 24px rgba(0,0,0,0.1);
+    }
+
+    .use-case-header {
+      background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+      color: white;
+      padding: 1.5rem;
+      font-size: 1.5rem;
+      font-weight: 700;
+    }
+
+    .use-case-body {
+      padding: 1.5rem;
+    }
+
+    .use-case-body p {
+      color: var(--gray-600);
+      margin-bottom: 1rem;
+    }
+
+    .use-case-body ul {
+      list-style: none;
+      padding: 0;
+    }
+
+    .use-case-body li {
+      padding: 0.5rem 0;
+      color: var(--gray-700);
+      display: flex;
+      align-items: start;
+      gap: 0.5rem;
+    }
+
+    .use-case-body li::before {
+      content: '✓';
+      color: var(--success);
+      font-weight: bold;
+      flex-shrink: 0;
+    }
+
+    /* How It Works */
+    .steps-container {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 3rem;
+      margin-top: 3rem;
+    }
+
+    .step {
+      text-align: center;
+    }
+
+    .step-number {
+      width: 60px;
+      height: 60px;
+      background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+      color: white;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+      font-weight: 700;
+      margin: 0 auto 1.5rem auto;
+    }
+
+    .step h3 {
+      font-size: 1.5rem;
+      margin-bottom: 1rem;
+      color: var(--gray-900);
+    }
+
+    .step pre {
+      text-align: left;
+      background: var(--gray-900);
+      color: #a6e22e;
+      padding: 1.5rem;
+      border-radius: 8px;
+      overflow-x: auto;
+      font-size: 0.9rem;
+      line-height: 1.5;
+    }
+
+    /* Comparison Table */
+    .comparison-table {
+      overflow-x: auto;
+      margin-top: 3rem;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: white;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.07);
+      border-radius: 12px;
+      overflow: hidden;
+    }
+
+    thead {
+      background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+      color: white;
+    }
+
+    th, td {
+      padding: 1rem 1.5rem;
+      text-align: left;
+    }
+
+    th {
+      font-weight: 600;
+      font-size: 1.1rem;
+    }
+
+    tbody tr {
+      border-bottom: 1px solid var(--gray-200);
+    }
+
+    tbody tr:hover {
+      background: var(--gray-50);
+    }
+
+    .check {
+      color: var(--success);
+      font-weight: bold;
+      font-size: 1.2rem;
+    }
+
+    .cross {
+      color: var(--danger);
+      font-weight: bold;
+      font-size: 1.2rem;
+    }
+
+    /* Pricing */
+    .pricing-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 2rem;
+      margin-top: 3rem;
+    }
+
+    .pricing-card {
+      background: white;
+      padding: 2.5rem;
+      border-radius: 12px;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.07);
+      text-align: center;
+      border: 3px solid var(--primary);
+    }
+
+    .pricing-card h3 {
+      font-size: 1.8rem;
+      margin-bottom: 1rem;
+      color: var(--gray-900);
+    }
+
+    .price {
+      font-size: 3rem;
+      font-weight: 800;
+      color: var(--primary);
+      margin-bottom: 0.5rem;
+    }
+
+    .price span {
+      font-size: 1.2rem;
+      color: var(--gray-600);
+      font-weight: 400;
+    }
+
+    .pricing-card ul {
+      list-style: none;
+      padding: 0;
+      margin: 2rem 0;
+      text-align: left;
+    }
+
+    .pricing-card li {
+      padding: 0.75rem 0;
+      color: var(--gray-700);
+      display: flex;
+      align-items: start;
+      gap: 0.75rem;
+    }
+
+    .pricing-card li::before {
+      content: '✅';
+      flex-shrink: 0;
+    }
+
+    /* Cost Calculator */
+    .cost-calculator {
+      background: white;
+      padding: 2.5rem;
+      border-radius: 12px;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.07);
+      margin-top: 3rem;
+      max-width: 600px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .cost-calculator h3 {
+      font-size: 1.5rem;
+      margin-bottom: 2rem;
+      text-align: center;
+      color: var(--gray-900);
+    }
+
+    .calculator-input {
+      margin-bottom: 1.5rem;
+    }
+
+    .calculator-input label {
+      display: block;
+      margin-bottom: 0.5rem;
+      font-weight: 600;
+      color: var(--gray-700);
+    }
+
+    .calculator-input input[type="range"] {
+      width: 100%;
+      height: 8px;
+      border-radius: 4px;
+      background: var(--gray-200);
+      outline: none;
+    }
+
+    .calculator-input input[type="range"]::-webkit-slider-thumb {
+      appearance: none;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: var(--primary);
+      cursor: pointer;
+    }
+
+    .calculator-input select {
+      width: 100%;
+      padding: 0.75rem;
+      border: 2px solid var(--gray-300);
+      border-radius: 8px;
+      font-size: 1rem;
+      background: white;
+      cursor: pointer;
+    }
+
+    .range-display {
+      text-align: center;
+      font-size: 1.2rem;
+      font-weight: 600;
+      color: var(--primary);
+      margin-top: 0.5rem;
+    }
+
+    .estimated-cost {
+      background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+      color: white;
+      padding: 1.5rem;
+      border-radius: 8px;
+      text-align: center;
+      font-size: 1.2rem;
+      margin-top: 2rem;
+    }
+
+    .estimated-cost strong {
+      display: block;
+      font-size: 2.5rem;
+      margin-top: 0.5rem;
+    }
+
+    .cost-comparison {
+      text-align: center;
+      margin-top: 1rem;
+      color: var(--gray-600);
+      font-size: 0.95rem;
+    }
+
+    /* Getting Started Paths */
+    .paths-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 2rem;
+      margin-top: 3rem;
+    }
+
+    .path-card {
+      background: white;
+      padding: 2rem;
+      border-radius: 12px;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.07);
+      border-top: 4px solid var(--primary);
+      transition: all 0.3s ease;
+    }
+
+    .path-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 12px 24px rgba(0,0,0,0.1);
+    }
+
+    .path-card h3 {
+      font-size: 1.5rem;
+      margin-bottom: 1rem;
+      color: var(--gray-900);
+    }
+
+    .path-card p {
+      color: var(--gray-600);
+      margin-bottom: 1.5rem;
+    }
+
+    .path-card .btn {
+      width: 100%;
+      justify-content: center;
+      background: var(--primary);
+      color: white;
+    }
+
+    .path-card .btn:hover {
+      background: var(--secondary);
+    }
+
+    /* Footer */
+    footer {
+      background: var(--gray-900);
+      color: white;
+      padding: 3rem 2rem 2rem 2rem;
+    }
+
+    .footer-content {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 3rem;
+      margin-bottom: 2rem;
+    }
+
+    .footer-section h4 {
+      font-size: 1.2rem;
+      margin-bottom: 1rem;
+    }
+
+    .footer-section ul {
+      list-style: none;
+      padding: 0;
+    }
+
+    .footer-section li {
+      margin-bottom: 0.5rem;
+    }
+
+    .footer-section a {
+      color: var(--gray-400);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+
+    .footer-section a:hover {
+      color: white;
+    }
+
+    .footer-bottom {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding-top: 2rem;
+      border-top: 1px solid var(--gray-700);
+      text-align: center;
+      color: var(--gray-400);
+    }
+
+    /* Newsletter */
+    .newsletter-form {
+      display: flex;
+      gap: 0.5rem;
+      margin-top: 1rem;
+    }
+
+    .newsletter-form input {
+      flex: 1;
+      padding: 0.75rem;
+      border: 2px solid var(--gray-700);
+      border-radius: 6px;
+      background: var(--gray-800);
+      color: white;
+      font-size: 1rem;
+    }
+
+    .newsletter-form button {
+      padding: 0.75rem 1.5rem;
+      background: var(--primary);
+      color: white;
+      border: none;
+      border-radius: 6px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .newsletter-form button:hover {
+      background: var(--secondary);
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .hero h1 {
+        font-size: 2rem;
+      }
+
+      .hero .subtitle {
+        font-size: 1.1rem;
+      }
+
+      section {
+        padding: 3rem 1rem;
+      }
+
+      section h2 {
+        font-size: 2rem;
+      }
+
+      .cta-buttons {
+        flex-direction: column;
+        align-items: stretch;
+      }
+
+      .btn {
+        width: 100%;
+        justify-content: center;
+      }
+
+      .feature-grid,
+      .use-case-grid,
+      .steps-container,
+      .pricing-grid,
+      .paths-grid {
+        grid-template-columns: 1fr;
+      }
+
+      table {
+        font-size: 0.9rem;
+      }
+
+      th, td {
+        padding: 0.75rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Hero Section -->
+  <section class="hero">
+    <div class="hero-content">
+      <h1>Build AI Agent Systems<br>in Minutes, Not Months</h1>
+      <p class="subtitle">
+        Dual-mode AI orchestration supporting GPT-5, Claude Opus 4.5, and o3.<br>
+        Use as a library or deploy as an API server.
+      </p>
+      <div class="cta-buttons">
+        <a href="https://github.com/worksona/worksona-js" class="btn btn-primary">
+          🚀 Start Building Free
+        </a>
+        <a href="../docs/endpoint-api-demo.html" class="btn btn-secondary">
+          🎮 Try Live Demo
+        </a>
+        <a href="../docs/index.html" class="btn btn-tertiary">
+          📚 Read Docs
+        </a>
+      </div>
+      <div class="trust-indicators">
+        <img src="https://img.shields.io/npm/v/worksona-js?style=for-the-badge&logo=npm" alt="NPM Version">
+        <img src="https://img.shields.io/github/stars/worksona/worksona-js?style=for-the-badge&logo=github" alt="GitHub Stars">
+        <span class="badge">MIT Licensed</span>
+        <span class="badge">Zero Dependencies</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- Features -->
+  <section>
+    <h2>Why Choose Worksona.js?</h2>
+    <p class="section-subtitle">Everything you need to build production-ready AI agent systems</p>
+
+    <div class="feature-grid">
+      <div class="feature-card">
+        <div class="feature-icon">🔄</div>
+        <h3>Dual-Mode Flexibility</h3>
+        <p>Use as a JavaScript library in your app, or deploy as a REST API server. Switch between modes without code changes.</p>
+      </div>
+
+      <div class="feature-card">
+        <div class="feature-icon">🤖</div>
+        <h3>Latest Frontier Models</h3>
+        <p>Full support for GPT-5, GPT-4o, Claude Opus 4.5, o3 reasoning models, and Google Gemini. Always up-to-date.</p>
+      </div>
+
+      <div class="feature-card">
+        <div class="feature-icon">🌐</div>
+        <h3>Multi-Provider Support</h3>
+        <p>OpenAI, Anthropic, and Google in one unified API. Automatic fallback and provider-specific optimizations.</p>
+      </div>
+
+      <div class="feature-card">
+        <div class="feature-icon">🎨</div>
+        <h3>Complete Image Pipeline</h3>
+        <p>Generate with DALL-E 3, analyze with vision models, edit, create variations. Built-in image processing.</p>
+      </div>
+
+      <div class="feature-card">
+        <div class="feature-icon">📄</div>
+        <h3>File Processing Built-In</h3>
+        <p>OCR with Tesseract, parse PDFs, DOCX, XLSX, CSV. Upload and analyze documents without external tools.</p>
+      </div>
+
+      <div class="feature-card">
+        <div class="feature-icon">🎭</div>
+        <h3>Agent Personality System</h3>
+        <p>Define agent traits, knowledge domains, and tone. Pre-configured agents for legal, marketing, research, and more.</p>
+      </div>
+
+      <div class="feature-card">
+        <div class="feature-icon">⚡</div>
+        <h3>Production Ready</h3>
+        <p>Rate limiting, error handling, retry logic, event emitters, webhook support. Battle-tested in production.</p>
+      </div>
+
+      <div class="feature-card">
+        <div class="feature-icon">👨‍💻</div>
+        <h3>Developer Friendly</h3>
+        <p>Single-file architecture, zero dependencies, TypeScript definitions. 2,200 lines of clean, readable code.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Use Cases -->
+  <section class="section-alt">
+    <h2>Real-World Use Cases</h2>
+    <p class="section-subtitle">See how teams use Worksona.js in production</p>
+
+    <div class="use-case-grid">
+      <div class="use-case-card">
+        <div class="use-case-header">🎧 Customer Support Automation</div>
+        <div class="use-case-body">
+          <p>Route inquiries, generate responses, escalate complex issues automatically.</p>
+          <ul>
+            <li>Classify incoming tickets by category</li>
+            <li>Auto-respond to common questions</li>
+            <li>Maintain conversation context</li>
+            <li>Integrate with existing support tools</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="use-case-card">
+        <div class="use-case-header">📊 Document Processing Pipeline</div>
+        <div class="use-case-body">
+          <p>Extract data from invoices, contracts, receipts with multi-agent workflows.</p>
+          <ul>
+            <li>OCR scanned documents</li>
+            <li>Extract structured data</li>
+            <li>Validate against rules</li>
+            <li>Generate summaries and reports</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="use-case-card">
+        <div class="use-case-header">✍️ Content Creation Workflow</div>
+        <div class="use-case-body">
+          <p>Research → Write → Edit → Fact-check with specialized agents.</p>
+          <ul>
+            <li>Research topics automatically</li>
+            <li>Generate drafts with GPT-4o</li>
+            <li>Edit for clarity and tone</li>
+            <li>Verify facts with Claude Opus</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="use-case-card">
+        <div class="use-case-header">🔍 Image Analysis & Generation</div>
+        <div class="use-case-body">
+          <p>Analyze product images, generate marketing visuals, moderate content.</p>
+          <ul>
+            <li>Analyze images with vision models</li>
+            <li>Generate images with DALL-E 3</li>
+            <li>Create variations and edits</li>
+            <li>Moderate user-generated content</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="use-case-card">
+        <div class="use-case-header">🧾 Data Extraction & Analysis</div>
+        <div class="use-case-body">
+          <p>Extract structured data from unstructured sources at scale.</p>
+          <ul>
+            <li>Process thousands of documents</li>
+            <li>Extract entities and relationships</li>
+            <li>Generate insights and summaries</li>
+            <li>Export to databases or spreadsheets</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="use-case-card">
+        <div class="use-case-header">🛠️ Custom AI Applications</div>
+        <div class="use-case-body">
+          <p>Build specialized tools: legal review, code analysis, tutoring systems.</p>
+          <ul>
+            <li>Define custom agent personalities</li>
+            <li>Chain multiple agents together</li>
+            <li>Add domain-specific knowledge</li>
+            <li>Deploy as microservice</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- How It Works -->
+  <section>
+    <h2>How It Works</h2>
+    <p class="section-subtitle">Get started in three simple steps</p>
+
+    <div class="steps-container">
+      <div class="step">
+        <div class="step-number">1</div>
+        <h3>Install or Deploy</h3>
+        <pre><code># As Library
+npm install worksona-js
+
+# As API Server
+docker run -p 3000:3000 \
+  worksona/api-server</code></pre>
+      </div>
+
+      <div class="step">
+        <div class="step-number">2</div>
+        <h3>Configure Agents</h3>
+        <pre><code>const agent = await worksona.loadAgent({
+  id: 'support-bot',
+  config: {
+    provider: 'openai',
+    model: 'gpt-5'
+  }
+});</code></pre>
+      </div>
+
+      <div class="step">
+        <div class="step-number">3</div>
+        <h3>Start Building</h3>
+        <pre><code>const response = await worksona.chat(
+  'support-bot',
+  'How can I help you today?'
+);
+
+console.log(response);</code></pre>
+      </div>
+    </div>
+  </section>
+
+  <!-- Comparison Table -->
+  <section class="section-alt">
+    <h2>Compare Solutions</h2>
+    <p class="section-subtitle">See how Worksona.js stacks up against alternatives</p>
+
+    <div class="comparison-table">
+      <table>
+        <thead>
+          <tr>
+            <th>Feature</th>
+            <th>Worksona.js</th>
+            <th>LangChain</th>
+            <th>Haystack</th>
+            <th>Semantic Kernel</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Dual-Mode (Library + API)</td>
+            <td class="check">✓</td>
+            <td class="cross">✗</td>
+            <td class="cross">✗</td>
+            <td class="cross">✗</td>
+          </tr>
+          <tr>
+            <td>Zero Dependencies</td>
+            <td class="check">✓</td>
+            <td class="cross">✗</td>
+            <td class="cross">✗</td>
+            <td class="cross">✗</td>
+          </tr>
+          <tr>
+            <td>Built-in Image Processing</td>
+            <td class="check">✓</td>
+            <td class="cross">✗</td>
+            <td class="cross">✗</td>
+            <td class="cross">✗</td>
+          </tr>
+          <tr>
+            <td>Document OCR Included</td>
+            <td class="check">✓</td>
+            <td class="cross">✗</td>
+            <td class="cross">✗</td>
+            <td class="cross">✗</td>
+          </tr>
+          <tr>
+            <td>Multi-Provider Support</td>
+            <td class="check">✓</td>
+            <td class="check">✓</td>
+            <td class="check">✓</td>
+            <td class="check">✓</td>
+          </tr>
+          <tr>
+            <td>Agent Personality System</td>
+            <td class="check">✓</td>
+            <td class="cross">✗</td>
+            <td class="cross">✗</td>
+            <td class="cross">✗</td>
+          </tr>
+          <tr>
+            <td>Production REST API</td>
+            <td class="check">✓</td>
+            <td class="cross">✗</td>
+            <td class="cross">✗</td>
+            <td class="cross">✗</td>
+          </tr>
+          <tr>
+            <td>Single-File Architecture</td>
+            <td class="check">✓</td>
+            <td class="cross">✗</td>
+            <td class="cross">✗</td>
+            <td class="cross">✗</td>
+          </tr>
+          <tr>
+            <td>Setup Time</td>
+            <td><strong>&lt; 5 min</strong></td>
+            <td>30+ min</td>
+            <td>45+ min</td>
+            <td>20+ min</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- Pricing -->
+  <section>
+    <h2>Free & Open Source</h2>
+    <p class="section-subtitle">No licensing fees. Ever.</p>
+
+    <div class="pricing-grid">
+      <div class="pricing-card">
+        <h3>Worksona.js</h3>
+        <div class="price">$0<span>/forever</span></div>
+        <ul>
+          <li>Zero licensing fees</li>
+          <li>Pay only LLM API costs</li>
+          <li>Self-hosted or cloud</li>
+          <li>Full source access</li>
+          <li>Commercial use allowed</li>
+          <li>No vendor lock-in</li>
+          <li>Community support</li>
+          <li>MIT Licensed</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="cost-calculator">
+      <h3>💰 Estimate Your Monthly Cost</h3>
+
+      <div class="calculator-input">
+        <label>Queries per Month</label>
+        <input type="range" id="queriesSlider" min="1000" max="1000000" value="10000" step="1000" oninput="updateCostEstimate()">
+        <div class="range-display" id="queriesDisplay">10,000 queries/month</div>
+      </div>
+
+      <div class="calculator-input">
+        <label>Primary Model</label>
+        <select id="modelSelect" onchange="updateCostEstimate()">
+          <option value="2.5">GPT-4o ($2.50/1M input tokens)</option>
+          <option value="5">GPT-5 ($5/1M input tokens)</option>
+          <option value="15">Claude Opus 4.5 ($15/1M input tokens)</option>
+          <option value="3">Claude Sonnet 4.5 ($3/1M input tokens)</option>
+          <option value="1">Gemini Pro ($1/1M input tokens)</option>
+        </select>
+      </div>
+
+      <div class="estimated-cost">
+        Estimated Monthly Cost
+        <strong id="costDisplay">$25</strong>
+        <div class="cost-comparison">vs $299/mo with competitors</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Getting Started Paths -->
+  <section class="section-alt">
+    <h2>Choose Your Path</h2>
+    <p class="section-subtitle">Select the approach that works best for you</p>
+
+    <div class="paths-grid">
+      <div class="path-card">
+        <h3>🚀 Quick Prototype</h3>
+        <p>Load via CDN and start building in under 5 minutes. Perfect for MVPs and testing ideas.</p>
+        <a href="../docs/code-examples-hub.html#quick-start" class="btn">View Examples</a>
+      </div>
+
+      <div class="path-card">
+        <h3>⚙️ Production Setup</h3>
+        <p>Deploy the REST API server with Docker or Node.js. Includes rate limiting and monitoring.</p>
+        <a href="../docs/index.html#rest-api" class="btn">Setup Guide</a>
+      </div>
+
+      <div class="path-card">
+        <h3>📚 Explore First</h3>
+        <p>Try the interactive demos to see Worksona.js in action before committing.</p>
+        <a href="../docs/endpoint-api-demo.html" class="btn">Try Demo</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer>
+    <div class="footer-content">
+      <div class="footer-section">
+        <h4>📖 Documentation</h4>
+        <ul>
+          <li><a href="../docs/index.html">Documentation Hub</a></li>
+          <li><a href="../docs/api-reference-swagger.html">API Reference</a></li>
+          <li><a href="../docs/code-examples-hub.html">Code Examples</a></li>
+          <li><a href="../docs/delegation-demo.html">Delegation Demo</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-section">
+        <h4>🔗 Resources</h4>
+        <ul>
+          <li><a href="https://github.com/worksona/worksona-js">GitHub Repository</a></li>
+          <li><a href="https://www.npmjs.com/package/worksona-js">NPM Package</a></li>
+          <li><a href="https://github.com/worksona/worksona-js/issues">Report Issues</a></li>
+          <li><a href="https://github.com/worksona/worksona-js/discussions">Discussions</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-section">
+        <h4>🤝 Community</h4>
+        <ul>
+          <li><a href="https://github.com/worksona/worksona-js/blob/main/CONTRIBUTING.md">Contributing</a></li>
+          <li><a href="https://github.com/worksona/worksona-js/blob/main/CODE_OF_CONDUCT.md">Code of Conduct</a></li>
+          <li><a href="https://github.com/worksona/worksona-js/blob/main/LICENSE">MIT License</a></li>
+          <li><a href="https://github.com/worksona/worksona-js/blob/main/CHANGELOG.md">Changelog</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-section">
+        <h4>📬 Stay Updated</h4>
+        <p style="color: var(--gray-400); margin-bottom: 1rem;">Get notified about new features and updates</p>
+        <form class="newsletter-form" onsubmit="return false;">
+          <input type="email" placeholder="your@email.com" required>
+          <button type="submit">Subscribe</button>
+        </form>
+      </div>
+    </div>
+
+    <div class="footer-bottom">
+      <p>&copy; 2026 Worksona.js • MIT Licensed • Built with ❤️ for developers</p>
+      <p style="margin-top: 0.5rem; font-size: 0.9rem;">
+        <a href="https://github.com/worksona/worksona-js">View on GitHub</a> •
+        <a href="https://www.npmjs.com/package/worksona-js">NPM Package</a> •
+        <a href="../docs">Documentation</a>
+      </p>
+    </div>
+  </footer>
+
+  <script>
+    // Cost Calculator
+    function updateCostEstimate() {
+      const queries = parseInt(document.getElementById('queriesSlider').value);
+      const costPer1M = parseFloat(document.getElementById('modelSelect').value);
+
+      // Update queries display
+      const queriesFormatted = queries >= 1000000 ?
+        (queries / 1000000).toFixed(1) + 'M' :
+        (queries / 1000).toFixed(0) + 'K';
+      document.getElementById('queriesDisplay').textContent = `${queriesFormatted} queries/month`;
+
+      // Calculate cost
+      // Assuming average 500 input tokens and 200 output tokens per query
+      const avgInputTokens = 500;
+      const avgOutputTokens = 200;
+      const outputCostMultiplier = 3; // Output typically costs 3x input
+
+      const inputCost = (queries * avgInputTokens / 1000000) * costPer1M;
+      const outputCost = (queries * avgOutputTokens / 1000000) * costPer1M * outputCostMultiplier;
+      const totalCost = inputCost + outputCost;
+
+      document.getElementById('costDisplay').textContent = '$' + totalCost.toFixed(2);
+    }
+
+    // Initialize
+    document.addEventListener('DOMContentLoaded', () => {
+      updateCostEstimate();
+    });
+
+    // Newsletter form (placeholder - implement with actual service)
+    document.querySelector('.newsletter-form').addEventListener('submit', (e) => {
+      e.preventDefault();
+      alert('Newsletter signup coming soon! Follow us on GitHub for updates.');
+    });
+
+    // Smooth scroll for anchor links
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+      anchor.addEventListener('click', function (e) {
+        e.preventDefault();
+        const target = document.querySelector(this.getAttribute('href'));
+        if (target) {
+          target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+      });
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,521 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Worksona.js Examples</title>
+  <meta name="description" content="Interactive examples and demos for Worksona.js Library and API modes">
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    :root {
+      --primary-500: #2563eb;
+      --primary-600: #1d4ed8;
+      --secondary-500: #7c3aed;
+      --accent-500: #10b981;
+      --gray-50: #f8fafc;
+      --gray-100: #f1f5f9;
+      --gray-500: #64748b;
+      --gray-700: #334155;
+      --gray-900: #0f172a;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+      line-height: 1.6;
+      color: var(--gray-900);
+      background: var(--primary);
+      min-height: 100vh;
+      padding: 2rem;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    /* Header */
+    .header {
+      text-align: center;
+      color: white;
+      margin-bottom: 3rem;
+    }
+
+    .header h1 {
+      font-size: 3rem;
+      font-weight: 800;
+      margin-bottom: 0.5rem;
+      text-shadow: 0 4px 12px rgba(0,0,0,0.3);
+    }
+
+    .header p {
+      font-size: 1.25rem;
+      opacity: 0.95;
+      margin-bottom: 1.5rem;
+    }
+
+    .breadcrumb {
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+
+    .breadcrumb a {
+      color: white;
+      text-decoration: none;
+      opacity: 0.8;
+      transition: opacity 0.2s;
+    }
+
+    .breadcrumb a:hover {
+      opacity: 1;
+      text-decoration: underline;
+    }
+
+    .breadcrumb span {
+      color: white;
+      opacity: 0.6;
+      margin: 0 0.5rem;
+    }
+
+    /* Cards */
+    .section {
+      margin-bottom: 3rem;
+    }
+
+    .section-title {
+      color: white;
+      font-size: 1.75rem;
+      font-weight: 700;
+      margin-bottom: 1.5rem;
+      text-align: center;
+      text-shadow: 0 2px 8px rgba(0,0,0,0.2);
+    }
+
+    .card-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 1.5rem;
+    }
+
+    .card {
+      background: white;
+      border-radius: 4px;
+      padding: 2rem;
+      text-decoration: none;
+      color: inherit;
+      transition: all 0.3s ease;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 4px;
+      background: var(--primary);
+      transform: scaleX(0);
+      transition: transform 0.3s ease;
+    }
+
+    .card:hover {
+      transform: translateY(-8px);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    }
+
+    .card:hover::before {
+      transform: scaleX(1);
+    }
+
+    .card-badge {
+      display: inline-block;
+      padding: 0.25rem 0.75rem;
+      background: var(--accent-500);
+      color: white;
+      border-radius: 4px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      align-self: flex-start;
+    }
+
+    .card-badge.primary {
+      background: var(--primary-500);
+    }
+
+    .card-badge.secondary {
+      background: var(--secondary-500);
+    }
+
+    .card-icon {
+      font-size: 3rem;
+      line-height: 1;
+    }
+
+    .card-title {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--gray-900);
+    }
+
+    .card-description {
+      font-size: 1rem;
+      color: var(--gray-500);
+      line-height: 1.6;
+      flex-grow: 1;
+    }
+
+    .card-features {
+      list-style: none;
+      margin-top: 1rem;
+    }
+
+    .card-features li {
+      padding: 0.25rem 0;
+      color: var(--gray-700);
+      font-size: 0.9rem;
+    }
+
+    .card-features li::before {
+      content: "✓ ";
+      color: var(--accent-500);
+      font-weight: bold;
+      margin-right: 0.5rem;
+    }
+
+    /* Info Box */
+    .info-box {
+      background: rgba(255,255,255,0.95);
+      backdrop-filter: blur(10px);
+      border-radius: 4px;
+      padding: 2rem;
+      margin-bottom: 2rem;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    }
+
+    .info-box h3 {
+      color: var(--primary-600);
+      margin-bottom: 1rem;
+      font-size: 1.5rem;
+    }
+
+    .info-box p {
+      color: var(--gray-700);
+      margin-bottom: 0.5rem;
+      line-height: 1.8;
+    }
+
+    .info-box code {
+      background: var(--gray-100);
+      padding: 0.2rem 0.5rem;
+      border-radius: 4px;
+      font-family: 'Courier New', monospace;
+      font-size: 0.9rem;
+    }
+
+    /* Comparison Table */
+    .comparison {
+      background: white;
+      border-radius: 4px;
+      padding: 2rem;
+      margin-bottom: 2rem;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    }
+
+    .comparison h3 {
+      color: var(--primary-600);
+      margin-bottom: 1.5rem;
+      text-align: center;
+      font-size: 1.5rem;
+    }
+
+    .comparison-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 2rem;
+    }
+
+    .comparison-col h4 {
+      color: var(--secondary-500);
+      margin-bottom: 1rem;
+      font-size: 1.25rem;
+    }
+
+    .comparison-col ul {
+      list-style: none;
+    }
+
+    .comparison-col li {
+      padding: 0.5rem 0;
+      color: var(--gray-700);
+    }
+
+    .comparison-col li::before {
+      content: "✓ ";
+      color: var(--accent-500);
+      font-weight: bold;
+      margin-right: 0.5rem;
+    }
+
+    /* Footer */
+    .footer {
+      text-align: center;
+      color: white;
+      margin-top: 3rem;
+      padding: 2rem;
+      opacity: 0.9;
+    }
+
+    .footer a {
+      color: white;
+      text-decoration: underline;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      body {
+        padding: 1rem;
+      }
+
+      .header h1 {
+        font-size: 2rem;
+      }
+
+      .header p {
+        font-size: 1rem;
+      }
+
+      .card-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .comparison-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+  <link rel="stylesheet" href="/examples/shared-header.css">
+</head>
+<body>
+  <!-- Worksona Header -->
+  <header class="worksona-header">
+    <div class="worksona-header-content">
+      <a href="/" class="worksona-logo">
+        <div class="worksona-logo-icon">W</div>
+        <span class="worksona-logo-text">WORKSONA</span>
+      </a>
+      <button class="worksona-hamburger" id="worksonaHamburger" aria-label="Toggle navigation">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+    </div>
+  </header>
+
+  <nav class="worksona-nav-overlay" id="worksonaNavOverlay">
+    <div class="worksona-nav-content">
+      <div class="worksona-nav-section">
+        <h3>Overview</h3>
+        <ul class="worksona-nav-links">
+          <li><a href="/docs/overview.html">Project Overview</a></li>
+          <li><a href="https://github.com/worksona/worksona-js" target="_blank">GitHub Repository</a></li>
+          <li><a href="https://www.npmjs.com/package/worksona-js" target="_blank">NPM Package</a></li>
+        </ul>
+      </div>
+
+      <div class="worksona-nav-section">
+        <h3>Documentation</h3>
+        <ul class="worksona-nav-links">
+          <li><a href="/docs/index.html">Documentation Hub</a></li>
+          <li><a href="/docs/api-reference-swagger.html">API Reference</a></li>
+          <li><a href="/docs/code-examples-hub.html">Code Examples</a></li>
+        </ul>
+      </div>
+
+
+      <div class="worksona-nav-section">
+        <h3>Interactive Demos</h3>
+        <ul class="worksona-nav-links">
+          <li><a href="/docs/endpoint-api-demo.html">Endpoint API Demo</a></li>
+          <li><a href="/docs/library-internal-demo.html">Library Demo</a></li>
+          <li><a href="/docs/delegation-demo.html">Delegation Workflow Builder</a></li>
+          <li><a href="/examples/dual-mode-demo.html">Dual Mode Demo</a></li>
+          <li><a href="/examples/frontier-models-demo.html">Frontier Models Demo</a></li>
+        </ul>
+      </div>
+
+      <div class="worksona-nav-section">
+        <h3>Examples & Tutorials</h3>
+        <ul class="worksona-nav-links">
+          <li><a href="/examples/index.html">Examples Directory</a></li>
+          <li><a href="/examples/dual-mode-demo.js">Node.js Demo Script</a></li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <div class="container">
+    <!-- Header -->
+    <div class="header">
+      <h1>Worksona.js Examples</h1>
+      <p>Interactive demos, code samples, and tutorials</p>
+    </div>
+
+    <!-- Breadcrumb -->
+    <div class="breadcrumb">
+      <a href="/">Home</a>
+      <span>/</span>
+      <span>Examples</span>
+    </div>
+
+    <!-- Info Box -->
+    <div class="info-box">
+      <h3>About These Examples</h3>
+      <p>
+        This directory contains comprehensive examples demonstrating both <strong>Library Mode</strong> (direct JavaScript API)
+        and <strong>API Mode</strong> (REST endpoints) of Worksona.js. Each example is fully functional and ready to use.
+      </p>
+      <p>
+        <strong>Quick Start:</strong> Open any HTML file directly in your browser, or run the Node.js demos with
+        <code>node dual-mode-demo.js</code>
+      </p>
+    </div>
+
+    <!-- Interactive Demos -->
+    <div class="section">
+      <h2 class="section-title">Interactive Browser Demos</h2>
+      <div class="card-grid">
+        <a href="dual-mode-demo.html" class="card">
+          <span class="card-badge primary">Recommended</span>
+          <div class="card-icon"></div>
+          <div class="card-title">Dual Mode Demo</div>
+          <div class="card-description">
+            Side-by-side comparison of Library Mode vs API Mode with live testing and code examples in multiple languages.
+          </div>
+          <ul class="card-features">
+            <li>Live testing interface</li>
+            <li>JavaScript, Python, cURL examples</li>
+            <li>Visual mode comparison</li>
+            <li>Copy-paste ready snippets</li>
+          </ul>
+        </a>
+
+        <a href="frontier-models-demo.html" class="card">
+          <span class="card-badge">Latest</span>
+          <div class="card-icon"></div>
+          <div class="card-title">Frontier Models Demo</div>
+          <div class="card-description">
+            Test the latest AI models including GPT-5, Claude Opus 4.5, and o3 reasoning models with real-time comparison.
+          </div>
+          <ul class="card-features">
+            <li>GPT-5 series models</li>
+            <li>Claude Opus 4.5 & Sonnet 4.5</li>
+            <li>o3 & o3-mini reasoning</li>
+            <li>Multi-agent workflows</li>
+          </ul>
+        </a>
+      </div>
+    </div>
+
+    <!-- Code Examples -->
+    <div class="section">
+      <h2 class="section-title">Code Examples</h2>
+      <div class="card-grid">
+        <a href="dual-mode-demo.js" class="card">
+          <div class="card-icon"></div>
+          <div class="card-title">Node.js Demo Script</div>
+          <div class="card-description">
+            Comprehensive Node.js demonstration with both Library and API mode examples, metrics, and error handling.
+          </div>
+          <ul class="card-features">
+            <li>Library mode examples</li>
+            <li>API mode examples</li>
+            <li>Multi-agent systems</li>
+            <li>Batch processing</li>
+          </ul>
+        </a>
+
+        <a href="README.md" class="card">
+          <div class="card-icon"></div>
+          <div class="card-title">Examples Guide</div>
+          <div class="card-description">
+            Complete guide with setup instructions, use case comparisons, troubleshooting, and detailed code explanations.
+          </div>
+          <ul class="card-features">
+            <li>Setup instructions</li>
+            <li>Mode comparison table</li>
+            <li>Troubleshooting guide</li>
+            <li>Additional resources</li>
+          </ul>
+        </a>
+      </div>
+    </div>
+
+    <!-- Mode Comparison -->
+    <div class="comparison">
+      <h3>Library Mode vs API Mode</h3>
+      <div class="comparison-grid">
+        <div class="comparison-col">
+          <h4>Library Mode (Direct JavaScript)</h4>
+          <ul>
+            <li>Zero network latency</li>
+            <li>Direct access to all features</li>
+            <li>JavaScript/TypeScript apps</li>
+            <li>Browser extensions</li>
+            <li>Electron apps</li>
+            <li>Real-time event monitoring</li>
+          </ul>
+        </div>
+        <div class="comparison-col">
+          <h4>API Mode (REST Endpoints)</h4>
+          <ul>
+            <li>Language agnostic (Python, Ruby, PHP, Java)</li>
+            <li>Simple HTTP requests</li>
+            <li>Webhook support</li>
+            <li>File upload capabilities</li>
+            <li>External integrations</li>
+            <li>Mobile app backends</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- Getting Started -->
+    <div class="info-box">
+      <h3>Getting Started</h3>
+      <p><strong>For Browser Demos:</strong></p>
+      <p>1. Open <code>dual-mode-demo.html</code> or <code>frontier-models-demo.html</code> in your browser</p>
+      <p>2. Enter your API keys in the interface</p>
+      <p>3. Start testing!</p>
+
+      <p style="margin-top: 1.5rem;"><strong>For Node.js Examples:</strong></p>
+      <p>1. Set environment variables: <code>export OPENAI_API_KEY="sk-..."</code></p>
+      <p>2. For API mode, start server: <code>node worksona-server.js</code></p>
+      <p>3. Run the demo: <code>node examples/dual-mode-demo.js</code></p>
+    </div>
+
+    <!-- Footer -->
+    <div class="footer">
+      <p><strong>Worksona.js Examples</strong></p>
+      <p style="margin-top: 0.5rem;">
+        <a href="/">← Back to Home</a> •
+        <a href="/docs/index.html">Documentation</a> •
+        <a href="https://github.com/worksona/worksona-js">GitHub</a>
+      </p>
+    </div>
+  </div>
+  <script src="/examples/shared-header.js"></script>
+</body>
+</html>
