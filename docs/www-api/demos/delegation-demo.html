@@ -19,30 +19,79 @@
       box-sizing: border-box;
     }
 
+    :root {
+  --primary: #2563eb;
+  --secondary: #7c3aed;
+  --success: #10b981;
+  --gray-50: #f8fafc;
+  --gray-100: #f1f5f9;
+  --gray-200: #e2e8f0;
+  --gray-300: #cbd5e1;
+  --gray-500: #64748b;
+  --gray-600: #475569;
+  --gray-700: #334155;
+  --gray-800: #1e293b;
+  --gray-900: #0f172a;
+
+      --bg-light: #ffffff;
+      --bg-card: #ffffff;
+      --bg-card-hover: #f8fafc;
+      --text-primary: #0f172a;
+      --text-secondary: #64748b;
+      --accent-blue: #2563eb;
+      --accent-purple: #7c3aed;
+      --accent-pink: #10b981;
+      --border-color: #0f172a;
+    }
+
     body {
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      background: white;
       min-height: 100vh;
+      color: var(--gray-900);
     }
 
     .header {
-      background: linear-gradient(135deg, #2563eb 0%, #7c3aed 100%);
+      background: var(--primary);
       color: white;
       padding: 2rem;
       text-align: center;
-      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .header::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: var(--primary);
+      animation: shimmer 3s infinite;
+    }
+
+    @keyframes shimmer {
+      0%, 100% { transform: translateX(-100%); }
+      50% { transform: translateX(100%); }
     }
 
     .header h1 {
       margin: 0 0 0.5rem 0;
       font-size: 2rem;
       font-weight: 700;
+      position: relative;
+      z-index: 1;
+      text-shadow: 0 2px 10px rgba(0,0,0,0.3);
     }
 
     .header p {
       margin: 0 0 1rem 0;
       font-size: 1.1rem;
       opacity: 0.95;
+      position: relative;
+      z-index: 1;
     }
 
     .header-links {
@@ -50,21 +99,26 @@
       gap: 1rem;
       justify-content: center;
       flex-wrap: wrap;
+      position: relative;
+      z-index: 1;
     }
 
     .header-links a {
       color: white;
       text-decoration: none;
-      padding: 0.5rem 1rem;
-      background: rgba(255,255,255,0.2);
-      border-radius: 6px;
-      transition: all 0.2s;
+      padding: 0.75rem 1.5rem;
+      background: rgba(255,255,255,0.15);
+      border-radius: 0;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
       font-size: 0.9rem;
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255,255,255,0.2);
     }
 
     .header-links a:hover {
-      background: rgba(255,255,255,0.3);
-      transform: translateY(-2px);
+      background: rgba(255,255,255,0.25);
+      transform: translateY(-3px);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
     }
 
     .main-container {
@@ -84,17 +138,25 @@
 
     .card {
       background: white;
-      border-radius: 12px;
+      border-radius: 0;
       padding: 1.5rem;
-      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+      border: 1px solid var(--border-color);
+      transition: all 0.3s ease;
+    }
+
+    .card:hover {
+      border-color: var(--accent-blue);
+      box-shadow: 0 12px 32px rgba(59, 130, 246, 0.15);
     }
 
     .card h3 {
       font-size: 1.1rem;
-      color: #1e293b;
+      color: var(--accent-blue);
       margin-bottom: 1rem;
       padding-bottom: 0.75rem;
-      border-bottom: 2px solid #e2e8f0;
+      border-bottom: 3px solid;
+      border-image: linear-gradient(90deg, var(--accent-blue), var(--accent-purple)) 1;
     }
 
     .template-list {
@@ -104,33 +166,33 @@
     .template-item {
       padding: 0.75rem;
       margin-bottom: 0.5rem;
-      background: #f8fafc;
-      border-radius: 6px;
+      background: var(--bg-card-hover);
+      border-radius: 0;
       cursor: pointer;
       transition: all 0.2s;
       border: 2px solid transparent;
     }
 
     .template-item:hover {
-      background: #dbeafe;
-      border-color: #2563eb;
+      background: white;
+      border-color: var(--accent-blue);
       transform: translateX(4px);
     }
 
     .template-item.active {
-      background: #dbeafe;
-      border-color: #2563eb;
+      background: rgba(59, 130, 246, 0.15);
+      border-color: var(--accent-blue);
     }
 
     .template-name {
       font-weight: 600;
-      color: #1e293b;
+      color: var(--gray-900);
       margin-bottom: 0.25rem;
     }
 
     .template-desc {
       font-size: 0.85rem;
-      color: #64748b;
+      color: var(--gray-600);
     }
 
     .control-panel {
@@ -142,11 +204,11 @@
     .btn {
       padding: 0.75rem 1rem;
       border: none;
-      border-radius: 6px;
+      border-radius: 0;
       cursor: pointer;
       font-weight: 600;
       font-size: 0.9rem;
-      transition: all 0.2s;
+      transition: all 0.3s ease;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -154,47 +216,72 @@
     }
 
     .btn-primary {
-      background: #2563eb;
+      background: var(--primary);
       color: white;
+      box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
     }
 
     .btn-primary:hover {
-      background: #1d4ed8;
       transform: translateY(-2px);
-      box-shadow: 0 4px 8px rgba(37, 99, 235, 0.3);
+      box-shadow: 0 6px 20px rgba(59, 130, 246, 0.4);
     }
 
     .btn-success {
       background: #10b981;
       color: white;
+      box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
     }
 
     .btn-success:hover {
-      background: #059669;
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(16, 185, 129, 0.4);
     }
 
     .btn-secondary {
-      background: #64748b;
-      color: white;
+      background: var(--bg-card-hover);
+      color: var(--gray-900);
+      border: 1px solid var(--border-color);
     }
 
     .btn-secondary:hover {
-      background: #475569;
+      background: white;
+      border-color: var(--accent-blue);
     }
 
     .btn-danger {
       background: #ef4444;
       color: white;
+      box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
     }
 
     .btn-danger:hover {
-      background: #dc2626;
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(239, 68, 68, 0.4);
     }
 
     .btn:disabled {
       opacity: 0.5;
       cursor: not-allowed;
       transform: none !important;
+    }
+
+    /* Custom scrollbar */
+    ::-webkit-scrollbar {
+      width: 12px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: white;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: white;
+      border-radius: 0;
+      border: 2px solid var(--bg-dark);
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+      background: var(--bg-card-hover);
     }
 
     .main-content {
@@ -205,9 +292,9 @@
 
     .workflow-canvas {
       background: white;
-      border-radius: 12px;
+      border-radius: 4px;
       padding: 2rem;
-      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
       min-height: 500px;
     }
 
@@ -248,9 +335,9 @@
 
     .execution-log {
       background: white;
-      border-radius: 12px;
+      border-radius: 4px;
       padding: 2rem;
-      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
     }
 
     .execution-log h3 {
@@ -273,7 +360,7 @@
 
     .progress-fill {
       height: 100%;
-      background: linear-gradient(90deg, #2563eb 0%, #7c3aed 100%);
+      background: var(--primary);
       border-radius: 4px;
       transition: width 0.3s ease;
       width: 0%;
@@ -424,9 +511,9 @@
 
     .code-export {
       background: white;
-      border-radius: 12px;
+      border-radius: 4px;
       padding: 2rem;
-      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
     }
 
     .code-export h3 {
@@ -528,7 +615,7 @@
 
     .modal-content {
       background: white;
-      border-radius: 12px;
+      border-radius: 4px;
       padding: 2rem;
       max-width: 600px;
       max-height: 80vh;
@@ -650,11 +737,69 @@
       }
     }
   </style>
+  <link rel="stylesheet" href="/docs/shared-header.css">
 </head>
 <body>
+  <!-- Worksona Header -->
+  <header class="worksona-header">
+    <div class="worksona-header-content">
+      <a href="/" class="worksona-logo">
+        <div class="worksona-logo-icon">W</div>
+        <span class="worksona-logo-text">WORKSONA</span>
+      </a>
+      <button class="worksona-hamburger" id="worksonaHamburger" aria-label="Toggle navigation">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+    </div>
+  </header>
+
+  <nav class="worksona-nav-overlay" id="worksonaNavOverlay">
+    <div class="worksona-nav-content">
+      <div class="worksona-nav-section">
+        <h3>Overview</h3>
+        <ul class="worksona-nav-links">
+          <li><a href="/docs/overview.html">Project Overview</a></li>
+          <li><a href="https://github.com/worksona/worksona-js" target="_blank">GitHub Repository</a></li>
+          <li><a href="https://www.npmjs.com/package/worksona-js" target="_blank">NPM Package</a></li>
+        </ul>
+      </div>
+
+      <div class="worksona-nav-section">
+        <h3>Documentation</h3>
+        <ul class="worksona-nav-links">
+          <li><a href="/docs/index.html">Documentation Hub</a></li>
+          <li><a href="/docs/api-reference-swagger.html">API Reference</a></li>
+          <li><a href="/docs/code-examples-hub.html">Code Examples</a></li>
+        </ul>
+      </div>
+
+
+      <div class="worksona-nav-section">
+        <h3>Interactive Demos</h3>
+        <ul class="worksona-nav-links">
+          <li><a href="/docs/endpoint-api-demo.html">Endpoint API Demo</a></li>
+          <li><a href="/docs/library-internal-demo.html">Library Demo</a></li>
+          <li><a href="/docs/delegation-demo.html">Delegation Workflow Builder</a></li>
+          <li><a href="/examples/dual-mode-demo.html">Dual Mode Demo</a></li>
+          <li><a href="/examples/frontier-models-demo.html">Frontier Models Demo</a></li>
+        </ul>
+      </div>
+
+      <div class="worksona-nav-section">
+        <h3>Examples & Tutorials</h3>
+        <ul class="worksona-nav-links">
+          <li><a href="/examples/index.html">Examples Directory</a></li>
+          <li><a href="/examples/dual-mode-demo.js">Node.js Demo Script</a></li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
   <!-- Header -->
   <div class="header">
-    <h1>🔗 Worksona.js Delegation Demo</h1>
+    <h1>Worksona.js Delegation Demo</h1>
     <p>Visual workflow builder for multi-agent orchestration</p>
     <div class="header-links">
       <a href="./index.html">← Documentation Hub</a>
@@ -697,7 +842,7 @@
 
       <!-- Control Panel -->
       <div class="card">
-        <h3>🎮 Controls</h3>
+        <h3>Controls</h3>
         <div class="control-panel">
           <button class="btn btn-success" id="executeBtn" onclick="executeWorkflow()">
             ▶️ Execute Workflow
@@ -772,7 +917,7 @@ graph TB
 
       <!-- Execution Log -->
       <div class="execution-log">
-        <h3>📊 Execution Log</h3>
+        <h3>Execution Log</h3>
 
         <div class="progress-container">
           <div class="progress-bar">
@@ -793,7 +938,7 @@ graph TB
 
       <!-- Code Export -->
       <div class="code-export">
-        <h3>💻 Export Code</h3>
+        <h3>Export Code</h3>
         <div class="code-tabs">
           <button class="code-tab active" onclick="switchCodeTab('javascript')">JavaScript</button>
           <button class="code-tab" onclick="switchCodeTab('nodejs')">Node.js</button>
@@ -1618,5 +1763,6 @@ print('Final result:', results['${currentWorkflow.steps[currentWorkflow.steps.le
       }
     });
   </script>
+  <script src="/docs/shared-header.js"></script>
 </body>
 </html>

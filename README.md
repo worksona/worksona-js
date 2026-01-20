@@ -45,6 +45,8 @@ npm i worksona-js
 
 **NPM Package:** https://www.npmjs.com/package/worksona-js
 
+**Live Documentation:** The complete documentation site is available at `docs/www-api/` and can be deployed to any static hosting provider (Netlify, Vercel, GitHub Pages, etc.)
+
 ### Basic Usage
 
 ```javascript
@@ -327,24 +329,110 @@ MIT License - see [LICENSE](LICENSE) file for details.
 
 Contributions welcome! Please read our [contributing guidelines](CONTRIBUTING.md) first.
 
-## 📚 Documentation
+## 📚 Documentation & Resources
+
+The complete documentation site is available in `docs/www-api/` and includes:
 
 ### 🎯 Quick Links
-- **[📖 Documentation Hub](docs/index.html)** - Central documentation portal
-- **[🔌 API Reference (Swagger)](docs/api-reference-swagger.html)** - Interactive API documentation
-- **[🎮 Try Live Demo](docs/endpoint-api-demo.html)** - Test all API endpoints
-- **[💻 Code Examples](docs/code-examples-hub.html)** - 60+ copy/paste examples
-- **[🔗 Workflow Builder](docs/delegation-demo.html)** - Visual multi-agent workflows
-- **[🎵 Vibe Coding](vibe-coding/index.html)** - AI-assisted coding (NEW!)
-- **[🚀 Marketing Site](marketing/index.html)** - Product overview
 
-### 📖 Complete Documentation Suite
-We've created a comprehensive documentation system with:
-- **Interactive Demos**: Test all features directly in your browser
-- **Code Examples**: 60+ examples in JavaScript, Node.js, Python, and cURL
-- **Visual Workflow Builder**: Build and execute multi-agent workflows
-- **API Reference**: Complete OpenAPI/Swagger documentation
-- **Getting Started Guides**: Multiple learning paths for different use cases
+**Documentation**
+- **[📖 Documentation Hub](docs/www-api/docs/index.html)** - Central documentation portal
+- **[🔌 API Reference (Swagger)](docs/www-api/docs/api-reference-swagger.html)** - Interactive API documentation
+- **[💻 Code Examples](docs/www-api/docs/code-examples-hub.html)** - 60+ copy/paste examples
+
+**Interactive Demos**
+- **[🎮 Demos Home](docs/www-api/demos/index.html)** - All interactive demos
+- **[🔌 Endpoint API Demo](docs/www-api/demos/endpoint-api-demo.html)** - Test all REST endpoints
+- **[📚 Library Demo](docs/www-api/demos/library-internal-demo.html)** - Direct library usage
+- **[🔗 Delegation Workflow](docs/www-api/demos/delegation-demo.html)** - Visual multi-agent workflows
+
+**Vibe Coding (AI-Assisted Development)**
+- **[🎵 Vibe Coding Home](docs/www-api/vibe-coding/index.html)** - AI coding assistant support
+- **[📝 AI Coding Prompt](docs/www-api/vibe-coding/AI_CODING_PROMPT.md)** - Prompts for Claude, ChatGPT, Copilot
+- **[💡 Examples](docs/www-api/vibe-coding/examples/)** - Chatbot, content pipeline, workflow builder
+
+**Downloads**
+- **[📦 worksona.min.js](docs/www-api/downloads/worksona.min.js)** - Minified library (51KB)
+- **[📦 worksona.js](docs/www-api/downloads/worksona.js)** - Full source (80KB)
+- **[📦 worksona-server.js](docs/www-api/downloads/worksona-server.js)** - REST API server
+- **[📦 worksona.d.ts](docs/www-api/downloads/worksona.d.ts)** - TypeScript definitions
+- **[📦 Complete Package (.zip)](docs/www-api/downloads/worksona-complete.zip)** - All files bundled
+
+### 🌐 Deploying the Documentation Site
+
+The documentation site in `docs/www-api/` is a standalone static site that can be deployed anywhere:
+
+**Netlify (Recommended)**
+```bash
+# Deploy from repository root
+netlify deploy --dir=docs/www-api --prod
+
+# Or use the included netlify.toml configuration
+cd docs/www-api
+netlify deploy --prod
+```
+
+**Vercel**
+```bash
+cd docs/www-api
+vercel --prod
+```
+
+**GitHub Pages**
+```bash
+# Push to gh-pages branch
+git subtree push --prefix docs/www-api origin gh-pages
+```
+
+**Any Static Host**
+Simply upload the contents of `docs/www-api/` to your web server or CDN.
+
+### 📖 Documentation Structure
+
+```
+docs/www-api/
+├── index.html              # Landing page
+├── overview.html           # Project overview
+├── assets/                 # Shared CSS and JS
+│   ├── css/
+│   │   └── navigation.css  # Unified navigation styles
+│   └── js/
+│       └── navigation.js   # Navigation functionality
+├── docs/                   # Documentation section
+│   ├── index.html
+│   ├── api-reference-swagger.html
+│   └── code-examples-hub.html
+├── demos/                  # Interactive demos
+│   ├── index.html
+│   ├── endpoint-api-demo.html
+│   ├── library-internal-demo.html
+│   ├── delegation-demo.html
+│   └── examples/
+├── vibe-coding/           # AI coding assistant support
+│   ├── index.html
+│   ├── AI_CODING_PROMPT.md
+│   ├── README.md
+│   └── examples/
+├── marketing/             # Marketing site
+│   └── index.html
+├── downloads/             # Downloadable files
+│   ├── worksona.min.js
+│   ├── worksona.js
+│   ├── worksona-server.js
+│   ├── worksona.d.ts
+│   └── *.zip
+└── netlify.toml           # Netlify configuration
+```
+
+### 🎨 Features of the Documentation Site
+
+- **Unified Left Rail Navigation** - Persistent navigation on desktop, hamburger menu on mobile
+- **Responsive Design** - Optimized for all screen sizes
+- **Interactive Demos** - Test all features directly in browser
+- **Code Examples** - Copy/paste ready examples in multiple languages
+- **AI Coding Support** - Full Vibe Coding integration for AI assistants
+- **Downloadable Files** - All library files available for offline use
+- **SEO Optimized** - Proper meta tags and structure
 
 **→ Start here: [docs/index.html](docs/index.html)**
 

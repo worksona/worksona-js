@@ -15,9 +15,9 @@
         }
         .container {
             background: white;
-            border-radius: 12px;
+            border-radius: 4px;
             padding: 30px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
         }
         h1 {
             color: #333;
@@ -111,13 +111,71 @@
             border-radius: 6px;
         }
     </style>
+  <link rel="stylesheet" href="/examples/shared-header.css">
 </head>
 <body>
+  <!-- Worksona Header -->
+  <header class="worksona-header">
+    <div class="worksona-header-content">
+      <a href="/" class="worksona-logo">
+        <div class="worksona-logo-icon">W</div>
+        <span class="worksona-logo-text">WORKSONA</span>
+      </a>
+      <button class="worksona-hamburger" id="worksonaHamburger" aria-label="Toggle navigation">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+    </div>
+  </header>
+
+  <nav class="worksona-nav-overlay" id="worksonaNavOverlay">
+    <div class="worksona-nav-content">
+      <div class="worksona-nav-section">
+        <h3>Overview</h3>
+        <ul class="worksona-nav-links">
+          <li><a href="/docs/overview.html">Project Overview</a></li>
+          <li><a href="https://github.com/worksona/worksona-js" target="_blank">GitHub Repository</a></li>
+          <li><a href="https://www.npmjs.com/package/worksona-js" target="_blank">NPM Package</a></li>
+        </ul>
+      </div>
+
+      <div class="worksona-nav-section">
+        <h3>Documentation</h3>
+        <ul class="worksona-nav-links">
+          <li><a href="/docs/index.html">Documentation Hub</a></li>
+          <li><a href="/docs/api-reference-swagger.html">API Reference</a></li>
+          <li><a href="/docs/code-examples-hub.html">Code Examples</a></li>
+        </ul>
+      </div>
+
+
+      <div class="worksona-nav-section">
+        <h3>Interactive Demos</h3>
+        <ul class="worksona-nav-links">
+          <li><a href="/docs/endpoint-api-demo.html">Endpoint API Demo</a></li>
+          <li><a href="/docs/library-internal-demo.html">Library Demo</a></li>
+          <li><a href="/docs/delegation-demo.html">Delegation Workflow Builder</a></li>
+          <li><a href="/examples/dual-mode-demo.html">Dual Mode Demo</a></li>
+          <li><a href="/examples/frontier-models-demo.html">Frontier Models Demo</a></li>
+        </ul>
+      </div>
+
+      <div class="worksona-nav-section">
+        <h3>Examples & Tutorials</h3>
+        <ul class="worksona-nav-links">
+          <li><a href="/examples/index.html">Examples Directory</a></li>
+          <li><a href="/examples/dual-mode-demo.js">Node.js Demo Script</a></li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
     <div class="container">
-        <h1>🚀 Worksona.js v0.2.0 - Frontier Models Demo</h1>
+        <h1>Worksona.js v0.2.0 - Frontier Models Demo</h1>
 
         <div class="api-setup">
-            <h3>⚙️ API Configuration</h3>
+            <h3>API Configuration</h3>
             <p>Enter your API keys to test the latest frontier models:</p>
             <div class="input-group">
                 <label>OpenAI API Key (for GPT-5, o3):</label>
@@ -341,7 +399,7 @@
                 let output = '<h3>Multi-Agent Analysis Results:</h3>';
 
                 // Step 1: Analysis
-                output += '<div style="margin: 15px 0;"><strong>📊 Claude Opus 4.5 Analysis:</strong><br>';
+                output += '<div style="margin: 15px 0;"><strong>Claude Opus 4.5 Analysis:</strong><br>';
                 const analysis = await worksona.chat('analyst', `Provide a comprehensive analysis of ${topic}`);
                 output += `<div style="padding: 10px; background: #f0f8ff; border-radius: 4px; margin-top: 5px;">${analysis}</div></div>`;
 
@@ -361,5 +419,6 @@
             }
         }
     </script>
+  <script src="/examples/shared-header.js"></script>
 </body>
 </html>

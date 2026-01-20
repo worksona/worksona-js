@@ -14,7 +14,7 @@
 
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: var(--primary);
             min-height: 100vh;
             padding: 20px;
         }
@@ -41,9 +41,9 @@
 
         .mode-card {
             background: white;
-            border-radius: 16px;
+            border-radius: 0;
             padding: 30px;
-            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
         }
 
         .mode-card h2 {
@@ -57,7 +57,7 @@
         .mode-badge {
             display: inline-block;
             padding: 4px 12px;
-            border-radius: 12px;
+            border-radius: 0;
             font-size: 12px;
             font-weight: 600;
         }
@@ -97,7 +97,7 @@
             width: 100%;
             padding: 12px;
             border: 2px solid #e2e8f0;
-            border-radius: 8px;
+            border-radius: 0;
             font-size: 14px;
             transition: border-color 0.3s;
         }
@@ -116,11 +116,11 @@
         }
 
         button {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: var(--primary);
             color: white;
             border: none;
             padding: 12px 24px;
-            border-radius: 8px;
+            border-radius: 0;
             cursor: pointer;
             font-size: 16px;
             font-weight: 600;
@@ -148,7 +148,7 @@
             margin-top: 20px;
             padding: 15px;
             background: #f8fafc;
-            border-radius: 8px;
+            border-radius: 0;
             border-left: 4px solid #667eea;
             min-height: 80px;
             white-space: pre-wrap;
@@ -175,10 +175,10 @@
 
         .comparison {
             background: white;
-            border-radius: 16px;
+            border-radius: 0;
             padding: 30px;
             margin-top: 20px;
-            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
         }
 
         .comparison h2 {
@@ -195,7 +195,7 @@
         .comparison-item {
             padding: 20px;
             background: #f8fafc;
-            border-radius: 8px;
+            border-radius: 0;
             border: 2px solid #e2e8f0;
         }
 
@@ -229,16 +229,16 @@
             padding: 6px 12px;
             background: #667eea;
             color: white;
-            border-radius: 6px;
+            border-radius: 0;
             font-size: 12px;
             margin: 4px;
         }
 
         .code-block {
-            background: #1e293b;
+            background: #1a1f3a;
             color: #e2e8f0;
             padding: 15px;
-            border-radius: 8px;
+            border-radius: 0;
             font-family: 'Courier New', monospace;
             font-size: 13px;
             overflow-x: auto;
@@ -255,7 +255,7 @@
             padding: 10px 20px;
             background: #f1f5f9;
             border: none;
-            border-radius: 8px 8px 0 0;
+            border-radius: 0;
             cursor: pointer;
             font-weight: 600;
             color: #64748b;
@@ -286,10 +286,68 @@
             }
         }
     </style>
+  <link rel="stylesheet" href="/examples/shared-header.css">
 </head>
 <body>
+  <!-- Worksona Header -->
+  <header class="worksona-header">
+    <div class="worksona-header-content">
+      <a href="/" class="worksona-logo">
+        <div class="worksona-logo-icon">W</div>
+        <span class="worksona-logo-text">WORKSONA</span>
+      </a>
+      <button class="worksona-hamburger" id="worksonaHamburger" aria-label="Toggle navigation">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+    </div>
+  </header>
+
+  <nav class="worksona-nav-overlay" id="worksonaNavOverlay">
+    <div class="worksona-nav-content">
+      <div class="worksona-nav-section">
+        <h3>Overview</h3>
+        <ul class="worksona-nav-links">
+          <li><a href="/docs/overview.html">Project Overview</a></li>
+          <li><a href="https://github.com/worksona/worksona-js" target="_blank">GitHub Repository</a></li>
+          <li><a href="https://www.npmjs.com/package/worksona-js" target="_blank">NPM Package</a></li>
+        </ul>
+      </div>
+
+      <div class="worksona-nav-section">
+        <h3>Documentation</h3>
+        <ul class="worksona-nav-links">
+          <li><a href="/docs/index.html">Documentation Hub</a></li>
+          <li><a href="/docs/api-reference-swagger.html">API Reference</a></li>
+          <li><a href="/docs/code-examples-hub.html">Code Examples</a></li>
+        </ul>
+      </div>
+
+
+      <div class="worksona-nav-section">
+        <h3>Interactive Demos</h3>
+        <ul class="worksona-nav-links">
+          <li><a href="/docs/endpoint-api-demo.html">Endpoint API Demo</a></li>
+          <li><a href="/docs/library-internal-demo.html">Library Demo</a></li>
+          <li><a href="/docs/delegation-demo.html">Delegation Workflow Builder</a></li>
+          <li><a href="/examples/dual-mode-demo.html">Dual Mode Demo</a></li>
+          <li><a href="/examples/frontier-models-demo.html">Frontier Models Demo</a></li>
+        </ul>
+      </div>
+
+      <div class="worksona-nav-section">
+        <h3>Examples & Tutorials</h3>
+        <ul class="worksona-nav-links">
+          <li><a href="/examples/index.html">Examples Directory</a></li>
+          <li><a href="/examples/dual-mode-demo.js">Node.js Demo Script</a></li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
     <div class="container">
-        <h1>🚀 Worksona.js - Dual Mode Demo</h1>
+        <h1>Worksona.js - Dual Mode Demo</h1>
 
         <div class="modes">
             <!-- Library Mode -->
@@ -369,7 +427,7 @@
 
         <!-- Comparison Section -->
         <div class="comparison">
-            <h2>📊 Mode Comparison</h2>
+            <h2>Mode Comparison</h2>
 
             <div class="comparison-grid">
                 <div class="comparison-item">
@@ -436,13 +494,13 @@ curl "http://localhost:3000/api/query?q=Hello"</div>
 
         <!-- Code Examples Section -->
         <div class="comparison" style="margin-top: 20px;">
-            <h2>💻 Code Examples</h2>
+            <h2>Code Examples</h2>
 
             <div class="tabs">
-                <button class="tab active" onclick="showTab('js')">JavaScript</button>
-                <button class="tab" onclick="showTab('python')">Python</button>
-                <button class="tab" onclick="showTab('curl')">cURL</button>
-                <button class="tab" onclick="showTab('node')">Node.js</button>
+                <button class="tab active" onclick="showTab('js', this)">JavaScript</button>
+                <button class="tab" onclick="showTab('python', this)">Python</button>
+                <button class="tab" onclick="showTab('curl', this)">cURL</button>
+                <button class="tab" onclick="showTab('node', this)">Node.js</button>
             </div>
 
             <div id="js-content" class="tab-content active">
@@ -770,7 +828,7 @@ ${error.message}
         }
 
         // Tab switching
-        function showTab(tab) {
+        function showTab(tab, clickedButton) {
             // Hide all contents
             document.querySelectorAll('.tab-content').forEach(content => {
                 content.classList.remove('active');
@@ -785,8 +843,11 @@ ${error.message}
             document.getElementById(`${tab}-content`).classList.add('active');
 
             // Activate selected tab
-            event.target.classList.add('active');
+            if (clickedButton) {
+                clickedButton.classList.add('active');
+            }
         }
     </script>
+  <script src="/examples/shared-header.js"></script>
 </body>
 </html>

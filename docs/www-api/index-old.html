@@ -1,27 +1,14 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+  <link rel="stylesheet" href="/docs/shared-header.css">
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Worksona.js Documentation</title>
   <meta name="description" content="Complete documentation for Worksona.js - AI Agent Management Library & API Server with multi-provider support">
 
   <!-- Mermaid for diagrams -->
-  <script type="module">
-    import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
-    mermaid.initialize({
-      startOnLoad: true,
-      theme: 'base',
-      themeVariables: {
-        primaryColor: '#2563eb',
-        primaryTextColor: '#fff',
-        primaryBorderColor: '#1d4ed8',
-        lineColor: '#64748b',
-        secondaryColor: '#7c3aed',
-        tertiaryColor: '#f8fafc'
-      }
-    });
-  </script>
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
 
   <!-- Prism.js for syntax highlighting -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/themes/prism-tomorrow.min.css">
@@ -34,16 +21,18 @@
     }
 
     :root {
-      --primary-500: #2563eb;
-      --primary-600: #1d4ed8;
-      --primary-700: #1e40af;
-      --secondary-500: #7c3aed;
-      --secondary-600: #6d28d9;
+      --primary: #2563eb;
+      --secondary: #7c3aed;
+      --success: #10b981;
       --gray-50: #f8fafc;
       --gray-100: #f1f5f9;
       --gray-200: #e2e8f0;
+      --gray-300: #cbd5e1;
+      --gray-400: #94a3b8;
       --gray-500: #64748b;
+      --gray-600: #475569;
       --gray-700: #334155;
+      --gray-800: #1e293b;
       --gray-900: #0f172a;
     }
 
@@ -51,31 +40,31 @@
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
       line-height: 1.6;
       color: var(--gray-900);
-      background: var(--gray-50);
+      background: white;
+      margin: 0;
+      padding: 0;
     }
 
-    /* Header */
+    /* Page header styles */
     .header {
-      background: linear-gradient(135deg, var(--primary-500) 0%, var(--secondary-500) 100%);
-      color: white;
+      background: white;
+      border-bottom: 2px solid var(--gray-200);
       padding: 3rem 2rem;
       text-align: center;
-      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-      position: sticky;
-      top: 0;
-      z-index: 100;
+      margin-top: 60px;
     }
 
     .header h1 {
       font-size: 2.5rem;
       font-weight: 700;
       margin-bottom: 0.5rem;
+      color: var(--gray-900);
     }
 
     .header p {
       font-size: 1.25rem;
-      opacity: 0.95;
       margin-bottom: 1.5rem;
+      color: var(--gray-700);
     }
 
     .header-nav {
@@ -86,19 +75,20 @@
     }
 
     .header-nav a {
-      color: white;
+      color: var(--gray-900);
       text-decoration: none;
-      padding: 0.5rem 1rem;
-      background: rgba(255,255,255,0.2);
-      border-radius: 6px;
+      padding: 0.75rem 1.5rem;
+      background: var(--gray-100);
+      border: 2px solid var(--gray-200);
       transition: all 0.2s;
       font-size: 0.9rem;
       font-weight: 500;
     }
 
     .header-nav a:hover {
-      background: rgba(255,255,255,0.3);
-      transform: translateY(-2px);
+      background: var(--primary);
+      color: white;
+      border-color: var(--primary);
     }
 
     /* Container */
@@ -111,22 +101,28 @@
     /* Section */
     .section {
       background: white;
-      border-radius: 12px;
       padding: 2.5rem;
       margin-bottom: 2rem;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+      border: 2px solid var(--gray-200);
+      transition: all 0.2s ease;
+    }
+
+    .section:hover {
+      border-color: var(--primary);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
     }
 
     .section h2 {
-      color: var(--primary-600);
+      color: var(--primary);
       font-size: 2rem;
       margin-bottom: 1.5rem;
       padding-bottom: 0.75rem;
-      border-bottom: 3px solid var(--primary-500);
+      border-bottom: 2px solid var(--gray-200);
     }
 
     .section h3 {
-      color: var(--gray-700);
+      color: var(--gray-900);
       font-size: 1.5rem;
       margin: 1.5rem 0 1rem 0;
     }
@@ -140,31 +136,40 @@
     .section ul {
       margin: 1rem 0 1rem 2rem;
       line-height: 1.8;
+      color: var(--gray-700);
     }
 
     .section li {
       margin-bottom: 0.5rem;
     }
 
+    .section strong {
+      color: var(--gray-900);
+    }
+
     /* Code blocks */
     .code-block {
-      background: var(--gray-900);
+      background: #1a1f3a;
       color: #e2e8f0;
       padding: 1.5rem;
-      border-radius: 8px;
+      border-radius: 0;
       overflow-x: auto;
       margin: 1rem 0;
       font-family: 'Fira Code', 'Cascadia Code', monospace;
       font-size: 0.9rem;
       line-height: 1.6;
+      border: 1px solid var(--gray-700);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
     }
 
     code {
       font-family: 'Fira Code', 'Cascadia Code', monospace;
-      background: var(--gray-100);
-      padding: 0.2rem 0.4rem;
-      border-radius: 4px;
+      background: rgba(59, 130, 246, 0.15);
+      color: var(--primary);
+      padding: 0.2rem 0.5rem;
+      border-radius: 0;
       font-size: 0.9em;
+      border: 1px solid rgba(59, 130, 246, 0.2);
     }
 
     /* Navigation Grid */
@@ -178,24 +183,27 @@
     .nav-card {
       background: white;
       border: 2px solid var(--gray-200);
-      border-radius: 10px;
-      padding: 1.5rem;
+      border-radius: 0;
+      padding: 2rem;
       text-decoration: none;
       color: inherit;
-      transition: all 0.3s;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
       display: flex;
       flex-direction: column;
       gap: 0.75rem;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
     }
 
     .nav-card:hover {
-      border-color: var(--primary-500);
-      box-shadow: 0 8px 16px rgba(37, 99, 235, 0.15);
-      transform: translateY(-4px);
+      border-color: var(--primary);
+      box-shadow: 0 12px 32px rgba(59, 130, 246, 0.3);
+      transform: translateY(-6px);
+      background: var(--gray-50);
     }
 
     .nav-card-icon {
       font-size: 2.5rem;
+      filter: drop-shadow(0 0 8px currentColor);
     }
 
     .nav-card-title {
@@ -206,7 +214,7 @@
 
     .nav-card-desc {
       font-size: 0.9rem;
-      color: var(--gray-500);
+      color: var(--gray-600);
       line-height: 1.5;
     }
 
@@ -221,19 +229,27 @@
     .feature {
       background: var(--gray-50);
       padding: 1.5rem;
-      border-radius: 8px;
-      border-left: 4px solid var(--primary-500);
+      border-radius: 0;
+      border-left: 4px solid var(--primary);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+      transition: all 0.3s ease;
+    }
+
+    .feature:hover {
+      border-left-color: var(--secondary);
+      transform: translateX(4px);
+      box-shadow: 0 6px 20px rgba(139, 92, 246, 0.3);
     }
 
     .feature h4 {
-      color: var(--primary-600);
+      color: var(--primary);
       margin-bottom: 0.5rem;
       font-size: 1.1rem;
     }
 
     .feature p {
       font-size: 0.9rem;
-      color: var(--gray-700);
+      color: var(--gray-600);
       margin: 0;
     }
 
@@ -241,27 +257,31 @@
     .diagram-container {
       background: white;
       padding: 2rem;
-      border-radius: 8px;
+      border-radius: 0;
       margin: 2rem 0;
       border: 1px solid var(--gray-200);
       overflow-x: auto;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
     }
 
     /* Footer */
     .footer {
-      background: var(--gray-900);
-      color: white;
+      background: var(--gray-100);
+      color: var(--gray-900);
       padding: 3rem 2rem;
       margin-top: 4rem;
       text-align: center;
+      border-top: 1px solid var(--gray-200);
     }
 
     .footer a {
-      color: var(--primary-500);
+      color: var(--primary);
       text-decoration: none;
+      transition: all 0.2s ease;
     }
 
     .footer a:hover {
+      color: var(--secondary);
       text-decoration: underline;
     }
 
@@ -275,12 +295,26 @@
 
     /* Responsive */
     @media (max-width: 768px) {
+      .header {
+        padding: 2rem 1rem;
+      }
+
       .header h1 {
         font-size: 1.75rem;
       }
 
       .header p {
         font-size: 1rem;
+      }
+
+      .header-nav a {
+        width: 100%;
+        max-width: 250px;
+        text-align: center;
+      }
+
+      .container {
+        padding: 1rem;
       }
 
       .section {
@@ -305,20 +339,96 @@
       scroll-behavior: smooth;
     }
 
+    /* Custom scrollbar */
+    ::-webkit-scrollbar {
+      width: 12px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: white;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: var(--gray-300);
+      border-radius: 0;
+      border: 2px solid var(--gray-100);
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+      background: var(--gray-400);
+    }
+
     /* Badge */
     .badge {
       display: inline-block;
       padding: 0.25rem 0.75rem;
-      background: var(--primary-500);
+      background: var(--primary);
       color: white;
-      border-radius: 20px;
+      border-radius: 0;
       font-size: 0.85rem;
       font-weight: 600;
       margin: 0 0.25rem;
+      box-shadow: 0 2px 8px rgba(59, 130, 246, 0.3);
     }
   </style>
 </head>
 <body>
+  <!-- Worksona Header -->
+  <header class="worksona-header">
+    <div class="worksona-header-content">
+      <a href="/" class="worksona-logo">
+        <div class="worksona-logo-icon">W</div>
+        <span class="worksona-logo-text">WORKSONA</span>
+      </a>
+      <button class="worksona-hamburger" id="worksonaHamburger" aria-label="Toggle navigation">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+    </div>
+  </header>
+
+  <nav class="worksona-nav-overlay" id="worksonaNavOverlay">
+    <div class="worksona-nav-content">
+      <div class="worksona-nav-section">
+        <h3>Overview</h3>
+        <ul class="worksona-nav-links">
+          <li><a href="/docs/overview.html">Project Overview</a></li>
+          <li><a href="https://github.com/worksona/worksona-js" target="_blank">GitHub Repository</a></li>
+          <li><a href="https://www.npmjs.com/package/worksona-js" target="_blank">NPM Package</a></li>
+        </ul>
+      </div>
+
+      <div class="worksona-nav-section">
+        <h3>Documentation</h3>
+        <ul class="worksona-nav-links">
+          <li><a href="/docs/index.html">Documentation Hub</a></li>
+          <li><a href="/docs/api-reference-swagger.html">API Reference</a></li>
+          <li><a href="/docs/code-examples-hub.html">Code Examples</a></li>
+        </ul>
+      </div>
+
+      <div class="worksona-nav-section">
+        <h3>Interactive Demos</h3>
+        <ul class="worksona-nav-links">
+          <li><a href="/docs/endpoint-api-demo.html">Endpoint API Demo</a></li>
+          <li><a href="/docs/library-internal-demo.html">Library Demo</a></li>
+          <li><a href="/docs/delegation-demo.html">Delegation Workflow Builder</a></li>
+          <li><a href="/examples/dual-mode-demo.html">Dual Mode Demo</a></li>
+          <li><a href="/examples/frontier-models-demo.html">Frontier Models Demo</a></li>
+        </ul>
+      </div>
+
+      <div class="worksona-nav-section">
+        <h3>Examples & Tutorials</h3>
+        <ul class="worksona-nav-links">
+          <li><a href="/examples/index.html">Examples Directory</a></li>
+          <li><a href="/examples/dual-mode-demo.js">Node.js Demo Script</a></li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
   <!-- Header -->
   <header class="header">
     <h1>🤖 Worksona.js Documentation</h1>
@@ -342,7 +452,7 @@
 
       <div class="features">
         <div class="feature">
-          <h4>🚀 Zero Dependencies</h4>
+          <h4>Zero Dependencies</h4>
           <p>Single-file architecture with no external runtime dependencies</p>
         </div>
         <div class="feature">
@@ -354,7 +464,7 @@
           <p>Generate, analyze, edit, and create image variations</p>
         </div>
         <div class="feature">
-          <h4>📊 Observable</h4>
+          <h4>Observable</h4>
           <p>17 event emitters for complete visibility</p>
         </div>
       </div>
@@ -584,7 +694,7 @@ const article = await pipeline('Quantum Computing');</pre>
           <p>Expert in research, analysis, and fact-checking</p>
         </div>
         <div class="feature">
-          <h4>📝 Content Writer</h4>
+          <h4>Content Writer</h4>
           <p>Specialized in creating engaging written content</p>
         </div>
         <div class="feature">
@@ -592,7 +702,7 @@ const article = await pipeline('Quantum Computing');</pre>
           <p>Knowledgeable in legal analysis and compliance</p>
         </div>
         <div class="feature">
-          <h4>📊 Marketing Agent</h4>
+          <h4>Marketing Agent</h4>
           <p>Expert in marketing strategy and campaigns</p>
         </div>
         <div class="feature">
@@ -667,7 +777,7 @@ graph LR
       <h3>Key API Features</h3>
       <div class="features">
         <div class="feature">
-          <h4>📁 File Processing</h4>
+          <h4>File Processing</h4>
           <p>Upload and process images, PDFs, DOCX, XLSX, CSV files</p>
         </div>
         <div class="feature">
@@ -683,11 +793,11 @@ graph LR
           <p>Pattern: /api/agents/:agentId/:action/:object</p>
         </div>
         <div class="feature">
-          <h4>⚡ Batch Processing</h4>
+          <h4>Batch Processing</h4>
           <p>Process up to 10 queries in parallel</p>
         </div>
         <div class="feature">
-          <h4>🔗 Webhook Support</h4>
+          <h4>Webhook Support</h4>
           <p>Integrate with external services via webhooks</p>
         </div>
       </div>
@@ -824,7 +934,7 @@ GET /api/agents/marketing-agent/tools/dalle/generate?prompt=logo
 
       <div class="nav-grid">
         <a href="./api-reference-swagger.html" class="nav-card">
-          <div class="nav-card-icon">📖</div>
+          <div class="nav-card-icon"></div>
           <div class="nav-card-title">API Reference (Swagger)</div>
           <div class="nav-card-desc">Interactive API documentation with try-it-now functionality for all 32+ endpoints</div>
         </a>
@@ -836,13 +946,13 @@ GET /api/agents/marketing-agent/tools/dalle/generate?prompt=logo
         </a>
 
         <a href="./library-internal-demo.html" class="nav-card">
-          <div class="nav-card-icon">📚</div>
+          <div class="nav-card-icon"></div>
           <div class="nav-card-title">Library Internal Demo</div>
           <div class="nav-card-desc">Direct worksona.js library usage with chat, image generation, and file processing</div>
         </a>
 
         <a href="./code-examples-hub.html" class="nav-card">
-          <div class="nav-card-icon">💻</div>
+          <div class="nav-card-icon"></div>
           <div class="nav-card-title">Code Examples Hub</div>
           <div class="nav-card-desc">60 copy/paste examples in JavaScript, Node.js, Python, and cURL</div>
         </a>
@@ -854,7 +964,7 @@ GET /api/agents/marketing-agent/tools/dalle/generate?prompt=logo
         </a>
 
         <a href="./getting-started.html" class="nav-card">
-          <div class="nav-card-icon">🚀</div>
+          <div class="nav-card-icon"></div>
           <div class="nav-card-title">Getting Started Guide</div>
           <div class="nav-card-desc">Step-by-step guide to installing and using Worksona.js</div>
         </a>
@@ -872,7 +982,7 @@ GET /api/agents/marketing-agent/tools/dalle/generate?prompt=logo
         </a>
 
         <a href="../marketing/index.html" class="nav-card">
-          <div class="nav-card-icon">🌟</div>
+          <div class="nav-card-icon"></div>
           <div class="nav-card-title">Marketing Site</div>
           <div class="nav-card-desc">Features, use cases, and why choose Worksona.js</div>
         </a>
@@ -902,5 +1012,27 @@ GET /api/agents/marketing-agent/tools/dalle/generate?prompt=logo
   <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/prism.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-javascript.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-json.min.js"></script>
+
+  <!-- Initialize Mermaid -->
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      mermaid.initialize({
+        startOnLoad: true,
+        theme: 'base',
+        themeVariables: {
+          primaryColor: '#2563eb',
+          primaryTextColor: '#fff',
+          primaryBorderColor: '#1d4ed8',
+          lineColor: '#64748b',
+          secondaryColor: '#7c3aed',
+          tertiaryColor: '#f8fafc'
+        }
+      });
+      // Manually render all mermaid diagrams
+      mermaid.run();
+    });
+  </script>
+
+  <script src="/docs/shared-header.js"></script>
 </body>
 </html>

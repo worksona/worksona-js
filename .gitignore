@@ -9,7 +9,12 @@ node_modules/
 
 # Ignore local env files
 .env
-.env.*
+.env.local
+.env.*.local
+
+# Keep env template
+!env.template
+!.env.example
 
 # Ignore Netlify build output
 .netlify/

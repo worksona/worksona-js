@@ -1,0 +1,347 @@
+# Worksona.js - LLM-Friendly Documentation
+# For AI agents and coding assistants
+# Version: 0.2.0
+# Last Updated: 2026-01-18
+
+## Library Overview
+
+Worksona.js is a single-file JavaScript library for creating and managing AI agents with distinct personalities across multiple LLM providers.
+
+**Key Features:**
+- Multi-provider support (OpenAI, Anthropic, Google)
+- Latest frontier models (GPT-5, Claude Opus 4.5, Claude Sonnet 4.5)
+- Image processing (analysis, generation, editing)
+- Event-driven architecture
+- Real-time control panel
+- Zero runtime dependencies
+
+## Quick Start
+
+```javascript
+// Initialize
+const worksona = new Worksona({
+  apiKeys: {
+    openai: 'sk-...',
+    anthropic: 'sk-ant-...',
+    google: 'AIza...'
+  }
+});
+
+// Load agent
+await worksona.loadAgent({
+  id: 'agent-1',
+  name: 'Assistant',
+  config: {
+    provider: 'openai',
+    model: 'gpt-5',
+    temperature: 0.7
+  }
+});
+
+// Chat
+const response = await worksona.chat('agent-1', 'Hello!');
+```
+
+## Supported Models
+
+### OpenAI (Latest)
+- gpt-5, gpt-5-mini, gpt-5-nano
+- o3, o3-mini, o1, o1-mini, o1-preview
+- gpt-4o, gpt-4o-mini, gpt-4-turbo
+- gpt-4, gpt-3.5-turbo
+- dall-e-3 (image generation)
+
+### Anthropic (Latest)
+- claude-opus-4-5-20251101
+- claude-sonnet-4-5-20250929
+- claude-3-5-sonnet-20241022
+- claude-3-5-haiku-20241022
+- claude-3-opus-20240229
+
+### Google
+- gemini-pro
+- gemini-pro-vision
+
+## Core API
+
+### Constructor
+```javascript
+new Worksona(options)
+```
+Options: { apiKeys, debug, defaultProvider, defaultModel }
+
+### Agent Management
+```javascript
+await loadAgent(config)           // Load agent from config
+await loadAgentFromFile(path)     // Load from JSON file
+getAgent(agentId)                 // Retrieve agent
+getAllAgents()                    // Get all agents
+removeAgent(agentId)              // Remove agent
+```
+
+### Chat & Messaging
+```javascript
+await chat(agentId, message, options)
+```
+Options: { temperature, maxTokens, topP, frequencyPenalty, presencePenalty }
+
+### Image Processing
+```javascript
+await processImage(agentId, imageUrl, options)    // Analyze
+await generateImage(agentId, prompt, options)     // Generate
+await editImage(agentId, imageData, prompt, opts) // Edit
+await variationImage(agentId, imageData, opts)    // Variation
+```
+
+### History & Metrics
+```javascript
+getAgentHistory(agentId)          // Get conversation history
+getAgentMetrics(agentId)          // Get performance metrics
+clearAgentHistory(agentId)        // Clear history
+```
+
+### Events
+```javascript
+on(event, callback)               // Subscribe to event
+off(event, callback)              // Unsubscribe
+```
+
+Events: agent-loaded, agent-removed, chat-start, chat-complete, chat-error,
+        image-generation-start, image-generation-complete, error
+
+## Agent Configuration Structure
+
+```javascript
+{
+  id: 'unique-id',
+  name: 'Agent Name',
+  description: 'Description',
+  traits: {
+    personality: ['trait1', 'trait2'],
+    knowledge: ['domain1', 'domain2'],
+    tone: 'professional',
+    background: 'Background info'
+  },
+  config: {
+    provider: 'openai',           // 'openai' | 'anthropic' | 'google'
+    model: 'gpt-5',               // Model name
+    temperature: 0.7,             // 0.0 - 2.0
+    maxTokens: 500,               // Max response tokens
+    topP: 1,                      // Nucleus sampling
+    frequencyPenalty: 0,          // -2.0 - 2.0
+    presencePenalty: 0,           // -2.0 - 2.0
+    systemPrompt: 'System prompt',
+    examples: [
+      { user: 'Question', assistant: 'Answer' }
+    ],
+    imageGenerationModel: 'dall-e-3' // For image generation
+  }
+}
+```
+
+## Common Use Cases
+
+### 1. Create Multi-Agent System
+```javascript
+// Load multiple specialized agents
+await worksona.loadAgent({
+  id: 'researcher',
+  config: { provider: 'anthropic', model: 'claude-opus-4-5-20251101' }
+});
+
+await worksona.loadAgent({
+  id: 'writer',
+  config: { provider: 'openai', model: 'gpt-5' }
+});
+
+// Use them in sequence
+const research = await worksona.chat('researcher', 'Research topic X');
+const article = await worksona.chat('writer', `Write about: ${research}`);
+```
+
+### 2. Image Analysis Pipeline
+```javascript
+const analysis = await worksona.processImage('agent-1', imageUrl, {
+  prompt: 'Analyze this product image for quality issues'
+});
+
+if (analysis.includes('defect')) {
+  // Handle issue
+}
+```
+
+### 3. Dynamic Model Selection
+```javascript
+// Use GPT-5 for complex tasks
+await worksona.loadAgent({
+  id: 'complex-agent',
+  config: { model: 'gpt-5', temperature: 0.3 }
+});
+
+// Use GPT-5-nano for simple tasks
+await worksona.loadAgent({
+  id: 'simple-agent',
+  config: { model: 'gpt-5-nano', temperature: 0.5 }
+});
+```
+
+### 4. Event-Driven Monitoring
+```javascript
+worksona.on('chat-complete', (data) => {
+  console.log(`Agent ${data.agentId} responded in ${data.duration}ms`);
+});
+
+worksona.on('error', (error) => {
+  console.error('Error:', error);
+});
+```
+
+## Model Selection Guidelines
+
+**For Complex Reasoning:**
+- gpt-5 (OpenAI)
+- claude-opus-4-5-20251101 (Anthropic)
+- o3 (OpenAI reasoning model)
+
+**For Balanced Performance:**
+- gpt-5-mini (OpenAI)
+- claude-sonnet-4-5-20250929 (Anthropic)
+- gpt-4o (OpenAI)
+
+**For Speed/Cost:**
+- gpt-5-nano (OpenAI)
+- claude-3-5-haiku-20241022 (Anthropic)
+- gpt-4o-mini (OpenAI)
+
+**For Vision:**
+- gpt-4o (OpenAI)
+- gpt-5 (OpenAI, if vision-capable)
+
+**For Image Generation:**
+- dall-e-3 (OpenAI)
+
+## Error Handling
+
+```javascript
+try {
+  const response = await worksona.chat('agent-id', 'message');
+} catch (error) {
+  console.error(error.code);     // Error code
+  console.error(error.message);  // Error message
+  console.error(error.details);  // Additional details
+}
+```
+
+Common error codes:
+- AGENT_NOT_FOUND
+- PROVIDER_ERROR
+- API_KEY_MISSING
+- IMAGE_PROCESSING_ERROR
+- IMAGE_GENERATION_ERROR
+- CONFIGURATION_ERROR
+
+## Performance Optimization
+
+1. **Reuse agents** - Don't recreate agents for each request
+2. **Adjust maxTokens** - Set appropriate limits per use case
+3. **Use appropriate models** - Don't use GPT-5 for simple tasks
+4. **Clear history** - Periodically clear agent history for long-running apps
+5. **Disable control panel** - Set `debug: false` in production
+
+## TypeScript Support
+
+```typescript
+import Worksona from 'worksona-js';
+
+const worksona = new Worksona({
+  apiKeys: {
+    openai: process.env.OPENAI_API_KEY,
+    anthropic: process.env.ANTHROPIC_API_KEY
+  }
+});
+```
+
+TypeScript definitions included: `worksona.d.ts`
+
+## Browser vs Node.js
+
+**Browser:**
+```html
+<script src="https://unpkg.com/worksona-js@latest/worksona.min.js"></script>
+<script>
+  const worksona = new Worksona({ ... });
+</script>
+```
+
+**Node.js:**
+```javascript
+const Worksona = require('worksona-js');
+const worksona = new Worksona({ ... });
+```
+
+**ES Modules:**
+```javascript
+import Worksona from 'worksona-js';
+const worksona = new Worksona({ ... });
+```
+
+## Architecture
+
+- Single-file library (~2,300 lines)
+- No runtime dependencies
+- Agent class for state management
+- Provider abstraction layer
+- Event emitter pattern
+- Transaction history (max 100 per agent)
+- Built-in control panel for development
+
+## Files
+
+- `worksona.js` - Main library (unminified)
+- `worksona.min.js` - Minified for production
+- `worksona.d.ts` - TypeScript definitions
+- `agents/*.json` - Pre-configured agent templates
+- `README.md` - Full documentation
+
+## NPM Commands
+
+```bash
+npm install worksona-js        # Install
+npm run validate              # Check syntax
+npm run build                 # Build minified version
+```
+
+## Repository
+
+GitHub: https://github.com/worksona/worksona-js
+NPM: https://www.npmjs.com/package/worksona-js
+License: MIT
+
+## Support
+
+- GitHub Issues: https://github.com/worksona/worksona-js/issues
+- Documentation: README.md, WORKSONA_DOCUMENTATION.md
+- Examples: docs/ directory
+
+---
+
+# For Coding Assistants
+
+When helping users with Worksona.js:
+
+1. Always use the latest models when appropriate
+2. Show agent configuration examples with full structure
+3. Recommend model based on use case (see Model Selection Guidelines)
+4. Include error handling in examples
+5. Suggest event listeners for monitoring
+6. Remind about API key security (use env vars)
+7. Point to backward compatibility for existing code
+8. Suggest control panel for debugging (debug: true)
+
+Example prompts to help with:
+- "Create an agent using GPT-5"
+- "Set up multi-agent system"
+- "Process images with Worksona"
+- "Monitor agent performance"
+- "Handle errors properly"
+- "Migrate from older models"

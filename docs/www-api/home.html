@@ -1,0 +1,773 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Worksona.js - Documentation Hub</title>
+  <meta name="description" content="Complete documentation, demos, and examples for Worksona.js - Multi-agent AI orchestration library">
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    :root {
+      --primary: #2563eb;
+      --secondary: #7c3aed;
+      --success: #10b981;
+      --gray-50: #f8fafc;
+      --gray-100: #f1f5f9;
+      --gray-200: #e2e8f0;
+      --gray-300: #cbd5e1;
+      --gray-400: #94a3b8;
+      --gray-500: #64748b;
+      --gray-600: #475569;
+      --gray-700: #334155;
+      --gray-800: #1e293b;
+      --gray-900: #0f172a;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+      color: var(--gray-800);
+      line-height: 1.6;
+      background: white;
+      margin: 0;
+    }
+
+    /* Header */
+    .header {
+      background: white;
+      border-bottom: 1px solid var(--gray-200);
+      padding: 1rem 2rem;
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    }
+
+    .header-content {
+      max-width: 1400px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      text-decoration: none;
+      color: var(--gray-900);
+    }
+
+    .logo-icon {
+      width: 40px;
+      height: 40px;
+      border: 2px solid var(--gray-900);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 1.25rem;
+    }
+
+    .logo-text {
+      font-size: 1.25rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+    }
+
+    .hamburger {
+      width: 32px;
+      height: 32px;
+      border: none;
+      background: transparent;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 5px;
+      padding: 4px;
+    }
+
+    .hamburger span {
+      width: 100%;
+      height: 3px;
+      background: var(--gray-900);
+      transition: all 0.3s ease;
+    }
+
+    .hamburger.active span:nth-child(1) {
+      transform: rotate(45deg) translate(6px, 6px);
+    }
+
+    .hamburger.active span:nth-child(2) {
+      opacity: 0;
+    }
+
+    .hamburger.active span:nth-child(3) {
+      transform: rotate(-45deg) translate(6px, -6px);
+    }
+
+    /* Navigation Overlay */
+    .nav-overlay {
+      position: fixed;
+      top: 73px;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: white;
+      transform: translateX(100%);
+      transition: transform 0.3s ease;
+      overflow-y: auto;
+      z-index: 999;
+      padding: 2rem;
+    }
+
+    .nav-overlay.active {
+      transform: translateX(0);
+    }
+
+    .nav-content {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .nav-section {
+      margin-bottom: 2rem;
+    }
+
+    .nav-section h3 {
+      font-size: 1.1rem;
+      color: var(--gray-900);
+      margin-bottom: 1rem;
+      padding-bottom: 0.5rem;
+      border-bottom: 2px solid var(--gray-200);
+    }
+
+    .nav-links {
+      list-style: none;
+      display: grid;
+      gap: 0.5rem;
+    }
+
+    .nav-links a {
+      display: block;
+      padding: 0.75rem 1rem;
+      color: var(--gray-700);
+      text-decoration: none;
+      background: var(--gray-50);
+      border-left: 3px solid transparent;
+      transition: all 0.2s ease;
+    }
+
+    .nav-links a:hover {
+      background: var(--gray-100);
+      border-left-color: var(--primary);
+      color: var(--gray-900);
+    }
+
+    /* Hero Section */
+    .hero {
+      background: var(--gray-50);
+      padding: 4rem 2rem;
+      text-align: center;
+    }
+
+    .hero-content {
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    .hero h1 {
+      font-size: 3rem;
+      font-weight: 800;
+      margin-bottom: 1rem;
+      color: var(--gray-900);
+      line-height: 1.2;
+    }
+
+    .hero p {
+      font-size: 1.25rem;
+      color: var(--gray-600);
+      margin-bottom: 2rem;
+    }
+
+    .version-badge {
+      display: inline-block;
+      padding: 0.5rem 1rem;
+      background: var(--primary);
+      color: white;
+      font-weight: 600;
+      margin-bottom: 1.5rem;
+    }
+
+    /* Quick Links */
+    .quick-links {
+      display: flex;
+      gap: 1rem;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin-top: 2rem;
+    }
+
+    .btn {
+      display: inline-block;
+      padding: 0.75rem 1.5rem;
+      text-decoration: none;
+      font-weight: 600;
+      transition: all 0.2s ease;
+      border: 2px solid;
+    }
+
+    .btn-primary {
+      background: var(--primary);
+      color: white;
+      border-color: var(--primary);
+    }
+
+    .btn-primary:hover {
+      background: #1d4ed8;
+      border-color: #1d4ed8;
+    }
+
+    .btn-secondary {
+      background: white;
+      color: var(--primary);
+      border-color: var(--primary);
+    }
+
+    .btn-secondary:hover {
+      background: var(--gray-50);
+    }
+
+    /* Section Styles */
+    .section {
+      padding: 4rem 2rem;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .section-alt {
+      background: var(--gray-50);
+    }
+
+    .section h2 {
+      font-size: 2rem;
+      margin-bottom: 0.5rem;
+      color: var(--gray-900);
+      text-align: center;
+    }
+
+    .section-subtitle {
+      text-align: center;
+      color: var(--gray-600);
+      margin-bottom: 3rem;
+      font-size: 1.1rem;
+    }
+
+    /* Card Grid */
+    .card-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 1.5rem;
+      margin-top: 2rem;
+    }
+
+    .card {
+      background: white;
+      border: 2px solid var(--gray-200);
+      padding: 1.5rem;
+      text-decoration: none;
+      color: inherit;
+      transition: all 0.2s ease;
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+
+    .card:hover {
+      border-color: var(--primary);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    }
+
+    .card-badge {
+      display: inline-block;
+      padding: 0.25rem 0.75rem;
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      background: var(--gray-200);
+      color: var(--gray-700);
+      align-self: flex-start;
+    }
+
+    .card-badge.primary {
+      background: var(--primary);
+      color: white;
+    }
+
+    .card-badge.secondary {
+      background: var(--secondary);
+      color: white;
+    }
+
+    .card-badge.success {
+      background: var(--success);
+      color: white;
+    }
+
+    .card-title {
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: var(--gray-900);
+    }
+
+    .card-description {
+      font-size: 0.95rem;
+      color: var(--gray-600);
+      line-height: 1.6;
+    }
+
+    /* Feature Grid */
+    .feature-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 2rem;
+      margin-top: 2rem;
+    }
+
+    .feature-card {
+      background: white;
+      border: 2px solid var(--gray-200);
+      padding: 2rem;
+      text-align: center;
+      transition: all 0.2s ease;
+    }
+
+    .feature-card:hover {
+      border-color: var(--primary);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    }
+
+    .feature-title {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--gray-900);
+      margin-bottom: 0.5rem;
+    }
+
+    .feature-desc {
+      font-size: 0.9rem;
+      color: var(--gray-600);
+    }
+
+    /* Footer */
+    .footer {
+      background: var(--gray-900);
+      color: white;
+      padding: 3rem 2rem;
+      text-align: center;
+    }
+
+    .footer a {
+      color: var(--primary);
+      text-decoration: none;
+    }
+
+    .footer a:hover {
+      text-decoration: underline;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .hero h1 {
+        font-size: 2rem;
+      }
+
+      .hero p {
+        font-size: 1rem;
+      }
+
+      .card-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .feature-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Header -->
+  <header class="header">
+    <div class="header-content">
+      <a href="/" class="logo">
+        <div class="logo-icon">W</div>
+        <span class="logo-text">WORKSONA</span>
+      </a>
+      <button class="hamburger" id="hamburger" aria-label="Toggle navigation">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+    </div>
+  </header>
+
+  <!-- Navigation Overlay -->
+  <nav class="nav-overlay" id="navOverlay">
+    <div class="nav-content">
+      <div class="nav-section">
+        <h3>Getting Started</h3>
+        <ul class="nav-links">
+          <li><a href="/README.md">README</a></li>
+          <li><a href="/QUICK_START.md">Quick Start Guide</a></li>
+          <li><a href="/CHANGELOG.md">Changelog</a></li>
+          <li><a href="https://www.npmjs.com/package/worksona-js">NPM Package</a></li>
+        </ul>
+      </div>
+
+      <div class="nav-section">
+        <h3>Documentation</h3>
+        <ul class="nav-links">
+          <li><a href="/docs/index.html">Documentation Hub</a></li>
+          <li><a href="/docs/api-reference-swagger.html">API Reference</a></li>
+          <li><a href="/docs/code-examples-hub.html">Code Examples</a></li>
+          <li><a href="/WORKSONA_DOCUMENTATION.md">Complete Documentation</a></li>
+        </ul>
+      </div>
+
+      <div class="nav-section">
+        <h3>SDK & API</h3>
+        <ul class="nav-links">
+          <li><a href="/worksona.js">Library SDK (worksona.js)</a></li>
+          <li><a href="/worksona.min.js">Minified Library</a></li>
+          <li><a href="/worksona.d.ts">TypeScript Definitions</a></li>
+          <li><a href="/worksona-server.js">API Server</a></li>
+        </ul>
+      </div>
+
+      <div class="nav-section">
+        <h3>Interactive Demos</h3>
+        <ul class="nav-links">
+          <li><a href="/docs/endpoint-api-demo.html">Endpoint API Demo</a></li>
+          <li><a href="/docs/library-internal-demo.html">Library Demo</a></li>
+          <li><a href="/docs/delegation-demo.html">Delegation Workflow Builder</a></li>
+          <li><a href="/examples/dual-mode-demo.html">Dual Mode Demo</a></li>
+          <li><a href="/examples/frontier-models-demo.html">Frontier Models Demo</a></li>
+        </ul>
+      </div>
+
+      <div class="nav-section">
+        <h3>Examples & Tutorials</h3>
+        <ul class="nav-links">
+          <li><a href="/examples/">Examples Directory</a></li>
+          <li><a href="/examples/README.md">Examples Guide</a></li>
+          <li><a href="/examples/dual-mode-demo.js">Node.js Demo Script</a></li>
+        </ul>
+      </div>
+
+      <div class="nav-section">
+        <h3>Community</h3>
+        <ul class="nav-links">
+          <li><a href="/marketing/index.html">Marketing Site</a></li>
+          <li><a href="https://github.com/worksona/worksona-js">GitHub Repository</a></li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Hero Section -->
+  <section class="hero">
+    <div class="hero-content">
+      <span class="version-badge">v0.2.0</span>
+      <h1>Worksona.js Documentation</h1>
+      <p>Complete resources for building AI agent systems with Library Mode and API Mode</p>
+      <div class="quick-links">
+        <a href="/QUICK_START.md" class="btn btn-primary">Quick Start</a>
+        <a href="/docs/index.html" class="btn btn-secondary">Browse Docs</a>
+        <a href="/examples/" class="btn btn-secondary">View Examples</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- What is Worksona.js -->
+  <section class="section">
+    <h2>What is Worksona.js?</h2>
+    <p class="section-subtitle">Dual-mode AI orchestration supporting GPT-5, Claude Opus 4.5, and o3 reasoning models</p>
+
+    <div class="feature-grid">
+      <div class="feature-card">
+        <div class="feature-title">Library Mode</div>
+        <div class="feature-desc">Import directly into your JavaScript/TypeScript application for zero-latency access to all features</div>
+      </div>
+
+      <div class="feature-card">
+        <div class="feature-title">API Mode</div>
+        <div class="feature-desc">Deploy as a REST API server for language-agnostic access with simple HTTP requests</div>
+      </div>
+
+      <div class="feature-card">
+        <div class="feature-title">Multi-Provider</div>
+        <div class="feature-desc">Unified interface for OpenAI, Anthropic, and Google with automatic fallback support</div>
+      </div>
+
+      <div class="feature-card">
+        <div class="feature-title">Latest Models</div>
+        <div class="feature-desc">Full support for frontier models including GPT-5, Claude Opus 4.5, o3, and o3-mini</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Documentation -->
+  <section class="section section-alt">
+    <h2>Documentation & Resources</h2>
+    <p class="section-subtitle">Comprehensive guides and references</p>
+
+    <div class="card-grid">
+      <a href="/docs/index.html" class="card">
+        <span class="card-badge primary">Start Here</span>
+        <div class="card-title">Documentation Hub</div>
+        <div class="card-description">
+          Central portal for all documentation, API references, and code examples. Your starting point for learning Worksona.js.
+        </div>
+      </a>
+
+      <a href="/docs/api-reference-swagger.html" class="card">
+        <div class="card-title">API Reference</div>
+        <div class="card-description">
+          Complete REST API documentation with interactive Swagger UI. Test all endpoints directly in your browser.
+        </div>
+      </a>
+
+      <a href="/docs/code-examples-hub.html" class="card">
+        <div class="card-title">Code Examples Hub</div>
+        <div class="card-description">
+          60+ working code examples in JavaScript, Python, cURL, and more. Copy-paste ready snippets for every use case.
+        </div>
+      </a>
+
+      <a href="/README.md" class="card">
+        <div class="card-title">README</div>
+        <div class="card-description">
+          Main project documentation with installation instructions, basic usage, and architecture overview.
+        </div>
+      </a>
+
+      <a href="/QUICK_START.md" class="card">
+        <div class="card-title">Quick Start Guide</div>
+        <div class="card-description">
+          Get up and running in 5 minutes. Installation, basic examples, and first steps with both modes.
+        </div>
+      </a>
+
+      <a href="/WORKSONA_DOCUMENTATION.md" class="card">
+        <div class="card-title">Complete Documentation</div>
+        <div class="card-description">
+          In-depth technical documentation covering every feature, configuration option, and advanced use case.
+        </div>
+      </a>
+    </div>
+  </section>
+
+  <!-- Interactive Demos -->
+  <section class="section">
+    <h2>Interactive Demos</h2>
+    <p class="section-subtitle">Live testing interfaces and demonstrations</p>
+
+    <div class="card-grid">
+      <a href="/docs/endpoint-api-demo.html" class="card">
+        <span class="card-badge primary">Popular</span>
+        <div class="card-title">Endpoint API Demo</div>
+        <div class="card-description">
+          Comprehensive testing interface for all REST endpoints. Test queries, file uploads, image processing, and more with live code generation.
+        </div>
+      </a>
+
+      <a href="/docs/library-internal-demo.html" class="card">
+        <div class="card-title">Library Demo</div>
+        <div class="card-description">
+          Direct worksona.js library usage examples. Chat, image generation, file processing, and event monitoring in action.
+        </div>
+      </a>
+
+      <a href="/docs/delegation-demo.html" class="card">
+        <span class="card-badge secondary">Advanced</span>
+        <div class="card-title">Delegation Workflow Builder</div>
+        <div class="card-description">
+          Visual workflow builder for creating multi-agent delegation patterns. Build complex AI pipelines with drag-and-drop.
+        </div>
+      </a>
+
+      <a href="/examples/dual-mode-demo.html" class="card">
+        <span class="card-badge success">Recommended</span>
+        <div class="card-title">Dual Mode Demo</div>
+        <div class="card-description">
+          Interactive comparison of Library Mode vs API Mode. Live testing, code examples in multiple languages, and side-by-side comparison.
+        </div>
+      </a>
+
+      <a href="/examples/frontier-models-demo.html" class="card">
+        <span class="card-badge success">Latest</span>
+        <div class="card-title">Frontier Models Demo</div>
+        <div class="card-description">
+          Test the latest GPT-5, Claude Opus 4.5, and o3 reasoning models. Multi-agent system demonstration with side-by-side model comparison.
+        </div>
+      </a>
+    </div>
+  </section>
+
+  <!-- Examples -->
+  <section class="section section-alt">
+    <h2>Examples & Tutorials</h2>
+    <p class="section-subtitle">Working code samples and comprehensive guides</p>
+
+    <div class="card-grid">
+      <a href="/examples/" class="card">
+        <span class="card-badge primary">Start Here</span>
+        <div class="card-title">Examples Directory</div>
+        <div class="card-description">
+          Complete collection of working examples showing both Library Mode and API Mode usage. Includes Node.js demos, HTML examples, and comprehensive guides.
+        </div>
+      </a>
+
+      <a href="/examples/README.md" class="card">
+        <div class="card-title">Examples Guide</div>
+        <div class="card-description">
+          Detailed guide to all examples with setup instructions, use case comparisons, troubleshooting tips, and code snippets.
+        </div>
+      </a>
+
+      <a href="/examples/dual-mode-demo.js" class="card">
+        <div class="card-title">Node.js Demo Script</div>
+        <div class="card-description">
+          Comprehensive Node.js demonstration with library mode examples, API mode examples, multi-agent systems, and batch processing.
+        </div>
+      </a>
+    </div>
+  </section>
+
+  <!-- SDK & API -->
+  <section class="section">
+    <h2>SDK & API</h2>
+    <p class="section-subtitle">Core library files and server</p>
+
+    <div class="card-grid">
+      <a href="/worksona.js" class="card">
+        <span class="card-badge primary">Library SDK</span>
+        <div class="card-title">worksona.js</div>
+        <div class="card-description">
+          Main library file for browser and Node.js. Import directly into your JavaScript or TypeScript application.
+        </div>
+      </a>
+
+      <a href="/worksona-server.js" class="card">
+        <span class="card-badge secondary">API Server</span>
+        <div class="card-title">worksona-server.js</div>
+        <div class="card-description">
+          REST API server implementation. Deploy and access Worksona.js via HTTP endpoints from any language.
+        </div>
+      </a>
+
+      <a href="/worksona.min.js" class="card">
+        <div class="card-title">worksona.min.js</div>
+        <div class="card-description">
+          Minified production build. Optimized for browser deployment with reduced file size.
+        </div>
+      </a>
+
+      <a href="/worksona.d.ts" class="card">
+        <div class="card-title">worksona.d.ts</div>
+        <div class="card-description">
+          TypeScript type definitions. Full IntelliSense and type safety for TypeScript projects.
+        </div>
+      </a>
+    </div>
+  </section>
+
+  <!-- Marketing & Community -->
+  <section class="section section-alt">
+    <h2>Explore & Connect</h2>
+    <p class="section-subtitle">Marketing materials and community resources</p>
+
+    <div class="card-grid">
+      <a href="/marketing/index.html" class="card">
+        <span class="card-badge success">Featured</span>
+        <div class="card-title">Marketing Site</div>
+        <div class="card-description">
+          Product overview, use cases, and benefits. Perfect for learning what Worksona.js can do for your projects.
+        </div>
+      </a>
+
+      <a href="https://github.com/worksona/worksona-js" class="card">
+        <div class="card-title">GitHub Repository</div>
+        <div class="card-description">
+          Source code, issue tracking, and contributions. Star the repo and contribute to the project.
+        </div>
+      </a>
+
+      <a href="https://www.npmjs.com/package/worksona-js" class="card">
+        <div class="card-title">NPM Package</div>
+        <div class="card-description">
+          Install via npm or view package details, version history, and download statistics.
+        </div>
+      </a>
+
+      <a href="/CHANGELOG.md" class="card">
+        <div class="card-title">Changelog</div>
+        <div class="card-description">
+          Version history and release notes. Stay updated with the latest features and improvements.
+        </div>
+      </a>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <p><strong>Worksona.js</strong> - Multi-Agent AI Orchestration Library</p>
+    <p style="margin-top: 0.5rem;">
+      <a href="https://github.com/worksona/worksona-js">GitHub</a> •
+      <a href="https://www.npmjs.com/package/worksona-js">NPM</a> •
+      <a href="/docs/index.html">Documentation</a> •
+      <a href="/examples/">Examples</a>
+    </p>
+    <p style="margin-top: 1rem; font-size: 0.9rem; opacity: 0.8;">
+      MIT Licensed • Open Source • Zero Dependencies
+    </p>
+  </footer>
+
+  <script>
+    // Hamburger Menu Toggle
+    const hamburger = document.getElementById('hamburger');
+    const navOverlay = document.getElementById('navOverlay');
+
+    hamburger.addEventListener('click', () => {
+      hamburger.classList.toggle('active');
+      navOverlay.classList.toggle('active');
+    });
+
+    // Close menu when clicking a link
+    const navLinks = document.querySelectorAll('.nav-links a');
+    navLinks.forEach(link => {
+      link.addEventListener('click', () => {
+        hamburger.classList.remove('active');
+        navOverlay.classList.remove('active');
+      });
+    });
+
+    // Close menu when clicking outside
+    navOverlay.addEventListener('click', (e) => {
+      if (e.target === navOverlay) {
+        hamburger.classList.remove('active');
+        navOverlay.classList.remove('active');
+      }
+    });
+  </script>
+</body>
+</html>

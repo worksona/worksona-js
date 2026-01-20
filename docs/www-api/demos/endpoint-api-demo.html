@@ -17,58 +17,96 @@
     }
 
     :root {
-      --primary-500: #2563eb;
-      --primary-600: #1d4ed8;
-      --secondary-500: #7c3aed;
+      --bg-light: #ffffff;
+      --bg-card: #ffffff;
+      --bg-card-hover: #f8fafc;
+      --text-primary: #0f172a;
+      --text-secondary: #64748b;
+      --accent-blue: #2563eb;
+      --accent-purple: #7c3aed;
+      --accent-pink: #10b981;
+      --border-color: #0f172a;
+      --primary-500: #3b82f6;
+      --primary-600: #2563eb;
+      --secondary-500: #8b5cf6;
       --success: #10b981;
       --warning: #f59e0b;
       --error: #ef4444;
-      --gray-50: #f8fafc;
-      --gray-100: #f1f5f9;
-      --gray-200: #e2e8f0;
-      --gray-500: #64748b;
-      --gray-700: #334155;
-      --gray-900: #0f172a;
+      --gray-50: #1a1f3a;
+      --gray-100: #1e2438;
+      --gray-200: #252b45;
+      --gray-500: #94a3b8;
+      --gray-700: #cbd5e1;
+      --gray-900: #0a0e27;
     }
 
     body {
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-      background: var(--gray-50);
+      background: white;
       color: var(--gray-900);
     }
 
     /* Header */
     .header {
-      background: linear-gradient(135deg, var(--primary-500) 0%, var(--secondary-500) 100%);
+      background: var(--primary);
       color: white;
       padding: 2rem;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .header::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: var(--primary);
+      animation: shimmer 3s infinite;
+    }
+
+    @keyframes shimmer {
+      0%, 100% { transform: translateX(-100%); }
+      50% { transform: translateX(100%); }
     }
 
     .header h1 {
       font-size: 2rem;
       margin-bottom: 0.5rem;
+      position: relative;
+      z-index: 1;
+      text-shadow: 0 2px 10px rgba(0,0,0,0.3);
     }
 
     .header p {
       opacity: 0.95;
       margin-bottom: 1rem;
+      position: relative;
+      z-index: 1;
     }
 
     .header-nav a {
       color: white;
       text-decoration: none;
       margin-right: 1.5rem;
-      padding: 0.5rem 1rem;
-      background: rgba(255,255,255,0.2);
-      border-radius: 6px;
+      padding: 0.75rem 1.5rem;
+      background: rgba(255,255,255,0.15);
+      border-radius: 0;
       display: inline-block;
       margin-top: 0.5rem;
-      transition: all 0.2s;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255,255,255,0.2);
+      position: relative;
+      z-index: 1;
     }
 
     .header-nav a:hover {
-      background: rgba(255,255,255,0.3);
+      background: rgba(255,255,255,0.25);
+      transform: translateY(-3px);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
     }
 
     /* Status Bar */
@@ -79,7 +117,8 @@
       gap: 2rem;
       align-items: center;
       flex-wrap: wrap;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+      border-bottom: 1px solid var(--border-color);
     }
 
     .status-item {
@@ -122,16 +161,24 @@
     /* Panel */
     .panel {
       background: white;
-      border-radius: 12px;
+      border-radius: 0;
       padding: 2rem;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+      border: 1px solid var(--border-color);
+      transition: all 0.3s ease;
+    }
+
+    .panel:hover {
+      border-color: var(--accent-blue);
+      box-shadow: 0 12px 32px rgba(59, 130, 246, 0.15);
     }
 
     .panel h2 {
-      color: var(--primary-600);
+      color: var(--accent-blue);
       margin-bottom: 1.5rem;
       padding-bottom: 0.75rem;
-      border-bottom: 2px solid var(--primary-500);
+      border-bottom: 3px solid;
+      border-image: linear-gradient(90deg, var(--accent-blue), var(--accent-purple)) 1;
     }
 
     /* Tabs */
@@ -144,23 +191,27 @@
 
     .tab {
       padding: 0.75rem 1.5rem;
-      background: var(--gray-100);
+      background: var(--bg-card-hover);
       border: none;
-      border-radius: 8px;
+      border-radius: 0;
       cursor: pointer;
       font-size: 0.9rem;
       font-weight: 600;
-      color: var(--gray-700);
+      color: var(--gray-600);
       transition: all 0.2s;
+      border: 1px solid transparent;
     }
 
     .tab:hover {
-      background: var(--gray-200);
+      background: white;
+      border-color: var(--accent-blue);
+      color: var(--gray-900);
     }
 
     .tab.active {
-      background: var(--primary-500);
+      background: var(--primary);
       color: white;
+      border-color: transparent;
     }
 
     .tab-content {
@@ -180,7 +231,7 @@
       display: block;
       margin-bottom: 0.5rem;
       font-weight: 600;
-      color: var(--gray-700);
+      color: var(--gray-900);
       font-size: 0.9rem;
     }
 
@@ -189,18 +240,21 @@
     .form-group textarea {
       width: 100%;
       padding: 0.75rem;
-      border: 2px solid var(--gray-200);
-      border-radius: 6px;
+      border: 2px solid var(--border-color);
+      border-radius: 0;
       font-size: 0.95rem;
       font-family: inherit;
       transition: border-color 0.2s;
+      background: var(--bg-card-hover);
+      color: var(--gray-900);
     }
 
     .form-group input:focus,
     .form-group select:focus,
     .form-group textarea:focus {
       outline: none;
-      border-color: var(--primary-500);
+      border-color: var(--accent-blue);
+      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
     }
 
     .form-group textarea {
@@ -219,35 +273,45 @@
     .btn {
       padding: 0.75rem 1.5rem;
       border: none;
-      border-radius: 6px;
+      border-radius: 0;
       font-size: 0.95rem;
       font-weight: 600;
       cursor: pointer;
-      transition: all 0.2s;
+      transition: all 0.3s ease;
       display: inline-block;
     }
 
     .btn-primary {
-      background: var(--primary-500);
+      background: var(--primary);
       color: white;
+      box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
     }
 
     .btn-primary:hover {
-      background: var(--primary-600);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(59, 130, 246, 0.4);
     }
 
     .btn-secondary {
-      background: var(--gray-200);
-      color: var(--gray-700);
+      background: var(--bg-card-hover);
+      color: var(--gray-900);
+      border: 1px solid var(--border-color);
     }
 
     .btn-secondary:hover {
-      background: var(--gray-300);
+      background: white;
+      border-color: var(--accent-blue);
     }
 
     .btn-success {
       background: var(--success);
       color: white;
+      box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+    }
+
+    .btn-success:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(16, 185, 129, 0.4);
     }
 
     .btn-group {
@@ -258,22 +322,23 @@
 
     /* File Upload */
     .file-upload {
-      border: 2px dashed var(--gray-300);
-      border-radius: 8px;
+      border: 2px dashed var(--border-color);
+      border-radius: 0;
       padding: 2rem;
       text-align: center;
       cursor: pointer;
       transition: all 0.3s;
+      background: var(--bg-card-hover);
     }
 
     .file-upload:hover {
-      border-color: var(--primary-500);
-      background: var(--gray-50);
+      border-color: var(--accent-blue);
+      background: white;
     }
 
     .file-upload.dragover {
-      border-color: var(--primary-500);
-      background: var(--primary-500);
+      border-color: var(--accent-blue);
+      background: var(--accent-blue);
       color: white;
     }
 
@@ -291,7 +356,7 @@
 
     .response-status {
       padding: 0.5rem 1rem;
-      border-radius: 6px;
+      border-radius: 0;
       font-weight: 600;
       font-size: 0.85rem;
     }
@@ -299,29 +364,33 @@
     .response-status.success {
       background: var(--success);
       color: white;
+      box-shadow: 0 2px 8px rgba(16, 185, 129, 0.3);
     }
 
     .response-status.error {
       background: var(--error);
       color: white;
+      box-shadow: 0 2px 8px rgba(239, 68, 68, 0.3);
     }
 
     .response-time {
-      color: var(--gray-500);
+      color: var(--gray-600);
       font-size: 0.85rem;
     }
 
     .response-content {
-      background: var(--gray-900);
-      color: #e2e8f0;
+      background: #1a1f3a;
+      color: #0f172a;
       padding: 1.5rem;
-      border-radius: 8px;
+      border-radius: 0;
       overflow-x: auto;
       font-family: 'Fira Code', monospace;
       font-size: 0.85rem;
       line-height: 1.6;
       max-height: 500px;
       overflow-y: auto;
+      border: 1px solid var(--border-color);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
     }
 
     /* Code Generation */
@@ -337,17 +406,20 @@
 
     .code-tab {
       padding: 0.5rem 1rem;
-      background: var(--gray-100);
+      background: var(--bg-card-hover);
       border: none;
-      border-radius: 6px 6px 0 0;
+      border-radius: 0;
       cursor: pointer;
       font-size: 0.85rem;
       font-weight: 600;
+      color: var(--gray-600);
+      border: 1px solid var(--border-color);
+      border-bottom: none;
     }
 
     .code-tab.active {
-      background: var(--gray-900);
-      color: white;
+      background: #1a1f3a;
+      color: var(--accent-blue);
     }
 
     .code-content {
@@ -359,12 +431,14 @@
     }
 
     .code-block {
-      background: var(--gray-900);
-      color: #e2e8f0;
+      background: #1a1f3a;
+      color: #0f172a;
       padding: 1.5rem;
-      border-radius: 0 8px 8px 8px;
+      border-radius: 0;
       overflow-x: auto;
       position: relative;
+      border: 1px solid var(--border-color);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
     }
 
     .code-block pre {
@@ -379,22 +453,26 @@
       top: 1rem;
       right: 1rem;
       padding: 0.5rem 1rem;
-      background: var(--primary-500);
+      background: var(--accent-blue);
       color: white;
       border: none;
-      border-radius: 6px;
+      border-radius: 0;
       font-size: 0.75rem;
       cursor: pointer;
       opacity: 0.8;
-      transition: opacity 0.2s;
+      transition: all 0.2s;
+      box-shadow: 0 2px 8px rgba(59, 130, 246, 0.3);
     }
 
     .copy-btn:hover {
       opacity: 1;
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
     }
 
     .copy-btn.copied {
       background: var(--success);
+      box-shadow: 0 2px 8px rgba(16, 185, 129, 0.3);
     }
 
     /* Loading */
@@ -454,14 +532,92 @@
 
     .agent-badge {
       padding: 0.25rem 0.75rem;
-      background: var(--primary-500);
+      background: var(--primary);
       color: white;
-      border-radius: 20px;
+      border-radius: 0;
       font-size: 0.8rem;
+      box-shadow: 0 2px 8px rgba(59, 130, 246, 0.3);
+    }
+
+    /* Custom scrollbar */
+    ::-webkit-scrollbar {
+      width: 12px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: white;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: white;
+      border-radius: 0;
+      border: 2px solid var(--bg-dark);
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+      background: var(--bg-card-hover);
     }
   </style>
+  <link rel="stylesheet" href="/docs/shared-header.css">
 </head>
 <body>
+  <!-- Worksona Header -->
+  <header class="worksona-header">
+    <div class="worksona-header-content">
+      <a href="/" class="worksona-logo">
+        <div class="worksona-logo-icon">W</div>
+        <span class="worksona-logo-text">WORKSONA</span>
+      </a>
+      <button class="worksona-hamburger" id="worksonaHamburger" aria-label="Toggle navigation">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+    </div>
+  </header>
+
+  <nav class="worksona-nav-overlay" id="worksonaNavOverlay">
+    <div class="worksona-nav-content">
+      <div class="worksona-nav-section">
+        <h3>Overview</h3>
+        <ul class="worksona-nav-links">
+          <li><a href="/docs/overview.html">Project Overview</a></li>
+          <li><a href="https://github.com/worksona/worksona-js" target="_blank">GitHub Repository</a></li>
+          <li><a href="https://www.npmjs.com/package/worksona-js" target="_blank">NPM Package</a></li>
+        </ul>
+      </div>
+
+      <div class="worksona-nav-section">
+        <h3>Documentation</h3>
+        <ul class="worksona-nav-links">
+          <li><a href="/docs/index.html">Documentation Hub</a></li>
+          <li><a href="/docs/api-reference-swagger.html">API Reference</a></li>
+          <li><a href="/docs/code-examples-hub.html">Code Examples</a></li>
+        </ul>
+      </div>
+
+
+      <div class="worksona-nav-section">
+        <h3>Interactive Demos</h3>
+        <ul class="worksona-nav-links">
+          <li><a href="/docs/endpoint-api-demo.html">Endpoint API Demo</a></li>
+          <li><a href="/docs/library-internal-demo.html">Library Demo</a></li>
+          <li><a href="/docs/delegation-demo.html">Delegation Workflow Builder</a></li>
+          <li><a href="/examples/dual-mode-demo.html">Dual Mode Demo</a></li>
+          <li><a href="/examples/frontier-models-demo.html">Frontier Models Demo</a></li>
+        </ul>
+      </div>
+
+      <div class="worksona-nav-section">
+        <h3>Examples & Tutorials</h3>
+        <ul class="worksona-nav-links">
+          <li><a href="/examples/index.html">Examples Directory</a></li>
+          <li><a href="/examples/dual-mode-demo.js">Node.js Demo Script</a></li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
   <!-- Header -->
   <header class="header">
     <h1>🔌 Endpoint API Demo</h1>
@@ -606,7 +762,7 @@
         <div class="form-group">
           <label>File</label>
           <div class="file-upload" id="fileUploadZone">
-            <p>📁 Drag & drop file here or click to browse</p>
+            <p>Drag & drop file here or click to browse</p>
             <p style="margin-top: 0.5rem; font-size: 0.85rem; color: var(--gray-500);">
               Supported: Images, PDF, DOCX, XLSX, CSV, TXT (max 10MB)
             </p>
@@ -1343,5 +1499,6 @@ console.log(response.data);`;
     checkServerStatus();
     setInterval(checkServerStatus, 30000); // Check every 30 seconds
   </script>
+  <script src="/docs/shared-header.js"></script>
 </body>
 </html>

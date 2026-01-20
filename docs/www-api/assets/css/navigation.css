@@ -1,0 +1,289 @@
+/* Worksona.js Unified Navigation System */
+
+:root {
+  --nav-width: 280px;
+  --header-height: 64px;
+  --primary: #2563eb;
+  --primary-dark: #1d4ed8;
+  --gray-50: #f8fafc;
+  --gray-100: #f1f5f9;
+  --gray-200: #e2e8f0;
+  --gray-700: #334155;
+  --gray-800: #1e293b;
+  --gray-900: #0f172a;
+}
+
+/* Reset and Base */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+  line-height: 1.6;
+  color: var(--gray-900);
+}
+
+/* Top Header Bar */
+.worksona-header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: var(--header-height);
+  background: white;
+  border-bottom: 2px solid var(--gray-200);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  padding: 0 1.5rem;
+}
+
+.worksona-header-content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.worksona-logo {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  text-decoration: none;
+  color: var(--gray-900);
+  font-weight: 700;
+  font-size: 1.25rem;
+  transition: opacity 0.2s;
+}
+
+.worksona-logo:hover {
+  opacity: 0.8;
+}
+
+.worksona-logo-icon {
+  width: 36px;
+  height: 36px;
+  background: linear-gradient(135deg, var(--primary) 0%, #7c3aed 100%);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+  font-size: 1.25rem;
+  border-radius: 8px;
+}
+
+.worksona-header-links {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.worksona-header-links a {
+  padding: 0.5rem 1rem;
+  color: var(--gray-700);
+  text-decoration: none;
+  font-weight: 500;
+  font-size: 0.95rem;
+  border-radius: 6px;
+  transition: all 0.2s;
+}
+
+.worksona-header-links a:hover {
+  background: var(--gray-100);
+  color: var(--primary);
+}
+
+.worksona-header-links a.btn-primary {
+  background: var(--primary);
+  color: white;
+}
+
+.worksona-header-links a.btn-primary:hover {
+  background: var(--primary-dark);
+}
+
+/* Hamburger Menu Button */
+.worksona-hamburger {
+  display: none;
+  flex-direction: column;
+  gap: 5px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0.5rem;
+  z-index: 1001;
+}
+
+.worksona-hamburger span {
+  display: block;
+  width: 24px;
+  height: 3px;
+  background: var(--gray-900);
+  transition: all 0.3s;
+  border-radius: 2px;
+}
+
+.worksona-hamburger.active span:nth-child(1) {
+  transform: rotate(45deg) translate(7px, 7px);
+}
+
+.worksona-hamburger.active span:nth-child(2) {
+  opacity: 0;
+}
+
+.worksona-hamburger.active span:nth-child(3) {
+  transform: rotate(-45deg) translate(7px, -7px);
+}
+
+/* Left Rail Navigation (Desktop) */
+.worksona-nav {
+  position: fixed;
+  top: var(--header-height);
+  left: 0;
+  width: var(--nav-width);
+  height: calc(100vh - var(--header-height));
+  background: white;
+  border-right: 2px solid var(--gray-200);
+  overflow-y: auto;
+  padding: 2rem 0;
+  z-index: 900;
+}
+
+.worksona-nav-section {
+  margin-bottom: 2rem;
+  padding: 0 1.5rem;
+}
+
+.worksona-nav-section h3 {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--gray-700);
+  font-weight: 700;
+  margin-bottom: 0.75rem;
+}
+
+.worksona-nav-links {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.worksona-nav-links li {
+  margin-bottom: 0.25rem;
+}
+
+.worksona-nav-links a {
+  display: block;
+  padding: 0.5rem 0.75rem;
+  color: var(--gray-700);
+  text-decoration: none;
+  font-size: 0.95rem;
+  border-radius: 6px;
+  transition: all 0.2s;
+}
+
+.worksona-nav-links a:hover {
+  background: var(--gray-100);
+  color: var(--primary);
+  padding-left: 1rem;
+}
+
+.worksona-nav-links a.active {
+  background: var(--primary);
+  color: white;
+  font-weight: 600;
+}
+
+.worksona-nav-links a svg,
+.worksona-nav-links a .icon {
+  display: inline-block;
+  margin-right: 0.5rem;
+  opacity: 0.7;
+}
+
+/* Main Content Area */
+.worksona-content {
+  margin-top: var(--header-height);
+  margin-left: var(--nav-width);
+  padding: 2rem;
+  min-height: calc(100vh - var(--header-height));
+}
+
+/* Mobile Styles */
+@media (max-width: 1024px) {
+  .worksona-hamburger {
+    display: flex;
+  }
+
+  .worksona-header-links {
+    display: none;
+  }
+
+  /* Nav becomes overlay on mobile */
+  .worksona-nav {
+    left: -100%;
+    width: 280px;
+    transition: left 0.3s ease;
+    box-shadow: 4px 0 12px rgba(0, 0, 0, 0.1);
+  }
+
+  .worksona-nav.active {
+    left: 0;
+  }
+
+  /* Content takes full width on mobile */
+  .worksona-content {
+    margin-left: 0;
+  }
+
+  /* Backdrop for mobile nav */
+  .worksona-nav-backdrop {
+    display: none;
+    position: fixed;
+    top: var(--header-height);
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 899;
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+
+  .worksona-nav-backdrop.active {
+    display: block;
+    opacity: 1;
+  }
+}
+
+/* Desktop: Always show nav */
+@media (min-width: 1025px) {
+  .worksona-nav-backdrop {
+    display: none !important;
+  }
+}
+
+/* Scrollbar Styling */
+.worksona-nav::-webkit-scrollbar {
+  width: 8px;
+}
+
+.worksona-nav::-webkit-scrollbar-track {
+  background: var(--gray-50);
+}
+
+.worksona-nav::-webkit-scrollbar-thumb {
+  background: var(--gray-300);
+  border-radius: 4px;
+}
+
+.worksona-nav::-webkit-scrollbar-thumb:hover {
+  background: var(--gray-700);
+}
