@@ -92,7 +92,22 @@ const upload = multer({
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cors());
-app.use(helmet());
+app.use(helmet({
+  contentSecurityPolicy: {
+    directives: {
+      defaultSrc: ["'self'"],
+      scriptSrc: ["'self'", "'unsafe-inline'", "https://cdn.jsdelivr.net", "https://unpkg.com", "https://cdnjs.cloudflare.com"],
+      scriptSrcAttr: ["'unsafe-inline'"],
+      styleSrc: ["'self'", "'unsafe-inline'", "https://cdn.jsdelivr.net", "https://unpkg.com", "https://cdnjs.cloudflare.com"],
+      imgSrc: ["'self'", "data:", "https:"],
+      fontSrc: ["'self'", "https:", "data:"],
+      connectSrc: ["'self'"],
+      frameSrc: ["'self'"],
+      objectSrc: ["'none'"],
+      upgradeInsecureRequests: []
+    }
+  }
+}));
 
 // Serve API Console at /console
 app.use('/console', express.static(path.join(__dirname, 'public')));
@@ -100,17 +115,11 @@ app.use('/console', express.static(path.join(__dirname, 'public')));
 // Keep legacy /public route for backward compatibility
 app.use('/public', express.static(path.join(__dirname, 'public')));
 
-// Serve documentation directory
-app.use('/docs', express.static(path.join(__dirname, 'docs')));
+// Serve documentation site from www as root website
+app.use('/', express.static(path.join(__dirname, 'www')));
 
-// Serve marketing directory
-app.use('/marketing', express.static(path.join(__dirname, 'marketing')));
-
-// Serve vibe-coding directory
-app.use('/vibe-coding', express.static(path.join(__dirname, 'vibe-coding')));
-
-// Serve examples directory
-app.use('/examples', express.static(path.join(__dirname, 'examples')));
+// Also serve at /docs for backward compatibility
+app.use('/docs', express.static(path.join(__dirname, 'www')));
 
 // Rate limiting
 const limiter = rateLimit({
@@ -157,6 +166,46 @@ async function loadAgentsFromDirectory() {
 
 // Load agents on startup
 loadAgentsFromDirectory();
+
+// Utility: Validate provider API keys
+function validateProviderKeys(provider) {
+  const keys = {
+    openai: process.env.OPENAI_API_KEY,
+    anthropic: process.env.ANTHROPIC_API_KEY,
+    google: process.env.GOOGLE_API_KEY
+  };
+
+  if (!keys[provider]) {
+    const providerNames = {
+      openai: 'OpenAI',
+      anthropic: 'Anthropic',
+      google: 'Google'
+    };
+    throw new Error(
+      `${providerNames[provider]} API key not configured. ` +
+      `Please add ${provider.toUpperCase()}_API_KEY to your .env file and restart the server.`
+    );
+  }
+}
+
+// Middleware: Check if required provider API key exists
+function requireProviderKey(provider) {
+  return (req, res, next) => {
+    try {
+      validateProviderKeys(provider);
+      next();
+    } catch (error) {
+      res.status(503).json({
+        success: false,
+        error: {
+          code: 'PROVIDER_NOT_CONFIGURED',
+          message: error.message,
+          provider
+        }
+      });
+    }
+  };
+}
 
 // API Key Authentication Middleware
 function authenticateAPIKey(req, res, next) {
@@ -521,9 +570,15 @@ app.get('/api/query', async (req, res) => {
       }
     });
   } catch (error) {
-    res.status(500).json({
+    // Provide more helpful error messages
+    const statusCode = error.message.includes('API key') || error.message.includes('not configured') ? 503 : 500;
+    res.status(statusCode).json({
       success: false,
-      error: { code: 'QUERY_ERROR', message: error.message }
+      error: {
+        code: statusCode === 503 ? 'PROVIDER_NOT_CONFIGURED' : 'QUERY_ERROR',
+        message: error.message,
+        hint: statusCode === 503 ? 'Add the required API key to your .env file and restart the server' : undefined
+      }
     });
   }
 });
@@ -576,9 +631,15 @@ app.post('/api/query', async (req, res) => {
       }
     });
   } catch (error) {
-    res.status(500).json({
+    // Provide more helpful error messages
+    const statusCode = error.message.includes('API key') || error.message.includes('not configured') ? 503 : 500;
+    res.status(statusCode).json({
       success: false,
-      error: { code: 'QUERY_ERROR', message: error.message }
+      error: {
+        code: statusCode === 503 ? 'PROVIDER_NOT_CONFIGURED' : 'QUERY_ERROR',
+        message: error.message,
+        hint: statusCode === 503 ? 'Add the required API key to your .env file and restart the server' : undefined
+      }
     });
   }
 });
@@ -633,9 +694,15 @@ app.get('/api/agents/:agentId/query', async (req, res) => {
       }
     });
   } catch (error) {
-    res.status(500).json({
+    // Provide more helpful error messages
+    const statusCode = error.message.includes('API key') || error.message.includes('not configured') ? 503 : 500;
+    res.status(statusCode).json({
       success: false,
-      error: { code: 'QUERY_ERROR', message: error.message }
+      error: {
+        code: statusCode === 503 ? 'PROVIDER_NOT_CONFIGURED' : 'QUERY_ERROR',
+        message: error.message,
+        hint: statusCode === 503 ? 'Add the required API key to your .env file and restart the server' : undefined
+      }
     });
   }
 });
@@ -687,9 +754,15 @@ app.post('/api/agents/:agentId/query', async (req, res) => {
       }
     });
   } catch (error) {
-    res.status(500).json({
+    // Provide more helpful error messages
+    const statusCode = error.message.includes('API key') || error.message.includes('not configured') ? 503 : 500;
+    res.status(statusCode).json({
       success: false,
-      error: { code: 'QUERY_ERROR', message: error.message }
+      error: {
+        code: statusCode === 503 ? 'PROVIDER_NOT_CONFIGURED' : 'QUERY_ERROR',
+        message: error.message,
+        hint: statusCode === 503 ? 'Add the required API key to your .env file and restart the server' : undefined
+      }
     });
   }
 });
