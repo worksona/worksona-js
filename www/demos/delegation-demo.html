@@ -60,7 +60,15 @@
       box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
       position: relative;
       overflow: hidden;
+      margin-left: 280px; /* Account for worksona-nav width */
     ;}
+
+    /* On mobile, remove the left margin */
+    @media (max-width: 1024px) {
+      .header {
+        margin-left: 0;
+      }
+    }
 
 .header::before {
       content: '';
@@ -104,11 +112,19 @@
 .main-container {
       max-width: 1600px;
       margin: 2rem auto;
+      margin-left: calc(280px + 2rem); /* Account for worksona-nav width (280px) */
       padding: 0 2rem 2rem 2rem;
       display: grid;
       grid-template-columns: 300px 1fr;
       gap: 2rem;
     ;}
+
+    /* On mobile, remove the left margin */
+    @media (max-width: 1024px) {
+      .main-container {
+        margin-left: 2rem;
+      }
+    }
 
 .sidebar {
       display: flex;
@@ -243,6 +259,32 @@
       opacity: 0.5;
       cursor: not-allowed;
       transform: none !important;
+    }
+
+    /* Loading states */
+    .btn.loading {
+      position: relative;
+      color: transparent;
+      pointer-events: none;
+      opacity: 0.7;
+    }
+
+    .btn.loading::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 20px;
+      height: 20px;
+      border: 3px solid rgba(255,255,255,0.3);
+      border-top-color: white;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+      to { transform: translate(-50%, -50%) rotate(360deg); }
     }
 
     /* Custom scrollbar */
@@ -684,6 +726,7 @@
     @media (max-width: 1024px) {
       .main-container {
         grid-template-columns: 1fr;
+        margin-left: 0; /* Remove nav margin on mobile */
       ;}
 
 .sidebar {
@@ -778,21 +821,11 @@
       <div class="card">
         <h3>Controls</h3>
         <div class="control-panel">
-          <button class="btn btn-success" id="executeBtn" onclick="executeWorkflow()">
-             Execute Workflow
-          </button>
-          <button class="btn btn-primary" onclick="editWorkflow()">
-             Edit Workflow
-          </button>
-          <button class="btn btn-secondary" onclick="saveWorkflow()">
-             Save JSON
-          </button>
-          <button class="btn btn-secondary" onclick="loadWorkflow()">
-             Load JSON
-          </button>
-          <button class="btn btn-danger" onclick="clearLogs()">
-             Clear Logs
-          </button>
+          <button class="btn btn-success" id="executeBtn">Execute Workflow</button>
+          <button class="btn btn-primary" id="editWorkflowBtn">Edit Workflow</button>
+          <button class="btn btn-secondary" id="saveWorkflowBtn">Save JSON</button>
+          <button class="btn btn-secondary" id="loadWorkflowBtn">Load JSON</button>
+          <button class="btn btn-danger" id="clearLogsBtn">Clear Logs</button>
         </div>
       </div>
     </aside>
@@ -804,9 +837,9 @@
         <div class="workflow-header">
           <h2 id="workflowTitle">Content Creation Pipeline</h2>
           <div class="workflow-actions">
-            <button class="btn btn-primary btn-sm" onclick="zoomIn()">+</button>
-            <button class="btn btn-primary btn-sm" onclick="zoomOut()">-</button>
-            <button class="btn btn-secondary btn-sm" onclick="resetView()"></button>
+            <button class="btn btn-primary btn-sm" id="zoomInBtn">+</button>
+            <button class="btn btn-primary btn-sm" id="zoomOutBtn">-</button>
+            <button class="btn btn-secondary btn-sm" id="resetViewBtn"></button>
           </div>
         </div>
         <div class="mermaid-container" id="mermaidContainer">
@@ -874,29 +907,29 @@ graph TB
       <div class="code-export">
         <h3>Export Code</h3>
         <div class="code-tabs">
-          <button class="code-tab active" onclick="switchCodeTab('javascript')">JavaScript</button>
-          <button class="code-tab" onclick="switchCodeTab('nodejs')">Node.js</button>
-          <button class="code-tab" onclick="switchCodeTab('python')">Python</button>
-          <button class="code-tab" onclick="switchCodeTab('json')">JSON</button>
+          <button class="code-tab active" data-code-tab="javascript">JavaScript</button>
+          <button class="code-tab" data-code-tab="nodejs">Node.js</button>
+          <button class="code-tab" data-code-tab="python">Python</button>
+          <button class="code-tab" data-code-tab="json">JSON</button>
         </div>
 
         <div class="code-content active" id="code-javascript">
-          <button class="copy-code-btn" onclick="copyExportCode('javascript')">Copy</button>
+          <button class="copy-code-btn" data-copy-lang="javascript">Copy</button>
           <pre><code class="language-javascript" id="exportCodeJS">// JavaScript code will be generated here</code></pre>
         </div>
 
         <div class="code-content" id="code-nodejs">
-          <button class="copy-code-btn" onclick="copyExportCode('nodejs')">Copy</button>
+          <button class="copy-code-btn" data-copy-lang="nodejs">Copy</button>
           <pre><code class="language-javascript" id="exportCodeNode">// Node.js code will be generated here</code></pre>
         </div>
 
         <div class="code-content" id="code-python">
-          <button class="copy-code-btn" onclick="copyExportCode('python')">Copy</button>
+          <button class="copy-code-btn" data-copy-lang="python">Copy</button>
           <pre><code class="language-python" id="exportCodePython"># Python code will be generated here</code></pre>
         </div>
 
         <div class="code-content" id="code-json">
-          <button class="copy-code-btn" onclick="copyExportCode('json')">Copy</button>
+          <button class="copy-code-btn" data-copy-lang="json">Copy</button>
           <pre><code class="language-json" id="exportCodeJSON">// JSON workflow will be generated here</code></pre>
         </div>
       </div>
@@ -908,7 +941,7 @@ graph TB
     <div class="modal-content">
       <div class="modal-header">
         <h3 id="modalTitle">Step Details</h3>
-        <button class="modal-close" onclick="closeModal()">×</button>
+        <button class="modal-close" id="closeModalBtn">×</button>
       </div>
       <div class="modal-body" id="modalBody">
         <!-- Step details will be shown here -->
@@ -960,7 +993,7 @@ graph TB
             id: 'research',
             name: 'Research',
             agent: 'research-analyst',
-            model: 'claude-opus-4.5',
+            model: 'claude-opus-4-5-20251101',
             temperature: 0.3,
             prompt: 'Research the following topic in depth: ${userInput}',
             outputVariable: 'researchOutput'
@@ -987,7 +1020,7 @@ graph TB
             id: 'fact-check',
             name: 'Fact Check',
             agent: 'research-analyst',
-            model: 'claude-opus-4.5',
+            model: 'claude-opus-4-5-20251101',
             temperature: 0.2,
             prompt: 'Verify all facts in this article and suggest corrections: ${editedContent}',
             outputVariable: 'finalArticle'
@@ -1054,7 +1087,7 @@ graph TB
             id: 'analyze',
             name: 'Analyze',
             agent: 'research-analyst',
-            model: 'claude-opus-4.5',
+            model: 'claude-opus-4-5-20251101',
             temperature: 0.3,
             prompt: 'Analyze this data and identify key insights: ${structuredData}',
             outputVariable: 'analysis'
@@ -1172,7 +1205,7 @@ graph TB
             id: 'research-market',
             name: 'Market Research',
             agent: 'research-analyst',
-            model: 'claude-opus-4.5',
+            model: 'claude-opus-4-5-20251101',
             temperature: 0.3,
             prompt: 'Research the target market for: ${productInfo}',
             outputVariable: 'marketResearch'
@@ -1232,7 +1265,7 @@ graph TB
             id: 'extract-clauses',
             name: 'Extract Clauses',
             agent: 'legal-agent',
-            model: 'claude-opus-4.5',
+            model: 'claude-opus-4-5-20251101',
             temperature: 0.1,
             prompt: 'Extract all key clauses from this legal document: ${document}',
             outputVariable: 'clauses'
@@ -1241,7 +1274,7 @@ graph TB
             id: 'analyze-risk',
             name: 'Analyze Risk',
             agent: 'legal-agent',
-            model: 'claude-opus-4.5',
+            model: 'claude-opus-4-5-20251101',
             temperature: 0.2,
             prompt: 'Analyze potential risks in these clauses: ${clauses}',
             outputVariable: 'riskAnalysis'
@@ -1349,7 +1382,9 @@ graph TB
       document.getElementById('finalResult').style.display = 'none';
 
       isExecuting = true;
-      document.getElementById('executeBtn').disabled = true;
+      const executeBtn = document.getElementById('executeBtn');
+      executeBtn.disabled = true;
+      executeBtn.classList.add('loading');
 
       // Simulate user input
       const userInput = prompt('Enter your input for the workflow:', 'AI trends in 2026');
@@ -1404,7 +1439,8 @@ graph TB
         } catch (error) {
           updateLogEntry(logEntry, 'error', 0, error.message);
           isExecuting = false;
-          document.getElementById('executeBtn').disabled = false;
+          executeBtn.disabled = false;
+          executeBtn.classList.remove('loading');
           return;
         }
       }
@@ -1419,7 +1455,8 @@ graph TB
       document.getElementById('progressText').textContent = 'Workflow completed successfully! ';
 
       isExecuting = false;
-      document.getElementById('executeBtn').disabled = false;
+      executeBtn.disabled = false;
+      executeBtn.classList.remove('loading');
     }
 
     // Map workflow agent names to actual agent IDs
@@ -1605,23 +1642,38 @@ print('Final result:', results['${currentWorkflow.steps[currentWorkflow.steps.le
       };
       document.getElementById('exportCodeJSON').textContent = JSON.stringify(jsonWorkflow, null, 2);
 
-      // Trigger Prism highlighting
-      Prism.highlightAll();
+      // Trigger Prism highlighting (check if Prism is loaded)
+      function highlightCode() {
+        if (typeof Prism !== 'undefined' && Prism.highlightAll) {
+          Prism.highlightAll();
+        } else {
+          // Wait for Prism to load if it's not ready yet
+          setTimeout(highlightCode, 50);
+        }
+      }
+      highlightCode();
     }
 
     // Switch code tab
-    function switchCodeTab(lang) {
+    function switchCodeTab(lang, event) {
       // Update tabs
       document.querySelectorAll('.code-tab').forEach(tab => tab.classList.remove('active'));
-      event.target.classList.add('active');
+      if (event && event.target) {
+        event.target.classList.add('active');
+      } else if (window.event && window.event.target) {
+        window.event.target.classList.add('active');
+      }
 
       // Update content
       document.querySelectorAll('.code-content').forEach(content => content.classList.remove('active'));
-      document.getElementById(`code-${lang}`).classList.add('active');
+      const contentEl = document.getElementById(`code-${lang}`);
+      if (contentEl) {
+        contentEl.classList.add('active');
+      }
     }
 
     // Copy export code
-    function copyExportCode(lang) {
+    function copyExportCode(lang, event) {
       const codeMap = {
         javascript: 'exportCodeJS',
         nodejs: 'exportCodeNode',
@@ -1630,18 +1682,28 @@ print('Final result:', results['${currentWorkflow.steps[currentWorkflow.steps.le
       };
 
       const codeElement = document.getElementById(codeMap[lang]);
+      if (!codeElement) {
+        console.error('Code element not found for:', lang);
+        return;
+      }
+
       const text = codeElement.textContent;
 
       navigator.clipboard.writeText(text).then(() => {
-        const btn = event.target;
-        const originalText = btn.textContent;
-        btn.textContent = 'Copied!';
-        btn.classList.add('copied');
+        const btn = (event && event.target) || (window.event && window.event.target);
+        if (btn) {
+          const originalText = btn.textContent;
+          btn.textContent = 'Copied!';
+          btn.classList.add('copied');
 
-        setTimeout(() => {
-          btn.textContent = originalText;
-          btn.classList.remove('copied');
-        }, 2000);
+          setTimeout(() => {
+            btn.textContent = originalText;
+            btn.classList.remove('copied');
+          }, 2000);
+        }
+      }).catch(err => {
+        console.error('Failed to copy:', err);
+        alert('Failed to copy to clipboard');
       });
     }
 
@@ -1732,12 +1794,57 @@ print('Final result:', results['${currentWorkflow.steps[currentWorkflow.steps.le
     // Initialize
     document.addEventListener('DOMContentLoaded', () => {
       generateExportCode();
-    });
 
-    // Close modal on outside click
-    document.getElementById('stepModal').addEventListener('click', (e) => {
-      if (e.target.id === 'stepModal') {
-        closeModal();
+      // Set up button event listeners
+      const executeBtn = document.getElementById('executeBtn');
+      if (executeBtn) executeBtn.addEventListener('click', executeWorkflow);
+
+      const editWorkflowBtn = document.getElementById('editWorkflowBtn');
+      if (editWorkflowBtn) editWorkflowBtn.addEventListener('click', editWorkflow);
+
+      const saveWorkflowBtn = document.getElementById('saveWorkflowBtn');
+      if (saveWorkflowBtn) saveWorkflowBtn.addEventListener('click', saveWorkflow);
+
+      const loadWorkflowBtn = document.getElementById('loadWorkflowBtn');
+      if (loadWorkflowBtn) loadWorkflowBtn.addEventListener('click', loadWorkflow);
+
+      const clearLogsBtn = document.getElementById('clearLogsBtn');
+      if (clearLogsBtn) clearLogsBtn.addEventListener('click', clearLogs);
+
+      const zoomInBtn = document.getElementById('zoomInBtn');
+      if (zoomInBtn) zoomInBtn.addEventListener('click', zoomIn);
+
+      const zoomOutBtn = document.getElementById('zoomOutBtn');
+      if (zoomOutBtn) zoomOutBtn.addEventListener('click', zoomOut);
+
+      const resetViewBtn = document.getElementById('resetViewBtn');
+      if (resetViewBtn) resetViewBtn.addEventListener('click', resetView);
+
+      const closeModalBtn = document.getElementById('closeModalBtn');
+      if (closeModalBtn) closeModalBtn.addEventListener('click', closeModal);
+
+      // Set up code tab switching
+      document.querySelectorAll('.code-tab[data-code-tab]').forEach(tab => {
+        tab.addEventListener('click', (e) => {
+          switchCodeTab(tab.dataset.codeTab, e);
+        });
+      });
+
+      // Set up copy buttons
+      document.querySelectorAll('.copy-code-btn[data-copy-lang]').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          copyExportCode(btn.dataset.copyLang, e);
+        });
+      });
+
+      // Close modal on outside click
+      const stepModal = document.getElementById('stepModal');
+      if (stepModal) {
+        stepModal.addEventListener('click', (e) => {
+          if (e.target.id === 'stepModal') {
+            closeModal();
+          }
+        });
       }
     });
   </script>

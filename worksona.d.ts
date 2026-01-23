@@ -21,11 +21,14 @@ declare module 'worksona' {
   export interface AgentConfig {
     provider?: 'openai' | 'anthropic' | 'google';
     model?: string;
+    imageGenerationModel?: string;
     temperature?: number;
     maxTokens?: number;
     topP?: number;
+    topK?: number;
     frequencyPenalty?: number;
     presencePenalty?: number;
+    organization?: string;
     systemPrompt?: string;
     examples?: Array<{
       user: string;
@@ -89,13 +92,25 @@ declare module 'worksona' {
     detail?: 'auto' | 'low' | 'high';
   }
 
+  export interface ImageEditOptions extends ImageGenerationOptions {
+    mask?: string;
+    input_fidelity?: 'low' | 'high';
+  }
+
   export interface ImageGenerationOptions {
-    model?: string;
-    size?: '256x256' | '512x512' | '1024x1024' | '1024x1792' | '1792x1024';
+    model?: 'gpt-image-1.5' | 'gpt-image-1' | 'gpt-image-1-mini' | 'dall-e-3' | 'dall-e-2' | string;
+    size?: 'auto' | '1024x1024' | '1536x1024' | '1024x1536' | '1792x1024' | '1024x1792' | '256x256' | '512x512';
     n?: number;
     response_format?: 'url' | 'b64_json';
-    quality?: 'standard' | 'hd';
+    quality?: 'auto' | 'high' | 'medium' | 'low' | 'standard' | 'hd';
+    output_format?: 'png' | 'jpeg' | 'webp';
+    output_compression?: number;
+    background?: 'auto' | 'transparent' | 'opaque';
+    moderation?: boolean | 'auto' | 'low';
+    stream?: boolean;
+    partial_images?: number;
     style?: 'vivid' | 'natural';
+    user?: string;
   }
 
   export interface WorksonaError extends Error {
@@ -124,7 +139,7 @@ declare module 'worksona' {
     processImage(agentId: string, imageData: string, options?: ImageProcessingOptions): Promise<string | null>;
     analyzeImage(agentId: string, imageData: string, options?: ImageProcessingOptions): Promise<string | null>;
     generateImage(agentId: string, prompt: string, options?: ImageGenerationOptions): Promise<string | null>;
-    editImage(agentId: string, imageData: string, prompt: string, options?: ImageGenerationOptions): Promise<string | null>;
+    editImage(agentId: string, imageData: string | string[], prompt: string, options?: ImageEditOptions): Promise<string | null>;
     variationImage(agentId: string, imageData: string, options?: ImageGenerationOptions): Promise<string | null>;
 
     // Events

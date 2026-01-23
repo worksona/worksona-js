@@ -1,6 +1,6 @@
 {
   "name": "worksona-js",
-  "version": "0.3.0",
+  "version": "0.2.0",
   "description": "A lightweight, single-file JavaScript library for creating and managing AI agents with distinct personalities across multiple LLM providers. Features comprehensive image processing, real-time control panel, and event-driven architecture.",
   "main": "worksona.js",
   "browser": "worksona.min.js",
@@ -16,7 +16,11 @@
     "LICENSE"
   ],
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "jest --testPathIgnorePatterns=node_modules --setupFilesAfterEnv=./tests/setup.js",
+    "test:watch": "jest --watch --testPathIgnorePatterns=node_modules --setupFilesAfterEnv=./tests/setup.js",
+    "test:coverage": "jest --coverage --testPathIgnorePatterns=node_modules --setupFilesAfterEnv=./tests/setup.js",
+    "test:api": "jest tests/api.test.js --setupFilesAfterEnv=./tests/setup.js",
+    "test:integration": "jest tests/integration.test.js --setupFilesAfterEnv=./tests/setup.js",
     "build": "npm run minify",
     "minify": "terser worksona.js -o worksona.min.js --compress --mangle",
     "validate": "node -c worksona.js",
@@ -76,6 +80,8 @@
     "node": ">=14.0.0"
   },
   "devDependencies": {
+    "jest": "^29.7.0",
+    "supertest": "^6.3.4",
     "terser": "^5.24.0"
   },
   "funding": {

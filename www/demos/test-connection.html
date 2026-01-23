@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Demo Connection Test - Worksona.js</title>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      max-width: 800px;
+      margin: 2rem auto;
+      padding: 2rem;
+      background: #f8fafc;
+    }
+    .test-card {
+      background: white;
+      padding: 1.5rem;
+      margin-bottom: 1rem;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    .test-card h3 {
+      margin-top: 0;
+      color: #2563eb;
+    }
+    .status {
+      padding: 0.5rem 1rem;
+      border-radius: 4px;
+      margin: 0.5rem 0;
+      font-weight: 600;
+    }
+    .status.success {
+      background: #d1fae5;
+      color: #065f46;
+    }
+    .status.error {
+      background: #fee2e2;
+      color: #991b1b;
+    }
+    .status.pending {
+      background: #fef3c7;
+      color: #92400e;
+    }
+    button {
+      background: #2563eb;
+      color: white;
+      border: none;
+      padding: 0.75rem 1.5rem;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 1rem;
+      margin-top: 1rem;
+    }
+    button:hover {
+      background: #1d4ed8;
+    }
+    pre {
+      background: #1e293b;
+      color: #e2e8f0;
+      padding: 1rem;
+      border-radius: 6px;
+      overflow-x: auto;
+      font-size: 0.875rem;
+    }
+    .info {
+      background: #dbeafe;
+      border-left: 4px solid #2563eb;
+      padding: 1rem;
+      margin: 1rem 0;
+    }
+  </style>
+</head>
+<body>
+  <h1>🔍 Demo Connection Test</h1>
+  <p>This page tests if your demos can connect to the API server.</p>
+
+  <div class="test-card">
+    <h3>1. Server Health Check</h3>
+    <div id="health-status" class="status pending">Testing...</div>
+    <pre id="health-details"></pre>
+  </div>
+
+  <div class="test-card">
+    <h3>2. API Info Endpoint</h3>
+    <div id="info-status" class="status pending">Testing...</div>
+    <pre id="info-details"></pre>
+  </div>
+
+  <div class="test-card">
+    <h3>3. Available Agents</h3>
+    <div id="agents-status" class="status pending">Testing...</div>
+    <pre id="agents-details"></pre>
+  </div>
+
+  <div class="test-card">
+    <h3>4. Test Agent Chat</h3>
+    <div id="chat-status" class="status pending">Testing...</div>
+    <pre id="chat-details"></pre>
+  </div>
+
+  <div class="info">
+    <strong>💡 Troubleshooting:</strong>
+    <ul>
+      <li>Make sure the server is running: <code>npm start</code> or <code>node worksona-server.js</code></li>
+      <li>Check that API keys are configured in your <code>.env</code> file</li>
+      <li>Verify the server is running on port 3000 (or the port in your .env)</li>
+      <li>Check browser console (F12) for CORS or network errors</li>
+    </ul>
+  </div>
+
+  <button onclick="runTests()">🔄 Run Tests Again</button>
+
+  <script>
+    const API_BASE = 'http://localhost:3000';
+
+    async function runTests() {
+      // Test 1: Health Check
+      try {
+        const healthRes = await fetch(`${API_BASE}/health`);
+        const healthData = await healthRes.json();
+        document.getElementById('health-status').className = 'status success';
+        document.getElementById('health-status').textContent = '✅ Server is running';
+        document.getElementById('health-details').textContent = JSON.stringify(healthData, null, 2);
+      } catch (error) {
+        document.getElementById('health-status').className = 'status error';
+        document.getElementById('health-status').textContent = '❌ Cannot connect to server';
+        document.getElementById('health-details').textContent = `Error: ${error.message}\n\nMake sure the server is running: npm start`;
+      }
+
+      // Test 2: API Info
+      try {
+        const infoRes = await fetch(`${API_BASE}/api/info`);
+        const infoData = await infoRes.json();
+        document.getElementById('info-status').className = 'status success';
+        document.getElementById('info-status').textContent = '✅ API info retrieved';
+        document.getElementById('info-details').textContent = JSON.stringify(infoData, null, 2);
+      } catch (error) {
+        document.getElementById('info-status').className = 'status error';
+        document.getElementById('info-status').textContent = '❌ API info failed';
+        document.getElementById('info-details').textContent = `Error: ${error.message}`;
+      }
+
+      // Test 3: List Agents
+      try {
+        const agentsRes = await fetch(`${API_BASE}/api/agents`);
+        const agentsData = await agentsRes.json();
+        document.getElementById('agents-status').className = 'status success';
+        document.getElementById('agents-status').textContent = `✅ Found ${agentsData.data?.agents?.length || 0} agents`;
+        document.getElementById('agents-details').textContent = JSON.stringify(agentsData, null, 2);
+      } catch (error) {
+        document.getElementById('agents-status').className = 'status error';
+        document.getElementById('agents-status').textContent = '❌ Failed to list agents';
+        document.getElementById('agents-details').textContent = `Error: ${error.message}`;
+      }
+
+      // Test 4: Test Chat
+      try {
+        // Try to use marketing-agent (should be auto-loaded)
+        const chatRes = await fetch(`${API_BASE}/api/agents/marketing-agent/chat`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            message: 'Hello, this is a test',
+            options: { temperature: 0.7 }
+          })
+        });
+        const chatData = await chatRes.json();
+        
+        if (chatData.success) {
+          document.getElementById('chat-status').className = 'status success';
+          document.getElementById('chat-status').textContent = '✅ Chat endpoint working';
+          document.getElementById('chat-details').textContent = JSON.stringify(chatData, null, 2);
+        } else {
+          document.getElementById('chat-status').className = 'status error';
+          document.getElementById('chat-status').textContent = `❌ Chat failed: ${chatData.error?.message || 'Unknown error'}`;
+          document.getElementById('chat-details').textContent = JSON.stringify(chatData, null, 2);
+        }
+      } catch (error) {
+        document.getElementById('chat-status').className = 'status error';
+        document.getElementById('chat-status').textContent = '❌ Chat request failed';
+        document.getElementById('chat-details').textContent = `Error: ${error.message}`;
+      }
+    }
+
+    // Run tests on page load
+    runTests();
+  </script>
+</body>
+</html>

@@ -53,7 +53,29 @@
         button:disabled {
             background: #ccc;
             cursor: not-allowed;
-        ;}
+        }
+        button.loading {
+            position: relative;
+            color: transparent;
+            pointer-events: none;
+            opacity: 0.7;
+        }
+        button.loading::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255,255,255,0.3);
+            border-top-color: white;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            to { transform: translate(-50%, -50%) rotate(360deg); }
+        }
 .output {
             margin-top: 15px;
             padding: 15px;
@@ -185,7 +207,22 @@
             </div>
             <button onclick="testO3()">Test o3</button>
             <button onclick="testO3Mini()">Test o3-mini</button>
+            <button onclick="testO1()">Test o1</button>
+            <button onclick="testO1Mini()">Test o1-mini</button>
             <div class="output" id="o3-output">Results will appear here...</div>
+        </div>
+
+        <!-- GPT Image Models Section -->
+        <div class="model-section">
+            <h2> GPT Image Models <span class="feature-badge">Latest</span></h2>
+            <p>Advanced image generation with transparency, multiple formats, and quality control</p>
+            <div class="input-group">
+                <textarea id="gpt-image-prompt" placeholder="Describe an image to generate...">A futuristic cityscape at sunset with flying cars and neon lights</textarea>
+            </div>
+            <button onclick="testGPTImage15()">Test gpt-image-1.5</button>
+            <button onclick="testGPTImage1()">Test gpt-image-1</button>
+            <button onclick="testGPTImage1Mini()">Test gpt-image-1-mini</button>
+            <div class="output" id="gpt-image-output">Results will appear here...</div>
         </div>
 
         <!-- Multi-Agent Demo -->
@@ -235,32 +272,189 @@
             }
         }
 
-        async function testGPT5() {
-            await testModel('gpt-5', 'gpt5-prompt', 'gpt5-output', 'openai');
+        // Loading state helpers
+        function showButtonLoading(button) {
+            if (button) {
+                button.classList.add('loading');
+                button.disabled = true;
+            }
         }
 
-        async function testGPT5Mini() {
-            await testModel('gpt-5-mini', 'gpt5-prompt', 'gpt5-output', 'openai');
+        function hideButtonLoading(button) {
+            if (button) {
+                button.classList.remove('loading');
+                button.disabled = false;
+            }
         }
 
-        async function testGPT5Nano() {
-            await testModel('gpt-5-nano', 'gpt5-prompt', 'gpt5-output', 'openai');
+        async function testGPT5(event) {
+            const btn = event?.target;
+            showButtonLoading(btn);
+            try {
+                await testModel('gpt-5', 'gpt5-prompt', 'gpt5-output', 'openai');
+            } finally {
+                hideButtonLoading(btn);
+            }
         }
 
-        async function testClaudeOpus45() {
-            await testModel('claude-opus-4-5-20251101', 'claude-prompt', 'claude-output', 'anthropic');
+        async function testGPT5Mini(event) {
+            const btn = event?.target;
+            showButtonLoading(btn);
+            try {
+                await testModel('gpt-5-mini', 'gpt5-prompt', 'gpt5-output', 'openai');
+            } finally {
+                hideButtonLoading(btn);
+            }
         }
 
-        async function testClaudeSonnet45() {
-            await testModel('claude-sonnet-4-5-20250929', 'claude-prompt', 'claude-output', 'anthropic');
+        async function testGPT5Nano(event) {
+            const btn = event?.target;
+            showButtonLoading(btn);
+            try {
+                await testModel('gpt-5-nano', 'gpt5-prompt', 'gpt5-output', 'openai');
+            } finally {
+                hideButtonLoading(btn);
+            }
         }
 
-        async function testO3() {
-            await testModel('o3', 'o3-prompt', 'o3-output', 'openai');
+        async function testClaudeOpus45(event) {
+            const btn = event?.target;
+            showButtonLoading(btn);
+            try {
+                await testModel('claude-opus-4-5-20251101', 'claude-prompt', 'claude-output', 'anthropic');
+            } finally {
+                hideButtonLoading(btn);
+            }
         }
 
-        async function testO3Mini() {
-            await testModel('o3-mini', 'o3-prompt', 'o3-output', 'openai');
+        async function testClaudeSonnet45(event) {
+            const btn = event?.target;
+            showButtonLoading(btn);
+            try {
+                await testModel('claude-sonnet-4-5-20250929', 'claude-prompt', 'claude-output', 'anthropic');
+            } finally {
+                hideButtonLoading(btn);
+            }
+        }
+
+        async function testO3(event) {
+            const btn = event?.target;
+            showButtonLoading(btn);
+            try {
+                await testModel('o3', 'o3-prompt', 'o3-output', 'openai');
+            } finally {
+                hideButtonLoading(btn);
+            }
+        }
+
+        async function testO3Mini(event) {
+            const btn = event?.target;
+            showButtonLoading(btn);
+            try {
+                await testModel('o3-mini', 'o3-prompt', 'o3-output', 'openai');
+            } finally {
+                hideButtonLoading(btn);
+            }
+        }
+
+        async function testO1(event) {
+            const btn = event?.target;
+            showButtonLoading(btn);
+            try {
+                await testModel('o1', 'o3-prompt', 'o3-output', 'openai');
+            } finally {
+                hideButtonLoading(btn);
+            }
+        }
+
+        async function testO1Mini(event) {
+            const btn = event?.target;
+            showButtonLoading(btn);
+            try {
+                await testModel('o1-mini', 'o3-prompt', 'o3-output', 'openai');
+            } finally {
+                hideButtonLoading(btn);
+            }
+        }
+
+        async function testGPTImage15(event) {
+            const btn = event?.target;
+            showButtonLoading(btn);
+            try {
+                await testImageModel('gpt-image-1.5', 'gpt-image-prompt', 'gpt-image-output');
+            } finally {
+                hideButtonLoading(btn);
+            }
+        }
+
+        async function testGPTImage1(event) {
+            const btn = event?.target;
+            showButtonLoading(btn);
+            try {
+                await testImageModel('gpt-image-1', 'gpt-image-prompt', 'gpt-image-output');
+            } finally {
+                hideButtonLoading(btn);
+            }
+        }
+
+        async function testGPTImage1Mini(event) {
+            const btn = event?.target;
+            showButtonLoading(btn);
+            try {
+                await testImageModel('gpt-image-1-mini', 'gpt-image-prompt', 'gpt-image-output');
+            } finally {
+                hideButtonLoading(btn);
+            }
+        }
+
+        async function testImageModel(model, promptId, outputId) {
+            if (!worksona) {
+                alert('Please initialize Worksona first');
+                return;
+            }
+
+            const prompt = document.getElementById(promptId).value;
+            const outputDiv = document.getElementById(outputId);
+
+            outputDiv.innerHTML = '<div class="loading">Generating image...</div>';
+
+            try {
+                const agentId = `${model}-agent`;
+                await worksona.loadAgent({
+                    id: agentId,
+                    name: `${model} Agent`,
+                    config: {
+                        provider: 'openai',
+                        imageGenerationModel: model,
+                        temperature: 0.7
+                    }
+                });
+
+                const startTime = Date.now();
+                const imageUrl = await worksona.generateImage(agentId, prompt, {
+                    model,
+                    quality: 'high',
+                    output_format: 'png',
+                    size: 'auto'
+                });
+                const duration = Date.now() - startTime;
+
+                if (imageUrl) {
+                    outputDiv.innerHTML = `
+                        <div class="success">
+                            <strong>Model:</strong> ${model}<br>
+                            <strong>Time:</strong> ${duration}ms<br>
+                            <strong>Format:</strong> Base64 (GPT Image models return base64)<br>
+                            <br>
+                            <img src="${imageUrl}" style="max-width: 100%; border-radius: 8px; margin-top: 1rem;" alt="Generated image">
+                        </div>
+                    `;
+                } else {
+                    outputDiv.innerHTML = '<div class="error">Image generation failed</div>';
+                }
+            } catch (error) {
+                outputDiv.innerHTML = `<div class="error">Error: ${error.message}</div>`;
+            }
         }
 
         async function testModel(model, promptId, outputId, provider) {
@@ -308,18 +502,20 @@
             }
         }
 
-        async function runMultiAgentDemo() {
+        async function runMultiAgentDemo(event) {
             if (!worksona) {
                 alert('Please initialize Worksona first');
                 return;
             }
 
-            const topic = document.getElementById('multi-topic').value;
+            const btn = event?.target;
+            showButtonLoading(btn);
             const outputDiv = document.getElementById('multi-output');
-
-            outputDiv.innerHTML = '<div class="loading"> Running multi-agent analysis...</div>';
+            outputDiv.innerHTML = '<div class="loading">Running multi-agent demo...</div>';
 
             try {
+
+            const topic = document.getElementById('multi-topic').value;
                 // Load all agents
                 await worksona.loadAgent({
                     id: 'analyst',
@@ -378,6 +574,8 @@
                 outputDiv.innerHTML = output;
             } catch (error) {
                 outputDiv.innerHTML = `<div class="error">Error: ${error.message}</div>`;
+            } finally {
+                hideButtonLoading(btn);
             }
         }
     </script>

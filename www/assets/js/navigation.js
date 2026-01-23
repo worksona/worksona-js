@@ -26,8 +26,7 @@
         links: [
           { label: 'Endpoint API Demo', href: '/demos/endpoint-api-demo.html' },
           { label: 'Library Demo', href: '/demos/library-internal-demo.html' },
-          { label: 'Delegation Demo', href: '/demos/delegation-demo.html' },
-          { label: 'Workflow Builder', href: '/demos/workflow-builder.html' }
+          { label: 'Delegation Demo', href: '/demos/delegation-demo.html' }
         ]
       },
       {

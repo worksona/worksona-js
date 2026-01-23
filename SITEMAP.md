@@ -15,20 +15,23 @@ worksona-js/
 │   └── SITEMAP.md                     This file
 │
 ├── 🎯 INTERACTIVE DEMOS (Try in Browser)
-│   ├── docs/
-│   │   ├── index.html                 ⭐ Documentation Hub (START HERE)
-│   │   ├── api-reference-swagger.html  Interactive API Reference
-│   │   ├── endpoint-api-demo.html     ⭐ API Testing Demo
-│   │   ├── library-internal-demo.html  Library Usage Demo
-│   │   ├── code-examples-hub.html     ⭐ 60+ Code Examples
-│   │   └── delegation-demo.html       ⭐ Visual Workflow Builder
-│   │
-│   └── marketing/
-│       └── index.html                  Product Landing Page
+│   ├── www/
+│   │   ├── docs/
+│   │   │   ├── index.html                 ⭐ Documentation Hub (START HERE)
+│   │   │   ├── api-reference-swagger.html  Interactive API Reference
+│   │   │   └── code-examples-hub.html     ⭐ 60+ Code Examples
+│   │   ├── demos/
+│   │   │   ├── index.html                 Demos Home
+│   │   │   ├── endpoint-api-demo.html     ⭐ API Testing Demo
+│   │   │   ├── library-internal-demo.html  Library Usage Demo
+│   │   │   ├── delegation-demo.html       ⭐ Visual Workflow Builder
+│   │   │   └── examples/                  Additional examples
+│   │   └── marketing/
+│   │       └── index.html                  Product Landing Page
 │
 ├── 🔌 API SPECIFICATION
-│   └── docs/
-│       └── openapi-spec.yaml           OpenAPI 3.0 Specification
+│   ├── worksona-api.yaml               OpenAPI 3.0 Specification
+│   └── www/openapi-spec.yaml           OpenAPI 3.0 Specification (www)
 │
 ├── 🤖 AGENT CONFIGURATIONS
 │   └── agents/
@@ -39,10 +42,10 @@ worksona-js/
 │       └── research-analyst.json
 │
 ├── 💻 SOURCE CODE
-│   ├── worksona.js                     Main library (2,241 lines)
-│   ├── worksona.min.js                 Minified version
+│   ├── worksona.js                     Main library (2,432 lines)
+│   ├── worksona.min.js                 Minified version (52KB)
 │   ├── worksona-server.js              REST API Server
-│   └── worksona.d.ts                   TypeScript definitions
+│   └── worksona.d.ts                   TypeScript definitions (updated with GPT Image support)
 │
 ├── 📦 EXAMPLES
 │   └── examples/
@@ -50,7 +53,9 @@ worksona-js/
 │
 └── 🛠️ CONFIGURATION
     ├── package.json                    NPM configuration
-    └── .env                            Environment variables
+    ├── .env                            Environment variables
+    ├── .env.example                    Environment variables template
+    └── jest.config.js                  Jest test configuration
 ```
 
 ## 🎯 Documentation by Purpose
@@ -183,14 +188,15 @@ worksona-js/
 3. [`docs/api-reference-swagger.html`](docs/api-reference-swagger.html) - API details
 
 ### "I want to generate images"
-1. [`docs/endpoint-api-demo.html`](docs/endpoint-api-demo.html) - Test DALL-E
-2. [`docs/code-examples-hub.html#image-processing`](docs/code-examples-hub.html) - Examples
-3. [`docs/library-internal-demo.html`](docs/library-internal-demo.html) - Interactive demo
+1. [`www/demos/endpoint-api-demo.html`](www/demos/endpoint-api-demo.html) - Test GPT Image 1.5 & DALL-E
+2. [`www/docs/code-examples-hub.html#image-processing`](www/docs/code-examples-hub.html) - Examples
+3. [`www/demos/library-internal-demo.html`](www/demos/library-internal-demo.html) - Interactive demo
+4. [`docs/MODELS_AND_PARAMETERS.md`](docs/MODELS_AND_PARAMETERS.md) - Complete model reference
 
 ### "I need multi-agent workflows"
-1. [`docs/delegation-demo.html`](docs/delegation-demo.html) - Visual builder
-2. [`docs/code-examples-hub.html#advanced-patterns`](docs/code-examples-hub.html) - Code patterns
-3. [`docs/index.html#delegators`](docs/index.html) - Architecture
+1. [`www/demos/delegation-demo.html`](www/demos/delegation-demo.html) - Visual builder
+2. [`www/docs/code-examples-hub.html#advanced-patterns`](www/docs/code-examples-hub.html) - Code patterns
+3. [`www/docs/index.html#delegators`](www/docs/index.html) - Architecture
 
 ### "I want a REST API"
 1. [`docs/api-reference-swagger.html`](docs/api-reference-swagger.html) - API reference
@@ -200,13 +206,13 @@ worksona-js/
 ## 🎨 By Format
 
 ### Interactive HTML Demos
-- [`docs/index.html`](docs/index.html) - Documentation hub
-- [`docs/api-reference-swagger.html`](docs/api-reference-swagger.html) - Swagger UI
-- [`docs/endpoint-api-demo.html`](docs/endpoint-api-demo.html) - API demo
-- [`docs/library-internal-demo.html`](docs/library-internal-demo.html) - Library demo
-- [`docs/code-examples-hub.html`](docs/code-examples-hub.html) - Examples
-- [`docs/delegation-demo.html`](docs/delegation-demo.html) - Workflows
-- [`marketing/index.html`](marketing/index.html) - Landing page
+- [`www/docs/index.html`](www/docs/index.html) - Documentation hub
+- [`www/docs/api-reference-swagger.html`](www/docs/api-reference-swagger.html) - Swagger UI
+- [`www/demos/endpoint-api-demo.html`](www/demos/endpoint-api-demo.html) - API demo
+- [`www/demos/library-internal-demo.html`](www/demos/library-internal-demo.html) - Library demo
+- [`www/docs/code-examples-hub.html`](www/docs/code-examples-hub.html) - Examples
+- [`www/demos/delegation-demo.html`](www/demos/delegation-demo.html) - Workflows
+- [`www/marketing/index.html`](www/marketing/index.html) - Landing page
 
 ### Markdown Documentation
 - [`README.md`](README.md) - Project overview
@@ -217,9 +223,16 @@ worksona-js/
 - [`SITEMAP.md`](SITEMAP.md) - This file
 
 ### Specification Files
-- [`docs/openapi-spec.yaml`](docs/openapi-spec.yaml) - OpenAPI 3.0
+- [`worksona-api.yaml`](worksona-api.yaml) - OpenAPI 3.0
+- [`www/openapi-spec.yaml`](www/openapi-spec.yaml) - OpenAPI 3.0 (www)
 - [`package.json`](package.json) - NPM package
-- [`worksona.d.ts`](worksona.d.ts) - TypeScript definitions
+- [`worksona.d.ts`](worksona.d.ts) - TypeScript definitions (updated)
+
+### Testing Documentation
+- [`docs/API_TESTING_GUIDE.md`](docs/API_TESTING_GUIDE.md) - Complete testing guide
+- [`tests/README.md`](tests/README.md) - Test setup and structure
+- [`tests/api.test.js`](tests/api.test.js) - API endpoint tests
+- [`tests/integration.test.js`](tests/integration.test.js) - Integration tests
 
 ### Source Code
 - [`worksona.js`](worksona.js) - Main library
@@ -234,13 +247,16 @@ worksona-js/
 
 ## 📊 Statistics
 
-- **Total Files**: 10+ documentation files
+- **Total Files**: 15+ documentation files
 - **Lines of Code**: ~12,000+ (documentation)
 - **Code Examples**: 60+ (in 4 languages = 240 total)
 - **Interactive Demos**: 6
 - **Workflow Templates**: 5
 - **API Endpoints**: 32+
 - **Mermaid Diagrams**: 8
+- **Test Suites**: 2 (API + Integration)
+- **Test Coverage**: Comprehensive coverage of all endpoints
+- **Supported Models**: 30+ (including GPT Image 1.5, GPT-5, Claude Opus 4.5)
 
 ## 🎯 Recommended Starting Points
 
@@ -266,4 +282,6 @@ worksona-js/
 - Search on GitHub: https://github.com/worksona/worksona-js
 - Ask in Discussions: https://github.com/worksona/worksona-js/discussions
 
-**Pro Tip**: Most people start with [`docs/endpoint-api-demo.html`](docs/endpoint-api-demo.html) to see it in action! 🎉
+**Pro Tip**: Most people start with [`www/demos/endpoint-api-demo.html`](www/demos/endpoint-api-demo.html) to see it in action! 🎉
+
+**Testing**: Run `npm test` to verify everything works, or check [`docs/API_TESTING_GUIDE.md`](docs/API_TESTING_GUIDE.md) for complete testing documentation.

@@ -122,8 +122,9 @@ worksona-js/
 1. **Chat with Latest Models** (GPT-5, Claude Opus 4.5, o3)
    - Demo: [`docs/endpoint-api-demo.html`](docs/endpoint-api-demo.html) → Simple Query tab
 
-2. **Generate Images with DALL-E 3**
+2. **Generate Images with GPT Image 1.5 or DALL-E 3**
    - Demo: [`docs/endpoint-api-demo.html`](docs/endpoint-api-demo.html) → Images tab
+   - Supports: `gpt-image-1.5`, `gpt-image-1`, `gpt-image-1-mini`, `dall-e-3`, `dall-e-2`
 
 3. **Process Documents (OCR)**
    - Demo: [`docs/endpoint-api-demo.html`](docs/endpoint-api-demo.html) → Documents tab
@@ -138,11 +139,11 @@ worksona-js/
 
 Before you can use Worksona.js, you need API keys from the providers:
 
-### OpenAI (Required for GPT models and DALL-E)
+### OpenAI (Required for GPT models and Image Generation)
 1. Go to: https://platform.openai.com/api-keys
 2. Click "Create new secret key"
 3. Copy key (starts with `sk-proj-...`)
-4. Cost: Pay-as-you-go (GPT-4o: ~$2.50/1M tokens)
+4. Cost: Pay-as-you-go (GPT-4o: ~$2.50/1M tokens, GPT Image 1.5: ~$0.04/image)
 
 ### Anthropic (Required for Claude models)
 1. Go to: https://console.anthropic.com/
@@ -158,19 +159,23 @@ Before you can use Worksona.js, you need API keys from the providers:
 ## 🐛 Troubleshooting
 
 ### "Server offline" in demos
-→ Start the API server: `node worksona-server.js`
+→ Start the API server: `node worksona-server.js` or `npm start`
 
 ### "Invalid API key"
-→ Check your API keys in environment variables or demo interface
+→ Check your API keys in environment variables (`.env` file) or demo interface
+→ For GPT Image models, ensure your OpenAI account has access (may require organization verification)
 
 ### "CORS error"
 → The API server includes CORS headers, but check browser console
 
 ### "404 Not Found"
-→ Ensure you're opening HTML files from the correct directory
+→ Ensure you're opening HTML files from the correct directory (`www/` folder)
 
 ### "Mermaid diagrams not showing"
 → Check internet connection (Mermaid loads from CDN)
+
+### "TypeScript errors"
+→ Updated TypeScript definitions (`worksona.d.ts`) include all latest features including GPT Image models
 
 ## 🆘 Need Help?
 
@@ -215,8 +220,29 @@ Use our interactive calculator: [`marketing/index.html`](marketing/index.html)
 - 10K queries/month with GPT-4o: ~$25/month
 - 10K queries/month with Claude Opus 4.5: ~$75/month
 - 10K queries/month with Gemini Pro: ~$10/month
+- 1K images/month with GPT Image 1.5: ~$40/month
 
 **Worksona.js is free** - you only pay for LLM API usage!
+
+## 🧪 Testing
+
+Worksona.js includes comprehensive automated testing:
+
+```bash
+# Run all tests
+npm test
+
+# Run API tests only
+npm run test:api
+
+# Run with coverage
+npm run test:coverage
+
+# Watch mode
+npm run test:watch
+```
+
+See [`docs/API_TESTING_GUIDE.md`](docs/API_TESTING_GUIDE.md) for complete testing documentation.
 
 ## 🚀 Ready to Build?
 

@@ -363,7 +363,7 @@
 
 .response-content {
       background: #1a1f3a;
-      color: #0f172a;
+      color: #e2e8f0;
       padding: 1.5rem;
       
       overflow-x: auto;
@@ -415,7 +415,7 @@
 
 .code-block {
       background: #1a1f3a;
-      color: #0f172a;
+      color: #e2e8f0;
       padding: 1.5rem;
       
       overflow-x: auto;
@@ -429,7 +429,26 @@
       font-family: 'Fira Code', monospace;
       font-size: 0.85rem;
       line-height: 1.6;
+      color: #e2e8f0;
     ;}
+
+.code-block code {
+      color: #e2e8f0;
+      background: transparent;
+    }
+
+/* Ensure Prism.js code blocks are readable */
+.code-block pre[class*="language-"],
+.code-block code[class*="language-"] {
+      color: #e2e8f0 !important;
+      background: transparent !important;
+    }
+
+/* Response content text color override */
+.response-content,
+.response-content * {
+      color: #e2e8f0 !important;
+    }
 
 .copy-btn {
       position: absolute;
@@ -471,6 +490,50 @@
 
     @keyframes spin {
       to { transform: rotate(360deg); }
+    }
+
+    /* Loading states */
+    .btn.loading {
+      position: relative;
+      color: transparent;
+      pointer-events: none;
+      opacity: 0.7;
+    }
+
+    .btn.loading::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 20px;
+      height: 20px;
+      border: 3px solid rgba(255,255,255,0.3);
+      border-top-color: white;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+
+    .loading-message {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 1.5rem;
+      background: #1a1f3a;
+      color: #e2e8f0;
+      border: 1px solid var(--border-color);
+      border-radius: 4px;
+      font-family: 'Fira Code', monospace;
+      font-size: 0.9rem;
+    }
+
+    .loading-message .spinner {
+      width: 20px;
+      height: 20px;
+      border: 3px solid rgba(226, 232, 240, 0.3);
+      border-top-color: #e2e8f0;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
     }
 
     /* Responsive */
@@ -589,16 +652,16 @@
       <h2>Request Configuration</h2>
 
       <!-- Tabs -->
-      <div class="tabs">
-        <button class="tab active" onclick="switchTab('simple-query')">Simple Query</button>
-        <button class="tab" onclick="switchTab('agent-chat')">Agent Chat</button>
-        <button class="tab" onclick="switchTab('batch')">Batch</button>
-        <button class="tab" onclick="switchTab('file-upload')">File Upload</button>
-        <button class="tab" onclick="switchTab('images')">Images</button>
-        <button class="tab" onclick="switchTab('documents')">Documents</button>
-        <button class="tab" onclick="switchTab('tools')">Tools</button>
-        <button class="tab" onclick="switchTab('translate')">Translate</button>
-        <button class="tab" onclick="switchTab('webhook')">Webhooks</button>
+      <div class="tabs" id="mainTabs">
+        <button class="tab active" data-tab="simple-query">Simple Query</button>
+        <button class="tab" data-tab="agent-chat">Agent Chat</button>
+        <button class="tab" data-tab="batch">Batch</button>
+        <button class="tab" data-tab="file-upload">File Upload</button>
+        <button class="tab" data-tab="images">Images</button>
+        <button class="tab" data-tab="documents">Documents</button>
+        <button class="tab" data-tab="tools">Tools</button>
+        <button class="tab" data-tab="translate">Translate</button>
+        <button class="tab" data-tab="webhook">Webhooks</button>
       </div>
 
       <!-- Simple Query Tab -->
@@ -622,11 +685,51 @@
           <div class="form-group">
             <label for="sq-model">Model (optional)</label>
             <select id="sq-model">
-              <option value="">Default</option>
-              <option value="gpt-4o">gpt-4o</option>
-              <option value="gpt-5">gpt-5</option>
-              <option value="claude-opus-4-5-20251101">Claude Opus 4.5</option>
-              <option value="o3">o3 (reasoning)</option>
+              <option value="">Default (gpt-4o)</option>
+              <optgroup label="OpenAI GPT-5 Series">
+                <option value="gpt-5">gpt-5</option>
+                <option value="gpt-5-mini">gpt-5-mini</option>
+                <option value="gpt-5-nano">gpt-5-nano</option>
+              </optgroup>
+              <optgroup label="OpenAI Reasoning (o-series)">
+                <option value="o3">o3</option>
+                <option value="o3-mini">o3-mini</option>
+                <option value="o1">o1</option>
+                <option value="o1-mini">o1-mini</option>
+                <option value="o1-preview">o1-preview</option>
+              </optgroup>
+              <optgroup label="OpenAI GPT-4 Series">
+                <option value="gpt-4o">gpt-4o (default)</option>
+                <option value="gpt-4o-mini">gpt-4o-mini</option>
+                <option value="gpt-4-turbo">gpt-4-turbo</option>
+                <option value="gpt-4">gpt-4</option>
+                <option value="gpt-4-32k">gpt-4-32k</option>
+              </optgroup>
+              <optgroup label="OpenAI Vision Models">
+                <option value="gpt-4o-vision">gpt-4o-vision</option>
+                <option value="gpt-4-turbo-vision">gpt-4-turbo-vision</option>
+              </optgroup>
+              <optgroup label="OpenAI GPT-3.5 Series">
+                <option value="gpt-3.5-turbo">gpt-3.5-turbo</option>
+                <option value="gpt-3.5-turbo-16k">gpt-3.5-turbo-16k</option>
+              </optgroup>
+              <optgroup label="Anthropic Claude 4.5">
+                <option value="claude-opus-4-5-20251101">Claude Opus 4.5</option>
+                <option value="claude-sonnet-4-5-20250929">Claude Sonnet 4.5</option>
+              </optgroup>
+              <optgroup label="Anthropic Claude 3.5">
+                <option value="claude-3-5-sonnet-20241022">Claude 3.5 Sonnet</option>
+                <option value="claude-3-5-haiku-20241022">Claude 3.5 Haiku</option>
+              </optgroup>
+              <optgroup label="Anthropic Claude 3">
+                <option value="claude-3-opus-20240229">Claude 3 Opus</option>
+                <option value="claude-3-sonnet-20240229">Claude 3 Sonnet</option>
+                <option value="claude-3-haiku-20240307">Claude 3 Haiku</option>
+              </optgroup>
+              <optgroup label="Google Gemini">
+                <option value="gemini-pro">Gemini Pro</option>
+                <option value="gemini-pro-vision">Gemini Pro Vision</option>
+              </optgroup>
             </select>
           </div>
 
@@ -637,8 +740,8 @@
         </div>
 
         <div class="btn-group">
-          <button class="btn btn-primary" onclick="executeSimpleQuery()">Send Query</button>
-          <button class="btn btn-secondary" onclick="clearResponse()">Clear</button>
+          <button class="btn btn-primary" id="executeSimpleQueryBtn">Send Query</button>
+          <button class="btn btn-secondary" id="clearResponseBtn">Clear</button>
         </div>
       </div>
 
@@ -667,8 +770,8 @@
         </div>
 
         <div class="btn-group">
-          <button class="btn btn-primary" onclick="executeAgentChat()">Send Message</button>
-          <button class="btn btn-secondary" onclick="clearResponse()">Clear</button>
+          <button class="btn btn-primary" id="executeAgentChatBtn">Send Message</button>
+          <button class="btn btn-secondary" id="clearResponseBtn2">Clear</button>
         </div>
       </div>
 
@@ -681,8 +784,8 @@
         </div>
 
         <div class="btn-group">
-          <button class="btn btn-primary" onclick="executeBatch()">Execute Batch</button>
-          <button class="btn btn-secondary" onclick="clearResponse()">Clear</button>
+          <button class="btn btn-primary" id="executeBatchBtn">Execute Batch</button>
+          <button class="btn btn-secondary" id="clearResponseBtn3">Clear</button>
         </div>
       </div>
 
@@ -715,7 +818,7 @@
         </div>
 
         <div class="btn-group">
-          <button class="btn btn-primary" onclick="executeFileUpload()">Upload & Analyze</button>
+          <button class="btn btn-primary" id="executeFileUploadBtn">Upload & Analyze</button>
           <button class="btn btn-secondary" onclick="clearResponse()">Clear</button>
         </div>
       </div>
@@ -732,6 +835,21 @@
 
         <div id="generateOptions">
           <div class="form-group">
+            <label for="img-model">Image Model</label>
+            <select id="img-model">
+              <optgroup label="GPT Image Models (Latest)">
+                <option value="gpt-image-1.5" selected>gpt-image-1.5 (default)</option>
+                <option value="gpt-image-1">gpt-image-1</option>
+                <option value="gpt-image-1-mini">gpt-image-1-mini</option>
+              </optgroup>
+              <optgroup label="DALL-E Models (Legacy)">
+                <option value="dall-e-3">dall-e-3</option>
+                <option value="dall-e-2">dall-e-2</option>
+              </optgroup>
+            </select>
+          </div>
+
+          <div class="form-group">
             <label for="img-prompt">Image Description</label>
             <textarea id="img-prompt" placeholder="A futuristic city at sunset"></textarea>
           </div>
@@ -740,19 +858,52 @@
             <div class="form-group">
               <label for="img-size">Size</label>
               <select id="img-size">
-                <option value="1024x1024">Square (1024x1024)</option>
-                <option value="1792x1024">Landscape (1792x1024)</option>
-                <option value="1024x1792">Portrait (1024x1792)</option>
+                <option value="auto">Auto (GPT Image only)</option>
+                <option value="1024x1024" selected>Square (1024x1024)</option>
+                <option value="1536x1024">Landscape (1536x1024) - GPT Image</option>
+                <option value="1024x1536">Portrait (1024x1536) - GPT Image</option>
+                <option value="1792x1024">Landscape (1792x1024) - DALL-E 3</option>
+                <option value="1024x1792">Portrait (1024x1792) - DALL-E 3</option>
               </select>
             </div>
 
             <div class="form-group">
               <label for="img-quality">Quality</label>
               <select id="img-quality">
-                <option value="standard">Standard</option>
-                <option value="hd">HD</option>
+                <option value="auto">Auto (GPT Image)</option>
+                <option value="high">High (GPT Image)</option>
+                <option value="medium">Medium (GPT Image)</option>
+                <option value="low">Low (GPT Image)</option>
+                <option value="standard">Standard (DALL-E)</option>
+                <option value="hd">HD (DALL-E)</option>
               </select>
             </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="img-output-format">Output Format</label>
+              <select id="img-output-format">
+                <option value="png">PNG (GPT Image)</option>
+                <option value="jpeg">JPEG (GPT Image)</option>
+                <option value="webp">WebP (GPT Image)</option>
+                <option value="url">URL (DALL-E only)</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label for="img-background">Background</label>
+              <select id="img-background">
+                <option value="auto">Auto</option>
+                <option value="transparent">Transparent (PNG/WebP only)</option>
+                <option value="opaque">Opaque</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="img-n">Number of Images</label>
+            <input type="number" id="img-n" value="1" min="1" max="10" step="1">
           </div>
         </div>
 
@@ -770,7 +921,7 @@
         </div>
 
         <div class="btn-group">
-          <button class="btn btn-primary" onclick="executeImageAction()">Execute</button>
+          <button class="btn btn-primary" id="executeImageActionBtn">Execute</button>
           <button class="btn btn-secondary" onclick="clearResponse()">Clear</button>
         </div>
       </div>
@@ -800,7 +951,7 @@
         </div>
 
         <div class="btn-group">
-          <button class="btn btn-primary" onclick="executeDocumentAction()">Process Document</button>
+          <button class="btn btn-primary" id="executeDocumentActionBtn">Process Document</button>
           <button class="btn btn-secondary" onclick="clearResponse()">Clear</button>
         </div>
       </div>
@@ -832,7 +983,7 @@
         </div>
 
         <div class="btn-group">
-          <button class="btn btn-primary" onclick="executeTool()">Execute Tool</button>
+          <button class="btn btn-primary" id="executeToolBtn">Execute Tool</button>
           <button class="btn btn-secondary" onclick="clearResponse()">Clear</button>
         </div>
       </div>
@@ -857,7 +1008,7 @@
         </div>
 
         <div class="btn-group">
-          <button class="btn btn-primary" onclick="executeTranslate()">Translate</button>
+          <button class="btn btn-primary" id="executeTranslateBtn">Translate</button>
           <button class="btn btn-secondary" onclick="clearResponse()">Clear</button>
         </div>
       </div>
@@ -875,7 +1026,7 @@
         </div>
 
         <div class="btn-group">
-          <button class="btn btn-primary" onclick="executeWebhook()">Send Webhook</button>
+          <button class="btn btn-primary" id="executeWebhookBtn">Send Webhook</button>
           <button class="btn btn-secondary" onclick="clearResponse()">Clear</button>
         </div>
       </div>
@@ -909,36 +1060,36 @@
         <h3 style="color: var(--gray-700); margin-bottom: 1rem;">Generated Code</h3>
 
         <div class="code-tabs">
-          <button class="code-tab active" onclick="switchCodeTab('curl')">cURL</button>
-          <button class="code-tab" onclick="switchCodeTab('javascript')">JavaScript</button>
-          <button class="code-tab" onclick="switchCodeTab('python')">Python</button>
-          <button class="code-tab" onclick="switchCodeTab('node')">Node.js</button>
+          <button class="code-tab active" data-code-tab="curl">cURL</button>
+          <button class="code-tab" data-code-tab="javascript">JavaScript</button>
+          <button class="code-tab" data-code-tab="python">Python</button>
+          <button class="code-tab" data-code-tab="node">Node.js</button>
         </div>
 
         <div id="curl" class="code-content active">
           <div class="code-block">
-            <button class="copy-btn" onclick="copyCode('curl')">Copy</button>
+            <button class="copy-btn" data-copy-lang="curl">Copy</button>
             <pre id="curl-code"># cURL command will appear here</pre>
           </div>
         </div>
 
         <div id="javascript" class="code-content">
           <div class="code-block">
-            <button class="copy-btn" onclick="copyCode('javascript')">Copy</button>
+            <button class="copy-btn" data-copy-lang="javascript">Copy</button>
             <pre id="javascript-code">// JavaScript code will appear here</pre>
           </div>
         </div>
 
         <div id="python" class="code-content">
           <div class="code-block">
-            <button class="copy-btn" onclick="copyCode('python')">Copy</button>
+            <button class="copy-btn" data-copy-lang="python">Copy</button>
             <pre id="python-code"># Python code will appear here</pre>
           </div>
         </div>
 
         <div id="node" class="code-content">
           <div class="code-block">
-            <button class="copy-btn" onclick="copyCode('node')">Copy</button>
+            <button class="copy-btn" data-copy-lang="node">Copy</button>
             <pre id="node-code">// Node.js code will appear here</pre>
           </div>
         </div>
@@ -996,7 +1147,7 @@
     }
 
     // Tab switching
-    function switchTab(tabName) {
+    function switchTab(tabName, event) {
       // Hide all tab contents
       document.querySelectorAll('.tab-content').forEach(tab => {
         tab.classList.remove('active');
@@ -1011,11 +1162,15 @@
       document.getElementById(tabName).classList.add('active');
 
       // Set active class on clicked tab
-      event.target.classList.add('active');
+      if (event && event.target) {
+        event.target.classList.add('active');
+      } else if (window.event && window.event.target) {
+        window.event.target.classList.add('active');
+      }
     }
 
     // Code tab switching
-    function switchCodeTab(tabName) {
+    function switchCodeTab(tabName, event) {
       document.querySelectorAll('.code-content').forEach(tab => {
         tab.classList.remove('active');
       });
@@ -1024,11 +1179,56 @@
       });
 
       document.getElementById(tabName).classList.add('active');
-      event.target.classList.add('active');
+      if (event && event.target) {
+        event.target.classList.add('active');
+      } else if (window.event && window.event.target) {
+        window.event.target.classList.add('active');
+      }
+    }
+
+    // Show loading state
+    function showLoading(buttonId, message = 'Processing...') {
+      const btn = document.getElementById(buttonId);
+      if (btn) {
+        btn.classList.add('loading');
+        btn.disabled = true;
+      }
+
+      // Show loading message in response area
+      document.getElementById('emptyState').style.display = 'none';
+      document.getElementById('responseContainer').style.display = 'block';
+      document.getElementById('codeExamples').style.display = 'none';
+
+      const responseContent = document.getElementById('responseContent');
+      responseContent.innerHTML = `
+        <div class="loading-message">
+          <div class="spinner"></div>
+          <span>${message}</span>
+        </div>
+      `;
+
+      const statusEl = document.getElementById('responseStatus');
+      statusEl.className = 'response-status';
+      statusEl.style.background = 'var(--warning)';
+      statusEl.textContent = 'Processing...';
+
+      document.getElementById('responseTime').textContent = '';
+    }
+
+    // Hide loading state
+    function hideLoading(buttonId) {
+      if (buttonId) {
+        const btn = document.getElementById(buttonId);
+        if (btn) {
+          btn.classList.remove('loading');
+          btn.disabled = false;
+        }
+      }
     }
 
     // Display response
     function displayResponse(data, duration) {
+      // Clear any loading states (will be handled by individual functions)
       document.getElementById('emptyState').style.display = 'none';
       document.getElementById('responseContainer').style.display = 'block';
       document.getElementById('codeExamples').style.display = 'block';
@@ -1037,9 +1237,11 @@
       if (data.success) {
         statusEl.className = 'response-status success';
         statusEl.textContent = 'Success';
+        statusEl.style.background = '';
       } else {
         statusEl.className = 'response-status error';
         statusEl.textContent = 'Error';
+        statusEl.style.background = '';
       }
 
       document.getElementById('responseTime').textContent = `Response time: ${duration}ms`;
@@ -1098,18 +1300,20 @@ console.log(response.data);`;
     }
 
     // Copy code
-    function copyCode(lang) {
+    function copyCode(lang, event) {
       const code = document.getElementById(`${lang}-code`).textContent;
       navigator.clipboard.writeText(code);
 
-      const btn = event.target;
-      btn.textContent = ' Copied';
-      btn.classList.add('copied');
+      const btn = (event && event.target) || (window.event && window.event.target);
+      if (btn) {
+        btn.textContent = ' Copied';
+        btn.classList.add('copied');
 
-      setTimeout(() => {
-        btn.textContent = 'Copy';
-        btn.classList.remove('copied');
-      }, 2000);
+        setTimeout(() => {
+          btn.textContent = 'Copy';
+          btn.classList.remove('copied');
+        }, 2000);
+      }
     }
 
     // Execute Simple Query
@@ -1133,6 +1337,7 @@ console.log(response.data);`;
       if (model) body.options.model = model;
 
       const startTime = Date.now();
+      showLoading('executeSimpleQueryBtn', 'Sending query to agent...');
 
       try {
         const response = await fetch(`${API_BASE}/api/query`, {
@@ -1146,6 +1351,8 @@ console.log(response.data);`;
         generateCode('/api/query', 'POST', body);
       } catch (error) {
         displayResponse({success: false, error: {message: error.message}}, Date.now() - startTime);
+      } finally {
+        hideLoading('executeSimpleQueryBtn');
       }
     }
 
@@ -1162,6 +1369,7 @@ console.log(response.data);`;
       };
 
       const startTime = Date.now();
+      showLoading('executeAgentChatBtn', `Chatting with ${agentId}...`);
 
       try {
         const response = await fetch(`${API_BASE}/api/agents/${agentId}/chat`, {
@@ -1175,6 +1383,8 @@ console.log(response.data);`;
         generateCode(`/api/agents/${agentId}/chat`, 'POST', body);
       } catch (error) {
         displayResponse({success: false, error: {message: error.message}}, Date.now() - startTime);
+      } finally {
+        hideLoading('executeAgentChatBtn');
       }
     }
 
@@ -1187,15 +1397,23 @@ console.log(response.data);`;
         const body = { queries };
 
         const startTime = Date.now();
-        const response = await fetch(`${API_BASE}/api/query/batch`, {
-          method: 'POST',
-          headers: {'Content-Type': 'application/json'},
-          body: JSON.stringify(body)
-        });
+        showLoading('executeBatchBtn', `Processing ${queries.length} queries...`);
 
-        const data = await response.json();
-        displayResponse(data, Date.now() - startTime);
-        generateCode('/api/query/batch', 'POST', body);
+        try {
+          const response = await fetch(`${API_BASE}/api/query/batch`, {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify(body)
+          });
+
+          const data = await response.json();
+          displayResponse(data, Date.now() - startTime);
+          generateCode('/api/query/batch', 'POST', body);
+        } catch (error) {
+          displayResponse({success: false, error: {message: error.message}}, Date.now() - startTime);
+        } finally {
+          hideLoading('executeBatchBtn');
+        }
       } catch (error) {
         alert('Invalid JSON format: ' + error.message);
       }
@@ -1216,6 +1434,7 @@ console.log(response.data);`;
       if (prompt) formData.append('prompt', prompt);
 
       const startTime = Date.now();
+      showLoading('executeFileUploadBtn', `Uploading and analyzing ${selectedFile.name}...`);
 
       try {
         const response = await fetch(`${API_BASE}/api/agents/${agentId}/upload?prompt=${encodeURIComponent(prompt)}`, {
@@ -1228,6 +1447,8 @@ console.log(response.data);`;
         generateCode(`/api/agents/${agentId}/upload`, 'POST', {prompt});
       } catch (error) {
         displayResponse({success: false, error: {message: error.message}}, Date.now() - startTime);
+      } finally {
+        hideLoading('executeFileUploadBtn');
       }
     }
 
@@ -1237,16 +1458,46 @@ console.log(response.data);`;
 
       if (action === 'generate') {
         const prompt = document.getElementById('img-prompt').value;
+        const model = document.getElementById('img-model').value || 'gpt-image-1.5';
         const size = document.getElementById('img-size').value;
         const quality = document.getElementById('img-quality').value;
+        const outputFormat = document.getElementById('img-output-format').value;
+        const background = document.getElementById('img-background').value;
+        const n = parseInt(document.getElementById('img-n').value) || 1;
 
+        const isGptImageModel = model.startsWith('gpt-image-');
+        
         const body = {
-          agentId: 'dalle-agent',
+          agentId: 'image-gen-agent',
           prompt,
-          options: { size, quality }
+          options: {
+            model,
+            size,
+            n
+          }
         };
 
+        // Handle quality parameter based on model type
+        if (isGptImageModel) {
+          // GPT Image models use: auto, high, medium, low
+          body.options.quality = quality;
+          body.options.output_format = outputFormat;
+          body.options.background = background;
+          
+          // Ensure transparency compatibility
+          if (background === 'transparent' && !['png', 'webp'].includes(outputFormat)) {
+            body.options.output_format = 'png';
+          }
+        } else {
+          // DALL-E models use: standard, hd
+          body.options.quality = quality;
+          if (outputFormat === 'url') {
+            body.options.response_format = 'url';
+          }
+        }
+
         const startTime = Date.now();
+        showLoading('executeImageActionBtn', `Generating image with ${model}...`);
 
         try {
           const response = await fetch(`${API_BASE}/api/images/generate`, {
@@ -1258,8 +1509,23 @@ console.log(response.data);`;
           const data = await response.json();
           displayResponse(data, Date.now() - startTime);
           generateCode('/api/images/generate', 'POST', body);
+          
+          // Display generated image if available
+          if (data.success && data.data && data.data.imageUrl) {
+            const imageUrl = data.data.imageUrl;
+            // Handle both base64 (GPT Image) and URL (DALL-E) formats
+            const imgPreview = document.createElement('div');
+            imgPreview.style.marginTop = '1rem';
+            imgPreview.innerHTML = `
+              <h4 style="margin-bottom: 0.5rem;">Generated Image:</h4>
+              <img src="${imageUrl}" style="max-width: 100%; border: 1px solid var(--gray-200); border-radius: 4px;" alt="Generated image">
+            `;
+            document.getElementById('responseContent').parentElement.appendChild(imgPreview);
+          }
         } catch (error) {
           displayResponse({success: false, error: {message: error.message}}, Date.now() - startTime);
+        } finally {
+          hideLoading('executeImageActionBtn');
         }
       }
     }
@@ -1279,6 +1545,7 @@ console.log(response.data);`;
 
       const endpoint = action === 'ocr' ? '/api/documents/ocr' : '/api/documents/analyze';
       const startTime = Date.now();
+      showLoading('executeDocumentActionBtn', `${action === 'ocr' ? 'Extracting text from' : 'Analyzing'} ${selectedDocFile.name}...`);
 
       try {
         const response = await fetch(`${API_BASE}${endpoint}`, {
@@ -1291,6 +1558,8 @@ console.log(response.data);`;
         generateCode(endpoint, 'POST', {file: 'binary'});
       } catch (error) {
         displayResponse({success: false, error: {message: error.message}}, Date.now() - startTime);
+      } finally {
+        hideLoading('executeDocumentActionBtn');
       }
     }
 
@@ -1311,6 +1580,7 @@ console.log(response.data);`;
       }
 
       const startTime = Date.now();
+      showLoading('executeToolBtn', `Executing ${toolName} ${action}...`);
 
       try {
         const response = await fetch(url);
@@ -1319,6 +1589,8 @@ console.log(response.data);`;
         generateCode(`/api/tools/${toolName}/${action}`, 'GET', null);
       } catch (error) {
         displayResponse({success: false, error: {message: error.message}}, Date.now() - startTime);
+      } finally {
+        hideLoading('executeToolBtn');
       }
     }
 
@@ -1330,6 +1602,7 @@ console.log(response.data);`;
 
       const url = `${API_BASE}/api/translate?text=${encodeURIComponent(text)}&from=${from}&to=${to}`;
       const startTime = Date.now();
+      showLoading('executeTranslateBtn', `Translating from ${from} to ${to}...`);
 
       try {
         const response = await fetch(url);
@@ -1338,6 +1611,8 @@ console.log(response.data);`;
         generateCode('/api/translate', 'GET', null);
       } catch (error) {
         displayResponse({success: false, error: {message: error.message}}, Date.now() - startTime);
+      } finally {
+        hideLoading('executeTranslateBtn');
       }
     }
 
@@ -1349,68 +1624,224 @@ console.log(response.data);`;
       try {
         const body = JSON.parse(payloadText);
         const startTime = Date.now();
+        showLoading('executeWebhookBtn', `Sending webhook to ${agentId}...`);
 
-        const response = await fetch(`${API_BASE}/api/webhook/${agentId}`, {
-          method: 'POST',
-          headers: {'Content-Type': 'application/json'},
-          body: JSON.stringify(body)
-        });
+        try {
+          const response = await fetch(`${API_BASE}/api/webhook/${agentId}`, {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify(body)
+          });
 
-        const data = await response.json();
-        displayResponse(data, Date.now() - startTime);
-        generateCode(`/api/webhook/${agentId}`, 'POST', body);
+          const data = await response.json();
+          displayResponse(data, Date.now() - startTime);
+          generateCode(`/api/webhook/${agentId}`, 'POST', body);
+        } catch (error) {
+          displayResponse({success: false, error: {message: error.message}}, Date.now() - startTime);
+        } finally {
+          hideLoading('executeWebhookBtn');
+        }
       } catch (error) {
         alert('Invalid JSON: ' + error.message);
       }
     }
 
-    // File upload handlers
-    const fileUploadZone = document.getElementById('fileUploadZone');
-    const fileInput = document.getElementById('fileInput');
+    // Initialize when DOM is ready
+    document.addEventListener('DOMContentLoaded', () => {
+      // Set up tab switching with event delegation
+      const mainTabs = document.getElementById('mainTabs');
+      if (mainTabs) {
+        mainTabs.addEventListener('click', (e) => {
+          const tab = e.target.closest('.tab');
+          if (tab && tab.dataset.tab) {
+            switchTab(tab.dataset.tab, e);
+          }
+        });
+      }
 
-    fileUploadZone.addEventListener('click', () => fileInput.click());
-    fileInput.addEventListener('change', (e) => {
-      selectedFile = e.target.files[0];
-      document.getElementById('fileName').textContent = `Selected: ${selectedFile.name}`;
-    });
+      // Set up code tab switching
+      document.querySelectorAll('.code-tab[data-code-tab]').forEach(tab => {
+        tab.addEventListener('click', (e) => {
+          switchCodeTab(tab.dataset.codeTab, e);
+        });
+      });
 
-    fileUploadZone.addEventListener('dragover', (e) => {
-      e.preventDefault();
-      fileUploadZone.classList.add('dragover');
-    });
+      // Set up copy buttons
+      document.querySelectorAll('.copy-btn[data-copy-lang]').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          copyCode(btn.dataset.copyLang, e);
+        });
+      });
 
-    fileUploadZone.addEventListener('dragleave', () => {
-      fileUploadZone.classList.remove('dragover');
-    });
+      // Set up image model selector change handler
+      const imgModelEl = document.getElementById('img-model');
+      if (imgModelEl) {
+        imgModelEl.addEventListener('change', updateImageModelOptions);
+        updateImageModelOptions(); // Initialize on load
+      }
 
-    fileUploadZone.addEventListener('drop', (e) => {
-      e.preventDefault();
-      fileUploadZone.classList.remove('dragover');
-      selectedFile = e.dataTransfer.files[0];
-      document.getElementById('fileName').textContent = `Selected: ${selectedFile.name}`;
-    });
+      // Set up execute buttons
+      const executeBtn = document.getElementById('executeSimpleQueryBtn');
+      if (executeBtn) executeBtn.addEventListener('click', executeSimpleQuery);
 
-    // Document upload handlers
-    const docUploadZone = document.getElementById('docUploadZone');
-    const docFileInput = document.getElementById('docFileInput');
+      const executeAgentChatBtn = document.getElementById('executeAgentChatBtn');
+      if (executeAgentChatBtn) executeAgentChatBtn.addEventListener('click', executeAgentChat);
 
-    docUploadZone.addEventListener('click', () => docFileInput.click());
-    docFileInput.addEventListener('change', (e) => {
-      selectedDocFile = e.target.files[0];
-      document.getElementById('docFileName').textContent = `Selected: ${selectedDocFile.name}`;
+      const executeBatchBtn = document.getElementById('executeBatchBtn');
+      if (executeBatchBtn) executeBatchBtn.addEventListener('click', executeBatch);
+
+      const executeFileUploadBtn = document.getElementById('executeFileUploadBtn');
+      if (executeFileUploadBtn) executeFileUploadBtn.addEventListener('click', executeFileUpload);
+
+      const executeImageActionBtn = document.getElementById('executeImageActionBtn');
+      if (executeImageActionBtn) executeImageActionBtn.addEventListener('click', executeImageAction);
+
+      const executeDocumentActionBtn = document.getElementById('executeDocumentActionBtn');
+      if (executeDocumentActionBtn) executeDocumentActionBtn.addEventListener('click', executeDocumentAction);
+
+      const executeToolBtn = document.getElementById('executeToolBtn');
+      if (executeToolBtn) executeToolBtn.addEventListener('click', executeTool);
+
+      const executeTranslateBtn = document.getElementById('executeTranslateBtn');
+      if (executeTranslateBtn) executeTranslateBtn.addEventListener('click', executeTranslate);
+
+      const executeWebhookBtn = document.getElementById('executeWebhookBtn');
+      if (executeWebhookBtn) executeWebhookBtn.addEventListener('click', executeWebhook);
+
+      // Set up clear buttons
+      document.querySelectorAll('[id^="clearResponseBtn"]').forEach(btn => {
+        btn.addEventListener('click', clearResponse);
+      });
+
+      // File upload handlers
+      const fileUploadZone = document.getElementById('fileUploadZone');
+      const fileInput = document.getElementById('fileInput');
+
+      if (fileUploadZone && fileInput) {
+        fileUploadZone.addEventListener('click', () => fileInput.click());
+        fileInput.addEventListener('change', (e) => {
+          selectedFile = e.target.files[0];
+          const fileNameEl = document.getElementById('fileName');
+          if (fileNameEl) {
+            fileNameEl.textContent = `Selected: ${selectedFile.name}`;
+          }
+        });
+
+        fileUploadZone.addEventListener('dragover', (e) => {
+          e.preventDefault();
+          fileUploadZone.classList.add('dragover');
+        });
+
+        fileUploadZone.addEventListener('dragleave', () => {
+          fileUploadZone.classList.remove('dragover');
+        });
+
+        fileUploadZone.addEventListener('drop', (e) => {
+          e.preventDefault();
+          fileUploadZone.classList.remove('dragover');
+          selectedFile = e.dataTransfer.files[0];
+          const fileNameEl = document.getElementById('fileName');
+          if (fileNameEl) {
+            fileNameEl.textContent = `Selected: ${selectedFile.name}`;
+          }
+        });
+      }
+
+      // Document upload handlers
+      const docUploadZone = document.getElementById('docUploadZone');
+      const docFileInput = document.getElementById('docFileInput');
+
+      if (docUploadZone && docFileInput) {
+        docUploadZone.addEventListener('click', () => docFileInput.click());
+        docFileInput.addEventListener('change', (e) => {
+          selectedDocFile = e.target.files[0];
+          const docFileNameEl = document.getElementById('docFileName');
+          if (docFileNameEl) {
+            docFileNameEl.textContent = `Selected: ${selectedDocFile.name}`;
+          }
+        });
+      }
+
+      // Initialize server status check
+      checkServerStatus();
+      setInterval(checkServerStatus, 30000); // Check every 30 seconds
     });
 
     // Toggle image action options
     function toggleImageAction() {
-      const action = document.getElementById('img-action').value;
-      document.getElementById('generateOptions').style.display = action === 'generate' ? 'block' : 'none';
-      document.getElementById('analyzeOptions').style.display = action === 'analyze' ? 'block' : 'none';
+      const actionEl = document.getElementById('img-action');
+      const generateOptions = document.getElementById('generateOptions');
+      const analyzeOptions = document.getElementById('analyzeOptions');
+      
+      if (actionEl && generateOptions && analyzeOptions) {
+        const action = actionEl.value;
+        generateOptions.style.display = action === 'generate' ? 'block' : 'none';
+        analyzeOptions.style.display = action === 'analyze' ? 'block' : 'none';
+      }
+    }
+
+    // Update image options based on selected model
+    function updateImageModelOptions() {
+      const modelEl = document.getElementById('img-model');
+      const sizeEl = document.getElementById('img-size');
+      const qualityEl = document.getElementById('img-quality');
+      const formatEl = document.getElementById('img-output-format');
+      const backgroundEl = document.getElementById('img-background');
+      
+      if (!modelEl) return;
+      
+      const model = modelEl.value;
+      const isGptImageModel = model.startsWith('gpt-image-');
+      
+      // Update size options
+      if (isGptImageModel) {
+        sizeEl.innerHTML = `
+          <option value="auto" selected>Auto</option>
+          <option value="1024x1024">Square (1024x1024)</option>
+          <option value="1536x1024">Landscape (1536x1024)</option>
+          <option value="1024x1536">Portrait (1024x1536)</option>
+        `;
+        qualityEl.innerHTML = `
+          <option value="auto" selected>Auto</option>
+          <option value="high">High</option>
+          <option value="medium">Medium</option>
+          <option value="low">Low</option>
+        `;
+        formatEl.innerHTML = `
+          <option value="png" selected>PNG</option>
+          <option value="jpeg">JPEG</option>
+          <option value="webp">WebP</option>
+        `;
+        backgroundEl.disabled = false;
+      } else {
+        // DALL-E models
+        sizeEl.innerHTML = `
+          <option value="1024x1024" selected>Square (1024x1024)</option>
+          <option value="1792x1024">Landscape (1792x1024) - DALL-E 3</option>
+          <option value="1024x1792">Portrait (1024x1792) - DALL-E 3</option>
+        `;
+        qualityEl.innerHTML = `
+          <option value="standard" selected>Standard</option>
+          <option value="hd">HD</option>
+        `;
+        formatEl.innerHTML = `
+          <option value="url" selected>URL</option>
+        `;
+        backgroundEl.disabled = true;
+        backgroundEl.value = 'auto';
+      }
     }
 
     // Update tool actions based on selected tool
     function updateToolActions() {
-      const toolName = document.getElementById('tool-name').value;
+      const toolNameEl = document.getElementById('tool-name');
       const actionSelect = document.getElementById('tool-action');
+      const toolParamsLabel = document.querySelector('#toolParams label');
+      const toolParamInput = document.getElementById('tool-param');
+
+      if (!toolNameEl || !actionSelect) return;
+
+      const toolName = toolNameEl.value;
 
       const actions = {
         'dalle': ['generate', 'edit', 'variations'],
@@ -1429,13 +1860,13 @@ console.log(response.data);`;
         'tts': 'Text'
       };
 
-      document.querySelector('#toolParams label').textContent = labels[toolName];
-      document.getElementById('tool-param').placeholder = `Enter ${labels[toolName].toLowerCase()}`;
+      if (toolParamsLabel) {
+        toolParamsLabel.textContent = labels[toolName];
+      }
+      if (toolParamInput) {
+        toolParamInput.placeholder = `Enter ${labels[toolName].toLowerCase()}`;
+      }
     }
-
-    // Initialize
-    checkServerStatus();
-    setInterval(checkServerStatus, 30000); // Check every 30 seconds
   </script>
   <script src="/assets/js/navigation.js"></script>
 </div>

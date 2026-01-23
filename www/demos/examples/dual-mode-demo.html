@@ -330,11 +330,39 @@
                 <div class="input-group">
                     <label>Model:</label>
                     <select id="library-model">
-                        <option value="gpt-4o">GPT-4o</option>
-                        <option value="gpt-5">GPT-5</option>
-                        <option value="gpt-5-mini">GPT-5-mini</option>
-                        <option value="gpt-5-nano">GPT-5-nano</option>
-                        <option value="o3">o3 (Reasoning)</option>
+                        <optgroup label="OpenAI GPT-5 Series">
+                            <option value="gpt-5">gpt-5</option>
+                            <option value="gpt-5-mini">gpt-5-mini</option>
+                            <option value="gpt-5-nano">gpt-5-nano</option>
+                        </optgroup>
+                        <optgroup label="OpenAI Reasoning">
+                            <option value="o3">o3</option>
+                            <option value="o3-mini">o3-mini</option>
+                            <option value="o1">o1</option>
+                            <option value="o1-mini">o1-mini</option>
+                        </optgroup>
+                        <optgroup label="OpenAI GPT-4">
+                            <option value="gpt-4o" selected>gpt-4o</option>
+                            <option value="gpt-4o-mini">gpt-4o-mini</option>
+                            <option value="gpt-4-turbo">gpt-4-turbo</option>
+                        </optgroup>
+                        <optgroup label="Anthropic Claude 4.5">
+                            <option value="claude-opus-4-5-20251101">Claude Opus 4.5</option>
+                            <option value="claude-sonnet-4-5-20250929">Claude Sonnet 4.5</option>
+                        </optgroup>
+                        <optgroup label="Anthropic Claude 3.5">
+                            <option value="claude-3-5-sonnet-20241022">Claude 3.5 Sonnet</option>
+                            <option value="claude-3-5-haiku-20241022">Claude 3.5 Haiku</option>
+                        </optgroup>
+                        <optgroup label="Anthropic Claude 3">
+                            <option value="claude-3-opus-20240229">Claude 3 Opus</option>
+                            <option value="claude-3-sonnet-20240229">Claude 3 Sonnet</option>
+                            <option value="claude-3-haiku-20240307">Claude 3 Haiku</option>
+                        </optgroup>
+                        <optgroup label="Google Gemini">
+                            <option value="gemini-pro">Gemini Pro</option>
+                            <option value="gemini-pro-vision">Gemini Pro Vision</option>
+                        </optgroup>
                     </select>
                 </div>
 

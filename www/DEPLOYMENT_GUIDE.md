@@ -4,12 +4,12 @@ This guide covers deploying the Worksona.js documentation site to various hostin
 
 ## Overview
 
-The documentation site (`docs/www-api/`) is a **standalone static site** that requires no build process or server-side code. It can be deployed to any static hosting service.
+The documentation site (`www/`) is a **standalone static site** that requires no build process or server-side code. It can be deployed to any static hosting service.
 
 ## Directory Structure
 
 ```
-docs/www-api/
+www/
 ├── index.html                    # Landing page
 ├── overview.html                 # Project overview
 ├── netlify.toml                  # Netlify configuration
@@ -42,10 +42,12 @@ docs/www-api/
    ```bash
    # Connect your repository to Netlify
    # Set build settings:
-   Base directory: docs/www-api
+   Base directory: (leave empty - deploy from root)
    Build command: (leave empty)
-   Publish directory: .
+   Publish directory: www
    ```
+   
+   Netlify will automatically use the `netlify.toml` in the repository root.
 
 2. **Using Netlify CLI**
    ```bash
@@ -55,25 +57,27 @@ docs/www-api/
    # Login to Netlify
    netlify login
 
-   # Deploy from repository root
-   netlify deploy --dir=docs/www-api --prod
+   # Deploy from repository root (recommended)
+   netlify deploy --dir=www --prod
 
-   # Or from www-api directory
-   cd docs/www-api
-   netlify deploy --prod
+   # Or initialize and link to site
+   netlify init
+   # Follow prompts, select www as publish directory
    ```
 
 3. **Drag & Drop**
    - Go to https://app.netlify.com/drop
-   - Drag the `docs/www-api` folder
+   - Drag the `www` folder
    - Your site is live!
 
 **Configuration:**
-The included `netlify.toml` provides:
+The included `netlify.toml` in the repository root provides:
 - Custom headers for security and caching
 - Redirects for old URLs
 - Pretty URLs without `.html` extension
 - 404 handling
+- Proper caching for static assets
+- Security headers (XSS protection, content type options, etc.)
 
 ---
 
@@ -95,13 +99,16 @@ The included `netlify.toml` provides:
    # Install Vercel CLI
    npm install -g vercel
 
-   # Deploy
-   cd docs/www-api
+   # Deploy from repository root
+   vercel --prod --cwd www
+
+   # Or from www directory
+   cd www
    vercel --prod
    ```
 
 **Configuration:**
-Create `vercel.json` in `docs/www-api/`:
+Create `vercel.json` in `www/`:
 ```json
 {
   "headers": [
@@ -143,7 +150,7 @@ Create `vercel.json` in `docs/www-api/`:
 1. **Using gh-pages branch**
    ```bash
    # From repository root
-   git subtree push --prefix docs/www-api origin gh-pages
+   git subtree push --prefix www origin gh-pages
    ```
 
 2. **GitHub Actions** (Automated)
@@ -155,7 +162,7 @@ Create `vercel.json` in `docs/www-api/`:
      push:
        branches: [main]
        paths:
-         - 'docs/www-api/**'
+         - 'www/**'
 
    jobs:
      deploy:
@@ -167,7 +174,7 @@ Create `vercel.json` in `docs/www-api/`:
            uses: peaceiris/actions-gh-pages@v3
            with:
              github_token: ${{ secrets.GITHUB_TOKEN }}
-             publish_dir: ./docs/www-api
+             publish_dir: ./www
              publish_branch: gh-pages
    ```
 
@@ -187,7 +194,7 @@ Create `vercel.json` in `docs/www-api/`:
    - Connect repository to Cloudflare Pages
    - Build settings:
      - Build command: (leave empty)
-     - Build output directory: `docs/www-api`
+     - Build output directory: `www`
 
 2. **Using Wrangler CLI**
    ```bash
@@ -195,7 +202,7 @@ Create `vercel.json` in `docs/www-api/`:
    npm install -g wrangler
 
    # Deploy
-   cd docs/www-api
+   cd www
    wrangler pages publish . --project-name=worksona-docs
    ```
 
@@ -219,7 +226,7 @@ Create `vercel.json` in `docs/www-api/`:
 2. **Upload Files**
    ```bash
    # Sync files
-   cd docs/www-api
+   cd www
    aws s3 sync . s3://worksona-docs \
      --delete \
      --cache-control "public, max-age=31536000" \
@@ -249,7 +256,7 @@ Create `vercel.json` in `docs/www-api/`:
    - Connect to GitHub repository
    - Set build configuration:
      ```yaml
-     app_location: "docs/www-api"
+     app_location: "www"
      output_location: ""
      ```
 
@@ -259,7 +266,7 @@ Create `vercel.json` in `docs/www-api/`:
    az staticwebapp create \
      --name worksona-docs \
      --resource-group myResourceGroup \
-     --source ./docs/www-api
+     --source ./www
    ```
 
 ---
@@ -268,7 +275,7 @@ Create `vercel.json` in `docs/www-api/`:
 
 **Deploy Steps:**
 
-Simply upload the contents of `docs/www-api/` to your web server:
+Simply upload the contents of `www/` to your web server:
 
 1. **Via FTP/SFTP**
    ```bash
@@ -391,10 +398,12 @@ For self-hosted options:
 ## Performance Optimization
 
 The site is already optimized with:
-- ✅ Minified JavaScript (worksona.min.js - 51KB)
+- ✅ Minified JavaScript (worksona.min.js - 52KB)
 - ✅ Optimized images
 - ✅ Proper caching headers
 - ✅ CDN-friendly structure
+- ✅ Security headers configured
+- ✅ Proper MIME types for all file types
 
 **Additional optimizations:**
 1. Enable Brotli compression on your CDN

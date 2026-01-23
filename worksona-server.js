@@ -96,9 +96,8 @@ app.use(helmet({
   contentSecurityPolicy: {
     directives: {
       defaultSrc: ["'self'"],
-      scriptSrc: ["'self'", "'unsafe-inline'", "https://cdn.jsdelivr.net", "https://unpkg.com", "https://cdnjs.cloudflare.com"],
-      scriptSrcAttr: ["'unsafe-inline'"],
-      styleSrc: ["'self'", "'unsafe-inline'", "https://cdn.jsdelivr.net", "https://unpkg.com", "https://cdnjs.cloudflare.com"],
+      scriptSrc: ["'self'", "'unsafe-inline'", "https://cdn.jsdelivr.net", "https://unpkg.com"],
+      styleSrc: ["'self'", "'unsafe-inline'", "https://cdn.jsdelivr.net", "https://unpkg.com"],
       imgSrc: ["'self'", "data:", "https:"],
       fontSrc: ["'self'", "https:", "data:"],
       connectSrc: ["'self'"],
@@ -121,10 +120,10 @@ app.use('/', express.static(path.join(__dirname, 'www')));
 // Also serve at /docs for backward compatibility
 app.use('/docs', express.static(path.join(__dirname, 'www')));
 
-// Rate limiting
+// Rate limiting (disabled in test environment)
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 100,
+  max: process.env.NODE_ENV === 'test' ? 10000 : 100, // Very high limit in tests
   message: { success: false, error: 'Too many requests, please try again later' }
 });
 app.use('/api', limiter);
@@ -2686,8 +2685,10 @@ app.use((err, req, res, next) => {
 // SERVER STARTUP
 // ============================================================================
 
-app.listen(port, () => {
-  console.log(`
+// Only start server if running directly (not imported for tests)
+if (require.main === module) {
+  app.listen(port, () => {
+    console.log(`
 ╔═══════════════════════════════════════════════════════════════╗
 ║                   WORKSONA API SERVER                         ║
 ║                      Version 0.3.0                            ║
@@ -2702,7 +2703,8 @@ app.listen(port, () => {
 ║    Anthropic: ${process.env.ANTHROPIC_API_KEY ? '✓' : '✗'}                                         ║
 ║    Google: ${process.env.GOOGLE_API_KEY ? '✓' : '✗'}                                            ║
 ╚═══════════════════════════════════════════════════════════════╝
-  `);
-});
+    `);
+  });
+}
 
 module.exports = app;

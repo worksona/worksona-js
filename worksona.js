@@ -6,7 +6,7 @@
  * with distinct personalities across multiple LLM providers.
  *
  * Supports latest frontier models:
- * - OpenAI: GPT-5, GPT-5-mini, GPT-5-nano, o1, o3, DALL-E 3, GPT-4o
+ * - OpenAI: GPT-5, GPT-5-mini, GPT-5-nano, o1, o3, GPT Image 1.5, DALL-E 3, GPT-4o
  * - Anthropic: Claude Opus 4.5, Claude Sonnet 4.5, Claude 3.5 Sonnet
  * - Backward compatible with all previous models
  */
@@ -277,6 +277,7 @@ class Agent {
           defaultModels: {
             chat: 'gpt-4o',
             vision: 'gpt-4o',
+            imageGeneration: 'gpt-image-1.5',
             // Latest frontier models
             reasoning: 'o3',
             reasoningMini: 'o3-mini',
@@ -297,7 +298,11 @@ class Agent {
             // GPT-3.5 series (legacy)
             'gpt-3.5-turbo', 'gpt-3.5-turbo-16k',
             // Vision models
-            'gpt-4o-vision', 'gpt-4-turbo-vision'
+            'gpt-4o-vision', 'gpt-4-turbo-vision',
+            // GPT Image models (image generation)
+            'gpt-image-1.5', 'gpt-image-1', 'gpt-image-1-mini',
+            // DALL-E models (legacy image generation)
+            'dall-e-3', 'dall-e-2'
           ]
         } : null,
 
@@ -2149,9 +2154,11 @@ class Agent {
     }
 
     /**
-     * Generate an image from a text prompt using the agent's provider (OpenAI DALL-E)
-     * Supports models: 'dall-e-3', 'dall-e-2' (legacy)
-     * Model selection order: options.model > agent.config.imageGenerationModel > 'dall-e-3'
+     * Generate an image from a text prompt using the agent's provider (OpenAI DALL-E or GPT Image)
+     * Supports models: 
+     *   - GPT Image: 'gpt-image-1.5', 'gpt-image-1', 'gpt-image-1-mini' (returns base64)
+     *   - DALL-E: 'dall-e-3', 'dall-e-2' (legacy, returns URL)
+     * Model selection order: options.model > agent.config.imageGenerationModel > 'gpt-image-1.5'
      */
     async generateImage(agentId, prompt, options = {}) {
       const agent = this.agents.get(agentId);
@@ -2163,29 +2170,82 @@ class Agent {
       this._emit('image-generation-start', { agentId, provider, prompt, options });
       try {
         if (provider === 'openai') {
-          // Model selection logic - DALL-E 3 is the latest stable image generation model
-          const modelName = (options.model || agent.config.imageGenerationModel || 'dall-e-3').trim();
-          // DALL-E endpoint supports model param for dalle-3
+          // Model selection logic - GPT Image 1.5 is the latest, fallback to DALL-E 3 for compatibility
+          const modelName = (options.model || agent.config.imageGenerationModel || 'gpt-image-1.5').trim();
+          const isGptImageModel = modelName.startsWith('gpt-image-');
+          
+          // Build request body
           const requestBody = {
             prompt,
+            model: modelName,
             n: options.n || 1,
-            size: options.size || '1024x1024',
-            response_format: options.response_format || 'url',
-            user: agentId,
-            model: modelName
+            user: options.user || agentId
           };
+
+          // Size handling
+          if (isGptImageModel) {
+            // GPT Image models support: 'auto', '1024x1024', '1536x1024', '1024x1536'
+            requestBody.size = options.size || 'auto';
+          } else {
+            // DALL-E models support: '256x256', '512x512', '1024x1024' (DALL-E 2), '1024x1024', '1792x1024', '1024x1792' (DALL-E 3)
+            requestBody.size = options.size || '1024x1024';
+          }
+
+          // GPT Image models always return base64, don't support response_format
+          if (!isGptImageModel) {
+            requestBody.response_format = options.response_format || 'url';
+          }
+
+          // GPT Image model-specific parameters
+          if (isGptImageModel) {
+            if (options.quality) requestBody.quality = options.quality; // 'auto', 'high', 'medium', 'low'
+            if (options.output_format) requestBody.output_format = options.output_format; // 'png', 'jpeg', 'webp'
+            if (options.output_compression !== undefined && (options.output_format === 'webp' || options.output_format === 'jpeg')) {
+              requestBody.output_compression = Math.max(0, Math.min(100, options.output_compression));
+            }
+            if (options.background) {
+              requestBody.background = options.background; // 'auto', 'transparent', 'opaque'
+              // Ensure output_format supports transparency
+              if (options.background === 'transparent' && !['png', 'webp'].includes(options.output_format || 'png')) {
+                requestBody.output_format = 'png';
+              }
+            }
+            if (options.moderation) requestBody.moderation = options.moderation; // 'auto', 'low'
+            
+            // Streaming support for GPT Image models
+            if (options.stream) {
+              requestBody.stream = true;
+              if (options.partial_images !== undefined) {
+                requestBody.partial_images = Math.max(0, Math.min(3, options.partial_images));
+              }
+            }
+          }
+
           const response = await fetch('https://api.openai.com/v1/images/generations', {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
-              'Authorization': `Bearer ${this.options.apiKeys.openai}`
+              'Authorization': `Bearer ${this.options.apiKeys.openai}`,
+              ...(agent.config.organization ? { 'OpenAI-Organization': agent.config.organization } : {})
             },
             body: JSON.stringify(requestBody)
           });
+
           const data = await response.json();
           if (!response.ok) throw new Error(data.error?.message || 'OpenAI image generation error');
+          
           this._emit('image-generation-complete', { agentId, provider, prompt, result: data });
-          return data.data[0].url;
+          
+          // GPT Image models return base64, DALL-E returns URLs
+          if (isGptImageModel) {
+            // Return base64 data URL for GPT Image models
+            const imageData = data.data[0].b64_json;
+            const format = options.output_format || 'png';
+            return `data:image/${format};base64,${imageData}`;
+          } else {
+            // Return URL for DALL-E models
+            return data.data[0].url;
+          }
         } else {
           throw new Error(`Provider ${provider} does not support image generation`);
         }
@@ -2197,9 +2257,18 @@ class Agent {
     }
 
     /**
-     * Edit an image based on a prompt using the agent's provider (OpenAI DALL-E)
-     * Supports models: 'dall-e-3', 'dall-e-2' (legacy)
-     * Model selection order: options.model > agent.config.model > 'dall-e-3'
+     * Edit an image based on a prompt using the agent's provider (OpenAI DALL-E or GPT Image)
+     * Supports models: 
+     *   - GPT Image: 'gpt-image-1.5', 'gpt-image-1', 'gpt-image-1-mini' (returns base64)
+     *   - DALL-E: 'dall-e-3', 'dall-e-2' (legacy, returns URL)
+     * Model selection order: options.model > agent.config.imageGenerationModel > 'gpt-image-1.5'
+     * 
+     * @param {string} agentId - Agent ID
+     * @param {string|Array<string>} imageData - Single image (base64/data URL) or array of up to 16 images
+     * @param {string} prompt - Edit instruction
+     * @param {Object} options - Edit options
+     * @param {string} options.mask - Optional PNG mask (base64/data URL) for DALL-E, alpha=0 indicates editable regions
+     * @param {string} options.input_fidelity - 'low' | 'high' (only for gpt-image-1, not gpt-image-1-mini)
      */
     async editImage(agentId, imageData, prompt, options = {}) {
       const agent = this.agents.get(agentId);
@@ -2212,28 +2281,89 @@ class Agent {
       try {
         if (provider === 'openai') {
           // Model selection logic
-          const modelName = (options.model || agent.config.model || 'dalle-3').trim();
+          const modelName = (options.model || agent.config.imageGenerationModel || 'gpt-image-1.5').trim();
+          const isGptImageModel = modelName.startsWith('gpt-image-');
+          
+          // Handle multiple images for GPT Image models (up to 16)
+          const images = Array.isArray(imageData) ? imageData : [imageData];
+          if (isGptImageModel && images.length > 16) {
+            throw new Error('GPT Image models support up to 16 images');
+          }
+
+          // Build request body
           const requestBody = {
-            image: imageData,
             prompt,
+            model: modelName,
             n: options.n || 1,
-            size: options.size || '1024x1024',
-            response_format: options.response_format || 'url',
-            user: agentId,
-            model: modelName
+            user: options.user || agentId
           };
+
+          // Handle images - GPT Image models use 'images' array, DALL-E uses single 'image'
+          if (isGptImageModel) {
+            requestBody.images = images;
+          } else {
+            requestBody.image = images[0];
+            if (options.mask) {
+              requestBody.mask = options.mask;
+            }
+          }
+
+          // Size handling
+          if (isGptImageModel) {
+            requestBody.size = options.size || 'auto';
+          } else {
+            requestBody.size = options.size || '1024x1024';
+          }
+
+          // GPT Image models always return base64
+          if (!isGptImageModel) {
+            requestBody.response_format = options.response_format || 'url';
+          }
+
+          // GPT Image model-specific parameters
+          if (isGptImageModel) {
+            if (options.quality) requestBody.quality = options.quality;
+            if (options.output_format) requestBody.output_format = options.output_format;
+            if (options.output_compression !== undefined && (options.output_format === 'webp' || options.output_format === 'jpeg')) {
+              requestBody.output_compression = Math.max(0, Math.min(100, options.output_compression));
+            }
+            if (options.background) {
+              requestBody.background = options.background;
+              if (options.background === 'transparent' && !['png', 'webp'].includes(options.output_format || 'png')) {
+                requestBody.output_format = 'png';
+              }
+            }
+            if (options.moderation) requestBody.moderation = options.moderation;
+            
+            // input_fidelity only for gpt-image-1 (not gpt-image-1-mini or gpt-image-1.5)
+            if (modelName === 'gpt-image-1' && options.input_fidelity) {
+              requestBody.input_fidelity = options.input_fidelity; // 'low' | 'high'
+            }
+          }
+
           const response = await fetch('https://api.openai.com/v1/images/edits', {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
-              'Authorization': `Bearer ${this.options.apiKeys.openai}`
+              'Authorization': `Bearer ${this.options.apiKeys.openai}`,
+              ...(agent.config.organization ? { 'OpenAI-Organization': agent.config.organization } : {})
             },
             body: JSON.stringify(requestBody)
           });
+
           const data = await response.json();
           if (!response.ok) throw new Error(data.error?.message || 'OpenAI image edit error');
+          
           this._emit('image-edit-complete', { agentId, provider, prompt, result: data });
-          return data.data[0].url;
+          
+          // GPT Image models return base64, DALL-E returns URLs
+          if (isGptImageModel) {
+            const imageData = data.data[0].b64_json;
+            const format = options.output_format || 'png';
+            return `data:image/${format};base64,${imageData}`;
+          } else {
+            return data.data[0].url;
+          }
         } else {
           throw new Error(`Provider ${provider} does not support image editing`);
         }

@@ -1,8 +1,8 @@
-# Worksona.js Documentation
+# Worksona.js Technical Specification
 
-**Last Updated:** January 6, 2026  
-**Version:** 0.2.0  
-**Type:** Single-file JavaScript library  
+**Last Updated:** January 22, 2026  
+**Version:** 0.3.0  
+**Type:** Single-file JavaScript library + REST API Server  
 **License:** MIT  
 
 ## 📋 Table of Contents
@@ -128,8 +128,8 @@ const imageUrl = await worksona.generateImage('marketing-agent', 'Create a profe
 
 | Provider | Chat | Vision | Image Generation |
 |----------|------|---------|-----------------|
-| OpenAI | ✅ GPT-4, GPT-4o | ✅ GPT-4o | ✅ DALL-E 3 |
-| Anthropic | ✅ Claude-3 | ❌ | ❌ |
+| OpenAI | ✅ GPT-5, o3, GPT-4o | ✅ GPT-4o | ✅ GPT Image 1.5, DALL-E 3 |
+| Anthropic | ✅ Claude Opus 4.5, Sonnet 4.5 | ❌ | ❌ |
 | Google | ✅ Gemini Pro | ❌ | ❌ |
 
 ### Agent Management System
@@ -143,9 +143,10 @@ const imageUrl = await worksona.generateImage('marketing-agent', 'Create a profe
 ### Image Processing Pipeline
 
 - **Image Analysis** - Detailed visual analysis using GPT-4o vision
-- **Image Generation** - Create images from text prompts with DALL-E 3
-- **Image Editing** - Modify existing images with natural language
-- **Image Variations** - Generate variations of existing images
+- **Image Generation** - Create images from text prompts with GPT Image 1.5 (default), GPT Image 1, GPT Image 1-mini, or DALL-E 3
+- **Image Editing** - Modify existing images with natural language (supports up to 16 images for GPT Image models)
+- **Image Variations** - Generate variations of existing images (DALL-E models)
+- **Advanced Features** - Transparent backgrounds, multiple output formats (PNG, JPEG, WebP), streaming support, quality controls
 
 ---
 
@@ -305,23 +306,38 @@ await worksona.generateImage(agentId, prompt, options)
 - `agentId` (string): Agent identifier
 - `prompt` (string): Text description of desired image
 - `options` (object):
-  - `model` (string): 'dall-e-3', 'gpt-4o' (default: 'dall-e-3')
-  - `size` (string): '256x256', '512x512', '1024x1024' (default: '1024x1024')
-  - `n` (number): Number of images (default: 1)
-  - `response_format` (string): 'url' or 'b64_json' (default: 'url')
+  - `model` (string): 'gpt-image-1.5' (default), 'gpt-image-1', 'gpt-image-1-mini', 'dall-e-3', 'dall-e-2'
+  - `size` (string): 'auto' (GPT Image), '1024x1024', '1536x1024', '1024x1536', '1792x1024', '1024x1792' (default: 'auto' for GPT Image, '1024x1024' for DALL-E)
+  - `quality` (string): 'auto', 'high', 'medium', 'low' (GPT Image) or 'standard', 'hd' (DALL-E)
+  - `output_format` (string): 'png', 'jpeg', 'webp' (GPT Image only)
+  - `background` (string): 'auto', 'transparent', 'opaque' (GPT Image only)
+  - `n` (number): Number of images (default: 1, max: 10)
+  - `response_format` (string): 'url' (DALL-E) or 'b64_json' (GPT Image returns base64 automatically)
 
 **Example:**
 ```javascript
+// GPT Image 1.5 (default, returns base64 data URL)
+const imageDataUrl = await worksona.generateImage('creative-agent', 
+  'A futuristic cityscape with flying cars and neon lights', {
+  model: 'gpt-image-1.5',
+  size: 'auto',
+  quality: 'high',
+  output_format: 'png',
+  background: 'transparent'
+});
+
+// DALL-E 3 (legacy, returns URL)
 const imageUrl = await worksona.generateImage('creative-agent', 
   'A futuristic cityscape with flying cars and neon lights', {
+  model: 'dall-e-3',
   size: '1024x1024',
-  model: 'dall-e-3'
+  quality: 'hd'
 });
 ```
 
 ### Image Editing
 
-Edit existing images using natural language prompts.
+Edit existing images using natural language prompts. Supports single images or arrays of up to 16 images (GPT Image models).
 
 ```javascript
 await worksona.editImage(agentId, imageData, prompt, options)
@@ -329,14 +345,36 @@ await worksona.editImage(agentId, imageData, prompt, options)
 
 **Parameters:**
 - `agentId` (string): Agent identifier
-- `imageData` (string): Original image data
+- `imageData` (string | string[]): Original image data (base64/data URL) or array of images (up to 16 for GPT Image)
 - `prompt` (string): Description of desired changes
-- `options` (object): Same as generateImage options
+- `options` (object):
+  - `model` (string): 'gpt-image-1.5' (default), 'gpt-image-1', 'dall-e-3'
+  - `input_fidelity` (string): 'low' | 'high' (only for gpt-image-1)
+  - `mask` (string): Optional PNG mask for DALL-E editing
+  - `size`, `quality`, `output_format`, `background`: Same as generateImage
 
 **Example:**
 ```javascript
+// GPT Image 1.5 (supports multiple images)
+const editedImage = await worksona.editImage('design-agent', [img1, img2, img3], 
+  'Apply vintage filter to all images', {
+  model: 'gpt-image-1.5',
+  quality: 'high',
+  output_format: 'png'
+});
+
+// GPT Image 1 (with input fidelity control)
+const editedImage = await worksona.editImage('design-agent', originalImageData, 
+  'Add a bright blue sky background', {
+  model: 'gpt-image-1',
+  input_fidelity: 'high',
+  quality: 'high'
+});
+
+// DALL-E 3 (legacy)
 const editedUrl = await worksona.editImage('design-agent', originalImageData, 
   'Add a bright blue sky background', {
+  model: 'dall-e-3',
   size: '1024x1024'
 });
 ```
@@ -409,9 +447,12 @@ const variationUrl = await worksona.variationImage('art-agent', imageData, {
 #### Model Configuration
 - `provider` (string): LLM provider ('openai', 'anthropic', 'google')
 - `model` (string): Specific model name
-- `temperature` (number): Creativity level (0.0-2.0)
+- `imageGenerationModel` (string): Image generation model (default: 'gpt-image-1.5')
+- `temperature` (number): Creativity level (0.0-2.0, fixed at 1.0 for GPT-5 and o-series)
 - `maxTokens` (number): Maximum response length
 - `topP` (number): Nucleus sampling parameter
+- `topK` (number): Top-K sampling (Anthropic/Google)
+- `organization` (string): OpenAI organization ID (optional)
 - `frequencyPenalty` (number): Repetition penalty
 - `presencePenalty` (number): Topic diversity penalty
 
@@ -860,6 +901,54 @@ const worksona = new Worksona({
 
 ---
 
+## TypeScript Support
+
+Full TypeScript definitions are included (`worksona.d.ts`) with:
+- Complete type definitions for all interfaces
+- GPT Image model parameter types
+- Image editing with multiple image support
+- All agent configuration options
+- Event handler types
+
+```typescript
+import Worksona from 'worksona-js';
+
+const worksona = new Worksona({
+  apiKeys: { openai: 'your-key' }
+});
+
+// TypeScript will provide autocomplete and type checking
+const image = await worksona.generateImage('agent-id', 'prompt', {
+  model: 'gpt-image-1.5',  // TypeScript knows valid models
+  quality: 'high',          // TypeScript knows valid quality values
+  output_format: 'png'      // TypeScript knows valid formats
+});
+```
+
+## Testing
+
+Worksona.js includes comprehensive automated testing:
+
+- **Unit Tests**: Individual API endpoint tests
+- **Integration Tests**: Full workflow tests
+- **Test Framework**: Jest with Supertest
+- **Coverage**: Code coverage reporting available
+- **CI/CD**: GitHub Actions workflow included
+
+```bash
+# Run all tests
+npm test
+
+# Run with coverage
+npm run test:coverage
+
+# Run specific test suite
+npm run test:api
+npm run test:integration
+```
+
+See [`docs/API_TESTING_GUIDE.md`](docs/API_TESTING_GUIDE.md) for complete testing documentation.
+
 ## License
 
 MIT License - See LICENSE file for details.
@@ -870,9 +959,10 @@ Contributions welcome! Please read the contributing guidelines and submit pull r
 
 ## Support
 
-- GitHub Issues: [Repository Issues](https://github.com/your-repo/worksona-js/issues)
-- Documentation: [Full Documentation](https://worksona.dev/docs)
-- Examples: [Demo Repository](https://github.com/your-repo/worksona-examples)
+- GitHub Issues: [Repository Issues](https://github.com/worksona/worksona-js/issues)
+- Documentation: [Full Documentation](docs/WORKSONA_JS_FEATURES.md)
+- Examples: [Code Examples Hub](www/docs/code-examples-hub.html)
+- Testing Guide: [API Testing Guide](docs/API_TESTING_GUIDE.md)
 
 ---
 

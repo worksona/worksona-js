@@ -1,6 +1,6 @@
 # Worksona.js
 
-**Last Updated:** January 19, 2026
+**Last Updated:** January 22, 2026
 **Version:** 0.3.0
 
 [![npm version](https://badge.fury.io/js/worksona-js.svg)](https://badge.fury.io/js/worksona-js)
@@ -13,11 +13,13 @@ A lightweight, single-file JavaScript library for creating and managing AI agent
 
 - 📚 **Complete Documentation Suite** - Interactive demos, code examples, visual workflow builder
 - 🔌 **REST API Server** - Production-ready Express server with 32+ endpoints
-- 🛠️ **Tool System** - DALL-E image generation, web scraper, text-to-speech
+- 🛠️ **Tool System** - GPT Image 1.5, DALL-E image generation, web scraper, text-to-speech
 - 🎨 **Agent Personality System** - Rich configuration with traits, knowledge, tone
 - 📄 **Document Processing** - OCR, PDF/DOCX/XLSX parsing built-in
-- ✨ **Latest Frontier Models** - Full support for GPT-5, Claude Opus 4.5, o3
+- ✨ **Latest Frontier Models** - Full support for GPT-5, Claude Opus 4.5, o3, GPT Image 1.5
 - 🔗 **Multi-Agent Workflows** - Build and execute complex agent delegation chains
+- 🧪 **Automated Testing** - Comprehensive test suite with Jest and Supertest
+- 📘 **Updated TypeScript Definitions** - Complete types for all features including GPT Image models
 
 ## ✨ Features
 
@@ -126,7 +128,7 @@ const editedUrl = await worksona.editImage('agent-id', imageData,
 
 | Provider | Latest Models | Chat | Vision | Image Generation |
 |----------|--------------|------|---------|-----------------|
-| **OpenAI** | GPT-5, GPT-5-mini, GPT-5-nano, o3, o1, GPT-4o | ✅ | ✅ | ✅ DALL-E 3 |
+| **OpenAI** | GPT-5, GPT-5-mini, GPT-5-nano, o3, o1, GPT-4o | ✅ | ✅ | ✅ GPT Image 1.5, DALL-E 3 |
 | **Anthropic** | Claude Opus 4.5, Claude Sonnet 4.5, Claude 3.5 Sonnet | ✅ | ❌ | ❌ |
 | **Google** | Gemini Pro | ✅ | ❌ | ❌ |
 
@@ -137,7 +139,7 @@ const editedUrl = await worksona.editImage('agent-id', imageData,
 - Reasoning models: `o3`, `o3-mini`, `o1`, `o1-mini`, `o1-preview` 🆕
 - GPT-4 series: `gpt-4o`, `gpt-4o-mini`, `gpt-4-turbo`, `gpt-4`, `gpt-4-32k`
 - GPT-3.5 series: `gpt-3.5-turbo`, `gpt-3.5-turbo-16k`
-- Image generation: `dall-e-3`, `dall-e-2`
+- Image generation: `gpt-image-1.5` 🆕 (default), `gpt-image-1` 🆕, `gpt-image-1-mini` 🆕, `dall-e-3`, `dall-e-2`
 
 **Anthropic:**
 - Claude 4.5: `claude-opus-4-5-20251101`, `claude-sonnet-4-5-20250929` 🆕
@@ -305,7 +307,7 @@ const factCheck = await worksona.chat('fact-checker', `Verify: ${article}`);
 
 ### TypeScript Support
 
-TypeScript definitions are included:
+Complete TypeScript definitions are included (`worksona.d.ts`) with full type coverage:
 
 ```typescript
 import Worksona from 'worksona-js';
@@ -313,7 +315,39 @@ import Worksona from 'worksona-js';
 const worksona = new Worksona({
   apiKeys: { openai: 'your-key' }
 });
+
+// Full type safety for GPT Image models
+const image = await worksona.generateImage('agent-id', 'prompt', {
+  model: 'gpt-image-1.5',  // TypeScript autocomplete
+  quality: 'high',          // Type-safe options
+  output_format: 'png',     // Validated formats
+  background: 'transparent' // Type-safe backgrounds
+});
+
+// Multiple image editing support
+const edited = await worksona.editImage('agent-id', [img1, img2], 'prompt', {
+  model: 'gpt-image-1.5',
+  input_fidelity: 'high'    // Type-safe for gpt-image-1
+});
 ```
+
+### Testing
+
+Comprehensive automated testing suite included:
+
+```bash
+# Run all tests
+npm test
+
+# Run with coverage
+npm run test:coverage
+
+# Run specific suites
+npm run test:api
+npm run test:integration
+```
+
+See [`docs/API_TESTING_GUIDE.md`](docs/API_TESTING_GUIDE.md) for complete testing documentation.
 
 ### Browser Compatibility
 
@@ -352,45 +386,45 @@ The complete documentation site is available in `docs/www-api/` and includes:
 - **[💡 Examples](docs/www-api/vibe-coding/examples/)** - Chatbot, content pipeline, workflow builder
 
 **Downloads**
-- **[📦 worksona.min.js](docs/www-api/downloads/worksona.min.js)** - Minified library (51KB)
-- **[📦 worksona.js](docs/www-api/downloads/worksona.js)** - Full source (80KB)
-- **[📦 worksona-server.js](docs/www-api/downloads/worksona-server.js)** - REST API server
-- **[📦 worksona.d.ts](docs/www-api/downloads/worksona.d.ts)** - TypeScript definitions
-- **[📦 Complete Package (.zip)](docs/www-api/downloads/worksona-complete.zip)** - All files bundled
+- **[📦 worksona.min.js](www/downloads/worksona.min.js)** - Minified library (52KB)
+- **[📦 worksona.js](www/downloads/worksona.js)** - Full source (86KB)
+- **[📦 worksona-server.js](www/downloads/worksona-server.js)** - REST API server
+- **[📦 worksona.d.ts](www/downloads/worksona.d.ts)** - TypeScript definitions (updated with GPT Image support)
+- **[📦 Complete Package (.zip)](www/downloads/worksona-complete.zip)** - All files bundled
 
 ### 🌐 Deploying the Documentation Site
 
-The documentation site in `docs/www-api/` is a standalone static site that can be deployed anywhere:
+The documentation site in `www/` is a standalone static site that can be deployed anywhere:
 
 **Netlify (Recommended)**
 ```bash
 # Deploy from repository root
-netlify deploy --dir=docs/www-api --prod
+netlify deploy --dir=www --prod
 
 # Or use the included netlify.toml configuration
-cd docs/www-api
+cd www
 netlify deploy --prod
 ```
 
 **Vercel**
 ```bash
-cd docs/www-api
+cd www
 vercel --prod
 ```
 
 **GitHub Pages**
 ```bash
 # Push to gh-pages branch
-git subtree push --prefix docs/www-api origin gh-pages
+git subtree push --prefix www origin gh-pages
 ```
 
 **Any Static Host**
-Simply upload the contents of `docs/www-api/` to your web server or CDN.
+Simply upload the contents of `www/` to your web server or CDN.
 
 ### 📖 Documentation Structure
 
 ```
-docs/www-api/
+www/
 ├── index.html              # Landing page
 ├── overview.html           # Project overview
 ├── assets/                 # Shared CSS and JS
@@ -434,7 +468,7 @@ docs/www-api/
 - **Downloadable Files** - All library files available for offline use
 - **SEO Optimized** - Proper meta tags and structure
 
-**→ Start here: [docs/index.html](docs/index.html)**
+**→ Start here: [www/docs/index.html](www/docs/index.html)**
 
 ## 🔗 Links
 
