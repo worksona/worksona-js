@@ -112,25 +112,22 @@
 
   <button onclick="runTests()">🔄 Run Tests Again</button>
 
+  <!-- Railway Environment Variables (injected by Netlify build) -->
+  <script src="/assets/js/railway-env.js"></script>
+  
+  <!-- Railway Config Module -->
+  <script src="/assets/js/railway-config.js"></script>
+
   <script>
-    // Detect API base URL
-    const API_BASE = (() => {
-      const hostname = window.location.hostname;
-      if (hostname === 'worksonajs.netlify.app' || hostname.includes('worksonajs')) {
-        return 'https://worksonajs.netlify.app';
-      }
-      // Check if we're on Vercel (worksona-js.vercel.app or any vercel.app domain)
-      if (hostname === 'worksona-js.vercel.app' || hostname.includes('vercel.app')) {
-        return window.location.origin;
-      }
-      const isLocalhost = hostname === 'localhost' || hostname === '127.0.0.1';
-      return isLocalhost ? 'http://localhost:3000' : '';
-    })();
+    // Use Railway Config for API URL detection
+    const API_BASE = RailwayConfig.detectApiUrl();
 
     async function runTests() {
       // Test 1: Health Check
       try {
-        const healthRes = await fetch(`${API_BASE}/health`);
+        const healthRes = await fetch(`${API_BASE}/health`, {
+          headers: RailwayConfig.getHeaders(false)
+        });
         const healthData = await healthRes.json();
         document.getElementById('health-status').className = 'status success';
         document.getElementById('health-status').textContent = '✅ Server is running';
@@ -143,7 +140,9 @@
 
       // Test 2: API Info
       try {
-        const infoRes = await fetch(`${API_BASE}/api/info`);
+        const infoRes = await fetch(`${API_BASE}/api/info`, {
+          headers: RailwayConfig.getHeaders()
+        });
         const infoData = await infoRes.json();
         document.getElementById('info-status').className = 'status success';
         document.getElementById('info-status').textContent = '✅ API info retrieved';
@@ -156,7 +155,9 @@
 
       // Test 3: List Agents
       try {
-        const agentsRes = await fetch(`${API_BASE}/api/agents`);
+        const agentsRes = await fetch(`${API_BASE}/api/agents`, {
+          headers: RailwayConfig.getHeaders()
+        });
         const agentsData = await agentsRes.json();
         document.getElementById('agents-status').className = 'status success';
         document.getElementById('agents-status').textContent = `✅ Found ${agentsData.data?.agents?.length || 0} agents`;
@@ -172,7 +173,7 @@
         // Try to use marketing-agent (should be auto-loaded)
         const chatRes = await fetch(`${API_BASE}/api/agents/marketing-agent/chat`, {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          headers: RailwayConfig.getHeaders(),
           body: JSON.stringify({
             message: 'Hello, this is a test',
             options: { temperature: 0.7 }

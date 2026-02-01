@@ -5,8 +5,8 @@
   # Publish directory (www folder contains all static files)
   publish = "www"
   
-  # No build command needed - static site
-  command = "echo 'No build required - static site'"
+  # Build command - inject environment variables
+  command = "node scripts/inject-env.js"
 
 # Production context (main branch)
 [context.production]

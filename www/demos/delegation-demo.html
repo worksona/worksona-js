@@ -1142,6 +1142,12 @@ graph TB
   </div>
 
   <!-- Prism.js -->
+  <!-- Railway Environment Variables (injected by Netlify build) -->
+  <script src="/assets/js/railway-env.js"></script>
+  
+  <!-- Railway Config Module -->
+  <script src="/assets/js/railway-config.js"></script>
+
   <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-javascript.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-python.min.js"></script>
@@ -1650,18 +1656,9 @@ graph TB
       'support-agent': 'marketing-agent'
     };
 
-    // Detect API base URL
+    // Detect API base URL using RailwayConfig
     const getApiBase = () => {
-      const hostname = window.location.hostname;
-      if (hostname === 'worksonajs.netlify.app' || hostname.includes('worksonajs')) {
-        return 'https://worksonajs.netlify.app/api';
-      }
-      // Check if we're on Vercel (worksona-js.vercel.app or any vercel.app domain)
-      if (hostname === 'worksona-js.vercel.app' || hostname.includes('vercel.app')) {
-        return window.location.origin + '/api';
-      }
-      const isLocalhost = hostname === 'localhost' || hostname === '127.0.0.1';
-      return isLocalhost ? 'http://localhost:3000/api' : '';
+      return RailwayConfig.detectApiUrl() + '/api';
     };
 
     // Real API call to worksona-server
@@ -1677,9 +1674,7 @@ graph TB
 
         const response = await fetch(`${apiBase}/agents/${agentId}/chat`, {
           method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
+          headers: RailwayConfig.getHeaders(),
           body: JSON.stringify({
             message: prompt,
             options: {

@@ -1,0 +1,115 @@
+#!/bin/bash
+#
+# Pre-commit Hook - API Key Detection
+#
+# This hook prevents committing files that contain potential API keys or secrets.
+# To install: cp .github/pre-commit-hook .git/hooks/pre-commit && chmod +x .git/hooks/pre-commit
+#
+
+set -e
+
+echo "🔍 Checking for API keys and secrets..."
+
+# Define patterns for different API key types
+declare -a PATTERNS=(
+    # Railway API keys (full length)
+    "wsk_live_[A-Za-z0-9=]{40,}"
+    "wsk_test_[A-Za-z0-9=]{40,}"
+    
+    # OpenAI API keys
+    "sk-proj-[A-Za-z0-9_-]{40,}"
+    "sk-[A-Za-z0-9]{48}"
+    
+    # Anthropic API keys
+    "sk-ant-api03-[A-Za-z0-9_-]{95,}"
+    
+    # Google API keys
+    "AIza[A-Za-z0-9_-]{35}"
+    
+    # Generic secret patterns
+    "api_key['\"]?\s*[:=]\s*['\"][A-Za-z0-9_-]{20,}"
+    "apiKey['\"]?\s*[:=]\s*['\"][A-Za-z0-9_-]{20,}"
+    "secret['\"]?\s*[:=]\s*['\"][A-Za-z0-9_-]{20,}"
+)
+
+# Files to exclude from checking
+EXCLUDE_PATTERNS=(
+    ".env.example"
+    "SECURITY_AUDIT.md"
+    ".github/pre-commit-hook"
+    "package-lock.json"
+    "*.min.js"
+)
+
+# Get list of staged files
+STAGED_FILES=$(git diff --cached --name-only --diff-filter=ACM)
+
+if [ -z "$STAGED_FILES" ]; then
+    echo "✅ No files to check"
+    exit 0
+fi
+
+# Function to check if file should be excluded
+should_exclude() {
+    local file=$1
+    for pattern in "${EXCLUDE_PATTERNS[@]}"; do
+        if [[ $file == $pattern ]]; then
+            return 0
+        fi
+    done
+    return 1
+}
+
+# Check each staged file
+FOUND_SECRETS=0
+
+for FILE in $STAGED_FILES; do
+    # Skip if file should be excluded
+    if should_exclude "$FILE"; then
+        continue
+    fi
+    
+    # Skip if file doesn't exist (deleted)
+    if [ ! -f "$FILE" ]; then
+        continue
+    fi
+    
+    # Check each pattern
+    for PATTERN in "${PATTERNS[@]}"; do
+        if grep -qE "$PATTERN" "$FILE" 2>/dev/null; then
+            # Found potential secret
+            echo ""
+            echo "❌ ERROR: Potential API key or secret found!"
+            echo "   File: $FILE"
+            echo "   Pattern: $PATTERN"
+            echo ""
+            
+            # Show the matching line (with context)
+            echo "   Matching content:"
+            grep -n -C 1 -E "$PATTERN" "$FILE" | head -n 10
+            echo ""
+            
+            FOUND_SECRETS=1
+        fi
+    done
+done
+
+if [ $FOUND_SECRETS -eq 1 ]; then
+    echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+    echo "🚨 COMMIT BLOCKED: API keys detected"
+    echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+    echo ""
+    echo "To fix this issue:"
+    echo "  1. Remove the API key from the file"
+    echo "  2. Use placeholder values (e.g., 'wsk_live_YOUR_KEY_HERE')"
+    echo "  3. Store real keys in environment variables or .env files"
+    echo ""
+    echo "If this is a false positive, you can:"
+    echo "  • Add the file to EXCLUDE_PATTERNS in .github/pre-commit-hook"
+    echo "  • Use git commit --no-verify (NOT recommended)"
+    echo ""
+    exit 1
+fi
+
+echo "✅ No API keys or secrets detected"
+exit 0

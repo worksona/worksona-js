@@ -622,11 +622,18 @@
       <div class="status-dot offline" id="serverStatus"></div>
       <span id="serverStatusText">Checking server...</span>
     </div>
-    <div class="status-item" id="apiUrlConfig" style="display: none;">
-      <label for="apiUrlInput" style="font-size: 0.875rem; color: var(--text-secondary); margin-right: 0.5rem;">API URL:</label>
-      <input type="text" id="apiUrlInput" placeholder="https://your-api-server.com" 
-             style="padding: 0.25rem 0.5rem; border: 1px solid var(--border-color); border-radius: 4px; font-size: 0.875rem; min-width: 200px;">
-      <button onclick="updateApiUrl()" style="margin-left: 0.5rem; padding: 0.25rem 0.75rem; background: var(--accent-blue); color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 0.875rem;">Update</button>
+    <div class="status-item" id="apiUrlConfig" style="display: none; flex-wrap: wrap; gap: 0.5rem;">
+      <div style="display: flex; align-items: center; gap: 0.5rem;">
+        <label for="apiUrlInput" style="font-size: 0.875rem; color: var(--text-secondary);">API URL:</label>
+        <input type="text" id="apiUrlInput" placeholder="https://your-api-server.com" 
+               style="padding: 0.25rem 0.5rem; border: 1px solid var(--border-color); border-radius: 4px; font-size: 0.875rem; min-width: 200px;">
+      </div>
+      <div style="display: flex; align-items: center; gap: 0.5rem;">
+        <label for="apiKeyInput" style="font-size: 0.875rem; color: var(--text-secondary);">API Key:</label>
+        <input type="password" id="apiKeyInput" placeholder="wsk_live_..." 
+               style="padding: 0.25rem 0.5rem; border: 1px solid var(--border-color); border-radius: 4px; font-size: 0.875rem; min-width: 200px;">
+      </div>
+      <button onclick="saveApiConfig()" style="padding: 0.25rem 0.75rem; background: var(--accent-blue); color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 0.875rem;">Save Config</button>
     </div>
     <div class="status-item">
       <strong>Available Agents:</strong>
@@ -1088,6 +1095,12 @@
     </div>
   </div>
 
+  <!-- Railway Environment Variables (injected by Netlify build) -->
+  <script src="/assets/js/railway-env.js"></script>
+  
+  <!-- Railway Config Module -->
+  <script src="/assets/js/railway-config.js"></script>
+
   <!-- Prism.js -->
   <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/prism.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-javascript.min.js"></script>
@@ -1095,41 +1108,16 @@
   <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-bash.min.js"></script>
 
   <script>
-    // Detect API base URL - use environment variable or detect host
-    let API_BASE = (() => {
-      // Check for environment variable (Netlify can set this)
-      if (typeof window !== 'undefined' && window.API_BASE_URL) {
-        return window.API_BASE_URL;
-      }
-      // Check localStorage for user-configured URL
-      const savedUrl = localStorage.getItem('worksona_api_url');
-      if (savedUrl) {
-        return savedUrl;
-      }
-      // Check if we're on worksonajs.netlify.app
-      const hostname = window.location.hostname;
-      if (hostname === 'worksonajs.netlify.app' || hostname.includes('worksonajs')) {
-        // Default API URL for worksonajs.netlify.app
-        return 'https://worksonajs.netlify.app/api';
-      }
-      // Check if we're on Vercel (worksona-js.vercel.app or any vercel.app domain)
-      if (hostname === 'worksona-js.vercel.app' || hostname.includes('vercel.app')) {
-        // Use same origin for Vercel (API and site on same domain)
-        return window.location.origin + '/api';
-      }
-      // Default: localhost for local development, empty for production (needs config)
-      const isLocalhost = hostname === 'localhost' || hostname === '127.0.0.1';
-      return isLocalhost ? 'http://localhost:3000' : '';
-    })();
+    // Use Railway Config for API URL detection
+    let API_BASE = RailwayConfig.detectApiUrl();
 
     // Function to update API URL
     function updateApiUrl() {
       const input = document.getElementById('apiUrlInput');
       const newUrl = input.value.trim();
       if (newUrl) {
-        // Remove trailing slash
-        API_BASE = newUrl.replace(/\/$/, '');
-        localStorage.setItem('worksona_api_url', API_BASE);
+        RailwayConfig.setApiUrl(newUrl);
+        API_BASE = RailwayConfig.detectApiUrl();
         // Update status
         const statusText = document.getElementById('serverStatusText');
         if (statusText) {
@@ -1139,6 +1127,58 @@
       } else {
         alert('Please enter a valid API URL');
       }
+    }
+
+    // Function to update API Key
+    function updateApiKey() {
+      const input = document.getElementById('apiKeyInput');
+      const newKey = input.value.trim();
+      RailwayConfig.setApiKey(newKey);
+      
+      // Update button feedback
+      const button = event?.target;
+      if (button) {
+        const originalText = button.textContent;
+        button.textContent = '✓ Saved';
+        button.style.background = 'var(--success)';
+        setTimeout(() => {
+          button.textContent = originalText;
+          button.style.background = '';
+        }, 2000);
+      }
+      
+      // Re-check server status with new key
+      checkServerStatus();
+    }
+
+    // Function to save both URL and Key
+    function saveApiConfig() {
+      const urlInput = document.getElementById('apiUrlInput');
+      const keyInput = document.getElementById('apiKeyInput');
+      
+      if (urlInput && urlInput.value.trim()) {
+        RailwayConfig.setApiUrl(urlInput.value.trim());
+        API_BASE = RailwayConfig.detectApiUrl();
+      }
+      
+      if (keyInput) {
+        RailwayConfig.setApiKey(keyInput.value.trim());
+      }
+      
+      // Update button feedback
+      const button = event?.target;
+      if (button) {
+        const originalText = button.textContent;
+        button.textContent = '✓ Saved';
+        button.style.background = 'var(--success)';
+        setTimeout(() => {
+          button.textContent = originalText;
+          button.style.background = '';
+        }, 2000);
+      }
+      
+      // Re-check server status
+      checkServerStatus();
     }
     
     // Allow Enter key to update API URL
@@ -1158,35 +1198,40 @@
       const hostname = window.location.hostname;
       const isProduction = hostname.includes('netlify.app') || 
                           hostname.includes('vercel.app') ||
+                          hostname.includes('railway.app') ||
                           (hostname !== 'localhost' && hostname !== '127.0.0.1');
       
       const apiUrlConfig = document.getElementById('apiUrlConfig');
       const input = document.getElementById('apiUrlInput');
+      const keyInput = document.getElementById('apiKeyInput');
       
-      // Always show API URL config on production (worksonajs.netlify.app)
+      // Always show API URL config on production
       if (isProduction && apiUrlConfig) {
         apiUrlConfig.style.display = 'flex';
         apiUrlConfig.style.alignItems = 'center';
         
-        // Set placeholder and default value
+        // Set placeholder and default value for URL
         if (input) {
-          if (hostname === 'worksonajs.netlify.app' || hostname.includes('worksonajs')) {
+          if (hostname.includes('railway.app')) {
+            input.placeholder = 'https://your-app.railway.app';
+            input.value = API_BASE || window.location.origin;
+          } else if (hostname === 'worksonajs.netlify.app' || hostname.includes('worksonajs')) {
             input.placeholder = 'https://worksonajs.netlify.app/api';
-            // Set default value if not already configured
-            if (!API_BASE || API_BASE === 'https://worksonajs.netlify.app/api') {
-              input.value = 'https://worksonajs.netlify.app/api';
-            } else {
-              input.value = API_BASE;
-            }
+            input.value = API_BASE || 'https://worksonajs.netlify.app/api';
           } else if (hostname === 'worksona-js.vercel.app' || hostname.includes('vercel.app')) {
             input.placeholder = window.location.origin + '/api';
-            input.value = window.location.origin + '/api';
+            input.value = API_BASE || (window.location.origin + '/api');
           } else {
             input.placeholder = 'https://your-api-server.com';
-            // Show current API URL if set
-            if (API_BASE) {
-              input.value = API_BASE;
-            }
+            input.value = API_BASE || '';
+          }
+        }
+        
+        // Set API key value if stored
+        if (keyInput) {
+          const savedKey = RailwayConfig.getApiKey();
+          if (savedKey) {
+            keyInput.value = savedKey;
           }
         }
       }
@@ -1200,7 +1245,9 @@
       const statusText = document.getElementById('serverStatusText');
 
       try {
-        const response = await fetch(`${API_BASE}/health`);
+        const response = await fetch(`${API_BASE}/health`, {
+          headers: RailwayConfig.getHeaders()
+        });
         if (response.ok) {
           statusDot.className = 'status-dot online';
           statusText.textContent = 'Server online';
@@ -1211,14 +1258,15 @@
         }
       } catch (error) {
         statusDot.className = 'status-dot offline';
-        // Check if we're on Netlify or production
+        // Check if we're on Netlify, Vercel, Railway or production
         const hostname = window.location.hostname;
         const isProduction = hostname.includes('netlify.app') || 
                             hostname.includes('vercel.app') ||
+                            hostname.includes('railway.app') ||
                             (hostname !== 'localhost' && hostname !== '127.0.0.1');
         
         if (isProduction && !API_BASE) {
-          statusText.textContent = 'API server not configured - Enter API URL below';
+          statusText.textContent = 'API server not configured - Enter API URL and Key below';
         } else if (isProduction && API_BASE) {
           statusText.textContent = `Cannot connect to ${API_BASE}`;
         } else {
@@ -1230,7 +1278,9 @@
     // Load available agents
     async function loadAgents() {
       try {
-        const response = await fetch(`${API_BASE}/api/agents`);
+        const response = await fetch(`${API_BASE}/api/agents`, {
+          headers: RailwayConfig.getHeaders()
+        });
         const data = await response.json();
 
         if (data.success && data.data.agents) {
@@ -1356,18 +1406,23 @@
     // Generate code examples
     function generateCode(endpoint, method, body) {
       const url = `${API_BASE}${endpoint}`;
+      const apiKey = RailwayConfig.getApiKey();
 
       // cURL
       let curlCode = `curl -X ${method} ${url}`;
+      if (apiKey) {
+        curlCode += ` \\\n  -H "x-api-key: ${apiKey}"`;
+      }
       if (body) {
         curlCode += ` \\\n  -H "Content-Type: application/json" \\\n  -d '${JSON.stringify(body, null, 2)}'`;
       }
       document.getElementById('curl-code').textContent = curlCode;
 
       // JavaScript
+      const headersObj = apiKey ? `{'Content-Type': 'application/json', 'x-api-key': '${apiKey}'}` : `{'Content-Type': 'application/json'}`;
       const jsCode = `const response = await fetch('${url}', {
   method: '${method}',
-  headers: {'Content-Type': 'application/json'},
+  headers: ${headersObj},
   ${body ? `body: JSON.stringify(${JSON.stringify(body, null, 2)})` : ''}
 });
 
@@ -1376,22 +1431,23 @@ console.log(data);`;
       document.getElementById('javascript-code').textContent = jsCode;
 
       // Python
+      const pythonHeaders = apiKey ? `,\n    headers={'x-api-key': '${apiKey}'}` : '';
       const pythonCode = `import requests
 
 response = requests.${method.toLowerCase()}('${url}'${
         body ? `,\n    json=${JSON.stringify(body, null, 2)}` : ''
-      })
+      }${pythonHeaders})
 
 data = response.json()
 print(data)`;
       document.getElementById('python-code').textContent = pythonCode;
 
       // Node.js
+      const axiosConfig = body ? `,\n  ${JSON.stringify(body, null, 2)}` : '';
+      const axiosHeaders = apiKey ? `,\n  {\n    headers: {'x-api-key': '${apiKey}'}\n  }` : '';
       const nodeCode = `const axios = require('axios');
 
-const response = await axios.${method.toLowerCase()}('${url}'${
-        body ? `,\n  ${JSON.stringify(body, null, 2)}` : ''
-      });
+const response = await axios.${method.toLowerCase()}('${url}'${axiosConfig}${axiosHeaders});
 
 console.log(response.data);`;
       document.getElementById('node-code').textContent = nodeCode;
@@ -1440,7 +1496,7 @@ console.log(response.data);`;
       try {
         const response = await fetch(`${API_BASE}/api/query`, {
           method: 'POST',
-          headers: {'Content-Type': 'application/json'},
+          headers: RailwayConfig.getHeaders(),
           body: JSON.stringify(body)
         });
 
@@ -1472,7 +1528,7 @@ console.log(response.data);`;
       try {
         const response = await fetch(`${API_BASE}/api/agents/${agentId}/chat`, {
           method: 'POST',
-          headers: {'Content-Type': 'application/json'},
+          headers: RailwayConfig.getHeaders(),
           body: JSON.stringify(body)
         });
 
@@ -1500,7 +1556,7 @@ console.log(response.data);`;
         try {
           const response = await fetch(`${API_BASE}/api/query/batch`, {
             method: 'POST',
-            headers: {'Content-Type': 'application/json'},
+            headers: RailwayConfig.getHeaders(),
             body: JSON.stringify(body)
           });
 
@@ -1535,8 +1591,13 @@ console.log(response.data);`;
       showLoading('executeFileUploadBtn', `Uploading and analyzing ${selectedFile.name}...`);
 
       try {
+        const headers = {};
+        const apiKey = RailwayConfig.getApiKey();
+        if (apiKey) headers['x-api-key'] = apiKey;
+        
         const response = await fetch(`${API_BASE}/api/agents/${agentId}/upload?prompt=${encodeURIComponent(prompt)}`, {
           method: 'POST',
+          headers: headers,
           body: formData
         });
 
@@ -1600,7 +1661,7 @@ console.log(response.data);`;
         try {
           const response = await fetch(`${API_BASE}/api/images/generate`, {
             method: 'POST',
-            headers: {'Content-Type': 'application/json'},
+            headers: RailwayConfig.getHeaders(),
             body: JSON.stringify(body)
           });
 
@@ -1646,8 +1707,13 @@ console.log(response.data);`;
       showLoading('executeDocumentActionBtn', `${action === 'ocr' ? 'Extracting text from' : 'Analyzing'} ${selectedDocFile.name}...`);
 
       try {
+        const headers = {};
+        const apiKey = RailwayConfig.getApiKey();
+        if (apiKey) headers['x-api-key'] = apiKey;
+        
         const response = await fetch(`${API_BASE}${endpoint}`, {
           method: 'POST',
+          headers: headers,
           body: formData
         });
 
@@ -1681,7 +1747,9 @@ console.log(response.data);`;
       showLoading('executeToolBtn', `Executing ${toolName} ${action}...`);
 
       try {
-        const response = await fetch(url);
+        const response = await fetch(url, {
+          headers: RailwayConfig.getHeaders()
+        });
         const data = await response.json();
         displayResponse(data, Date.now() - startTime);
         generateCode(`/api/tools/${toolName}/${action}`, 'GET', null);
@@ -1703,7 +1771,9 @@ console.log(response.data);`;
       showLoading('executeTranslateBtn', `Translating from ${from} to ${to}...`);
 
       try {
-        const response = await fetch(url);
+        const response = await fetch(url, {
+          headers: RailwayConfig.getHeaders()
+        });
         const data = await response.json();
         displayResponse(data, Date.now() - startTime);
         generateCode('/api/translate', 'GET', null);
@@ -1727,7 +1797,7 @@ console.log(response.data);`;
         try {
           const response = await fetch(`${API_BASE}/api/webhook/${agentId}`, {
             method: 'POST',
-            headers: {'Content-Type': 'application/json'},
+            headers: RailwayConfig.getHeaders(),
             body: JSON.stringify(body)
           });
 

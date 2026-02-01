@@ -22,12 +22,19 @@
     "test:api": "jest tests/api.test.js --setupFilesAfterEnv=./tests/setup.js",
     "test:integration": "jest tests/integration.test.js --setupFilesAfterEnv=./tests/setup.js",
     "build": "npm run minify",
+    "build:netlify": "node scripts/inject-env.js",
     "minify": "terser worksona.js -o worksona.min.js --compress --mangle",
     "validate": "node -c worksona.js",
     "prepare": "npm run build",
     "prepack": "npm run validate && npm run build",
     "start": "node worksona-server.js",
-    "dev": "node worksona-server.js"
+    "dev": "node worksona-server.js",
+    "netlify:setup": "bash scripts/setup-netlify-env.sh",
+    "netlify:env": "netlify env:list",
+    "netlify:deploy": "netlify deploy --prod",
+    "netlify:open": "netlify open:site",
+    "netlify:watch": "netlify watch",
+    "install:hooks": "cp .github/pre-commit-hook .git/hooks/pre-commit && chmod +x .git/hooks/pre-commit && echo '✅ Pre-commit hook installed successfully'"
   },
   "keywords": [
     "ai",

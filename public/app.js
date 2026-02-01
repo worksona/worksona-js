@@ -1,11 +1,103 @@
-const API_URL = 'http://localhost:3000';
+// Use dynamic API URL detection
+let API_URL = 'http://localhost:3000'; // Default, will be updated
 
 // State
 let agents = [];
 let lastRequest = null;
 
+// Detect API URL on load
+function detectApiUrl() {
+    // Check localStorage for user-configured URL
+    const savedUrl = localStorage.getItem('worksona_api_url');
+    if (savedUrl) {
+        return savedUrl;
+    }
+
+    // Check if we're on Railway
+    const hostname = window.location.hostname;
+    if (hostname.includes('railway.app')) {
+        return window.location.origin;
+    }
+
+    // Check if we're on Netlify
+    if (hostname === 'worksonajs.netlify.app' || hostname.includes('worksonajs')) {
+        return 'https://worksonajs.netlify.app/api';
+    }
+
+    // Check if we're on Vercel
+    if (hostname === 'worksona-js.vercel.app' || hostname.includes('vercel.app')) {
+        return window.location.origin + '/api';
+    }
+
+    // Default: localhost for local development
+    const isLocalhost = hostname === 'localhost' || hostname === '127.0.0.1';
+    return isLocalhost ? 'http://localhost:3000' : '';
+}
+
+// Get API key from localStorage
+function getApiKey() {
+    return localStorage.getItem('worksona_api_key') || '';
+}
+
+// Get headers with API key
+function getHeaders(includeContentType = true) {
+    const headers = {};
+    if (includeContentType) {
+        headers['Content-Type'] = 'application/json';
+    }
+    const apiKey = getApiKey();
+    if (apiKey) {
+        headers['x-api-key'] = apiKey;
+    }
+    return headers;
+}
+
+// Save API configuration
+function saveApiConfig() {
+    const urlInput = document.getElementById('apiUrlInput');
+    const keyInput = document.getElementById('apiKeyInput');
+    
+    if (urlInput && urlInput.value.trim()) {
+        const cleanUrl = urlInput.value.trim().replace(/\/$/, '');
+        localStorage.setItem('worksona_api_url', cleanUrl);
+        API_URL = cleanUrl;
+    }
+    
+    if (keyInput) {
+        const apiKey = keyInput.value.trim();
+        if (apiKey) {
+            localStorage.setItem('worksona_api_key', apiKey);
+        } else {
+            localStorage.removeItem('worksona_api_key');
+        }
+    }
+    
+    // Show feedback
+    alert('Configuration saved! Reloading page...');
+    location.reload();
+}
+
+// Initialize configuration form
+function initConfigForm() {
+    const urlInput = document.getElementById('apiUrlInput');
+    const keyInput = document.getElementById('apiKeyInput');
+    
+    if (urlInput) {
+        urlInput.value = API_URL || '';
+    }
+    
+    if (keyInput) {
+        const savedKey = getApiKey();
+        if (savedKey) {
+            keyInput.value = savedKey;
+        }
+    }
+}
+
 // Init
 document.addEventListener('DOMContentLoaded', async () => {
+    API_URL = detectApiUrl();
+    initConfigForm();
     await checkServerStatus();
     await loadAgents();
     setupTabs();
@@ -15,7 +107,9 @@ document.addEventListener('DOMContentLoaded', async () => {
 // Check server status
 async function checkServerStatus() {
     try {
-        const response = await fetch(`${API_URL}/health`);
+        const response = await fetch(`${API_URL}/health`, {
+            headers: getHeaders(false)
+        });
         const data = await response.json();
 
         document.getElementById('status-indicator').classList.add('online');
@@ -52,7 +146,9 @@ async function updateProviderStatus() {
 // Load agents from API
 async function loadAgents() {
     try {
-        const response = await fetch(`${API_URL}/api/agents`);
+        const response = await fetch(`${API_URL}/api/agents`, {
+            headers: getHeaders()
+        });
         const data = await response.json();
 
         if (data.success) {
@@ -228,11 +324,10 @@ async function makeRequest(method, endpoint, body = null) {
 
         const options = {
             method,
-            headers: {}
+            headers: getHeaders()
         };
 
         if (body) {
-            options.headers['Content-Type'] = 'application/json';
             options.body = JSON.stringify(body);
         }
 
@@ -253,8 +348,15 @@ async function uploadFile(formData) {
     try {
         showLoading();
 
+        const headers = {};
+        const apiKey = getApiKey();
+        if (apiKey) {
+            headers['x-api-key'] = apiKey;
+        }
+
         const response = await fetch(`${API_URL}/api/documents/analyze`, {
             method: 'POST',
+            headers: headers,
             body: formData
         });
 
