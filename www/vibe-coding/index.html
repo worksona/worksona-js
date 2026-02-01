@@ -1,11 +1,12 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <link rel="stylesheet" href="/assets/css/navigation.css">
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Worksona.js Vibe Coding - AI-Assisted Development</title>
-  <meta name="description" content="Enable AI coding assistants to work with Worksona.js - includes prompts, SDK, and examples">
+  <title>Worksona.js AI Engineering - AI-Assisted Development</title>
+  <meta name="description" content="Build AI-powered applications with Worksona.js - includes SDK, API reference, and examples">
+  <link rel="stylesheet" href="/assets/css/worksona-branding.css">
+  <link rel="stylesheet" href="/assets/css/navigation.css">
 
   <style>
     * {
@@ -14,36 +15,82 @@
       box-sizing: border-box;
     }
 
+    :root {
+      --bg-light: #ffffff;
+      --bg-card: #ffffff;
+      --bg-card-hover: #f8fafc;
+      --text-primary: #0f172a;
+      --text-secondary: #64748b;
+      --accent-blue: #2563eb;
+      --accent-purple: #7c3aed;
+      --accent-pink: #10b981;
+      --border-color: #e2e8f0;
+      --primary-500: #3b82f6;
+      --primary-600: #2563eb;
+      --secondary-500: #8b5cf6;
+      --success: #10b981;
+      --warning: #f59e0b;
+      --error: #ef4444;
+      --gray-50: #f8fafc;
+      --gray-100: #f1f5f9;
+      --gray-200: #e2e8f0;
+      --gray-500: #94a3b8;
+      --gray-700: #cbd5e1;
+      --gray-900: #0f172a;
+    }
+
     body {
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
       line-height: 1.6;
-      color: #1e293b;
-    ;}
+      background: white;
+      color: var(--gray-900);
+    }
 
-.header {
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    /* Header */
+    .header {
+      background: var(--primary-600);
       color: white;
-      padding: 4rem 2rem;
-      text-align: center;
-    ;}
+      padding: 2rem;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+      position: relative;
+      overflow: hidden;
+    }
 
-.header h1 {
-      font-size: 3rem;
-      margin-bottom: 1rem;
-      font-weight: 800;
-    ;}
+    .header::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: var(--primary-600);
+      animation: shimmer 3s infinite;
+    }
 
-.header p {
-      font-size: 1.3rem;
+    @keyframes shimmer {
+      0%, 100% { transform: translateX(-100%); }
+      50% { transform: translateX(100%); }
+    }
+
+    .header h1 {
+      font-size: 2rem;
+      margin-bottom: 0.5rem;
+      position: relative;
+      z-index: 1;
+      text-shadow: 0 2px 10px rgba(0,0,0,0.3);
+    }
+
+    .header p {
       opacity: 0.95;
-      max-width: 800px;
-      margin: 0 auto;
-    ;}
+      margin-bottom: 1rem;
+      position: relative;
+      z-index: 1;
+    }
 
-.container {
-      max-width: 1200px;
+    .container {
+      max-width: 1400px;
       margin: 0 auto;
-      padding: 4rem 2rem;
+      padding: 2rem;
     }
 
     section {
@@ -51,16 +98,19 @@
     }
 
     h2 {
-      font-size: 2rem;
+      color: var(--accent-blue);
+      font-size: 1.5rem;
       margin-bottom: 1.5rem;
-      color: #2563eb;
+      padding-bottom: 0.75rem;
+      border-bottom: 3px solid;
+      border-image: linear-gradient(90deg, var(--accent-blue), var(--accent-purple)) 1;
     }
 
     h3 {
-      font-size: 1.5rem;
+      font-size: 1.3rem;
       margin-bottom: 1rem;
-      color: #334155;
-    ;}
+      color: var(--gray-900);
+    }
 
 .feature-grid {
       display: grid;
@@ -72,25 +122,31 @@
 .feature-card {
       background: white;
       padding: 2rem;
-      
-      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-      border-left: 4px solid #2563eb;
-    ;}
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+      border: 1px solid var(--border-color);
+      transition: all 0.3s ease;
+    }
+
+    .feature-card:hover {
+      border-color: var(--accent-blue);
+      box-shadow: 0 12px 32px rgba(59, 130, 246, 0.15);
+    }
 
 .feature-card h3 {
-      color: #2563eb;
+      color: var(--accent-blue);
       margin-bottom: 0.5rem;
-    ;}
+    }
 
 .code-block {
-      background: #1e293b;
-      color: #e2e8f0;
+      background: var(--gray-900);
+      color: var(--gray-100);
       padding: 1.5rem;
-      
       overflow-x: auto;
       position: relative;
       margin: 1rem 0;
-    ;}
+      border: 1px solid var(--border-color);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    }
 
 .code-block code {
       font-family: 'Fira Code', 'Cascadia Code', monospace;
@@ -262,32 +318,32 @@
 <body>
 <div class="worksona-content">
   <div class="header">
-    <h1> Worksona.js Vibe Coding</h1>
-    <p>Empower AI coding assistants with comprehensive Worksona.js knowledge.<br>Code faster with Claude, ChatGPT, Copilot, and more.</p>
+    <h1> Worksona.js AI Engineering</h1>
+    <p>Build AI-powered applications with multi-agent orchestration.<br>Comprehensive SDK, API reference, and examples for developers.</p>
   </div>
 
   <div class="container">
-    <!-- What is Vibe Coding -->
+    <!-- What is AI Engineering -->
     <section>
-      <h2>What is Vibe Coding?</h2>
-      <p>Vibe coding is when AI coding assistants (like Claude Code, GitHub Copilot, ChatGPT, Cursor) understand your entire tech stack and can help you write code naturally. This package makes Worksona.js fully accessible to AI assistants.</p>
+      <h2>What is AI Engineering with Worksona?</h2>
+      <p>Build production-ready AI applications with multi-agent orchestration. Worksona.js provides a complete SDK for integrating GPT-4o, Claude, Gemini, and other frontier models into your applications with library or API modes.</p>
 
       <div class="feature-grid">
         <div class="feature-card">
-          <h3> Complete Context</h3>
-          <p>AI knows all Worksona.js capabilities, models, and patterns instantly.</p>
+          <h3> Multi-Provider Support</h3>
+          <p>Integrate OpenAI, Anthropic, Google, and more with a unified interface.</p>
         </div>
         <div class="feature-card">
-          <h3> Faster Development</h3>
-          <p>Write complex multi-agent workflows with AI assistance in minutes.</p>
+          <h3> Dual-Mode Architecture</h3>
+          <p>Use as a JavaScript library or deploy as a standalone API server.</p>
         </div>
         <div class="feature-card">
-          <h3> Best Practices</h3>
-          <p>AI suggests optimal patterns, error handling, and production-ready code.</p>
+          <h3> Agent Orchestration</h3>
+          <p>Build complex multi-agent workflows with delegation and state management.</p>
         </div>
         <div class="feature-card">
-          <h3> Dual-Mode Support</h3>
-          <p>AI provides both library and API server approaches automatically.</p>
+          <h3> Production Ready</h3>
+          <p>Complete error handling, streaming responses, and comprehensive API reference.</p>
         </div>
       </div>
     </section>
@@ -300,7 +356,7 @@
         <div class="step">
           <div class="step-number">1</div>
           <div class="step-content">
-            <h3>Include Worksona.js</h3>
+            <h3>Install Worksona.js</h3>
             <p>Choose library mode or API mode:</p>
             <div class="code-block">
               <button class="copy-btn" onclick="copyCode(this)">Copy</button>
@@ -322,87 +378,56 @@ node worksona-server.js
         <div class="step">
           <div class="step-number">2</div>
           <div class="step-content">
-            <h3>Copy the AI Prompt</h3>
-            <p>Give your AI assistant the context it needs:</p>
+            <h3>Configure Your Agent</h3>
+            <p>Set up your first AI agent with provider credentials:</p>
             <div class="code-block">
               <button class="copy-btn" onclick="copyCode(this)">Copy</button>
-              <code>I'm using Worksona.js (v0.3.0) - an AI agent management library.
+              <code>// Initialize with your API keys
+const worksona = new Worksona({
+  apiKeys: {
+    openai: 'sk-...',
+    anthropic: 'sk-ant-...',
+    google: 'AIza...'
+  }
+});
 
-Documentation: https://worksona.dev/docs/
-Examples: https://worksona.dev/vibe-coding/
-
-Two modes:
-- Library: new Worksona() then worksona.chat(agentId, message)
-- API: POST /api/agents/load then POST /api/agents/:id/chat
-
-Supported models: GPT-4o, Claude Opus 4.5, o3-mini
-
-When helping me code:
-1. Use latest model names
-2. Show proper error handling
-3. Include API key management
-
-Ready to code!</code>
+// Load an agent
+await worksona.loadAgent({
+  id: 'assistant',
+  config: {
+    provider: 'openai',
+    model: 'gpt-4o',
+    temperature: 0.7,
+    systemPrompt: 'You are a helpful assistant.'
+  }
+});</code>
             </div>
-            <p><a href="./AI_CODING_PROMPT.md" target="_blank">View full prompt </a></p>
+            <p><a href="./AI_CODING_PROMPT.md" target="_blank">View full documentation </a></p>
           </div>
         </div>
 
         <div class="step">
           <div class="step-number">3</div>
           <div class="step-content">
-            <h3>Start Coding with AI</h3>
-            <p>Ask your AI assistant to write Worksona.js code:</p>
+            <h3>Start Building</h3>
+            <p>Chat with your agent and build AI-powered features:</p>
             <div class="code-block">
               <button class="copy-btn" onclick="copyCode(this)">Copy</button>
-              <code>// Example prompts for your AI:
-"Create a chat interface with GPT-4o using the library"
-"Build a workflow that researches then writes an article"
-"Show me how to use the API to create an agent"
-"Set up multi-agent customer support routing"</code>
+              <code>// Chat with agent
+const response = await worksona.chat('assistant', 'Hello!');
+console.log(response.content);
+
+// Stream responses
+await worksona.chat('assistant', 'Tell me a story', {
+  stream: true,
+  onToken: (token) => console.log(token)
+});
+
+// Multi-agent workflows
+await worksona.delegate('researcher', 'agent-1', 'Research AI trends');
+const results = await worksona.getResults('agent-1');</code>
             </div>
           </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- Supported AI Tools -->
-    <section>
-      <h2>Supported AI Coding Assistants</h2>
-      <p>Works with all major AI coding tools:</p>
-
-      <div class="ai-tools">
-        <div class="ai-tool">
-          <strong>Claude Code</strong>
-          <p>CLI integration</p>
-        </div>
-        <div class="ai-tool">
-          <strong>ChatGPT</strong>
-          <p>Web & API</p>
-        </div>
-        <div class="ai-tool">
-          <strong>GitHub Copilot</strong>
-          <p>VS Code extension</p>
-        </div>
-        <div class="ai-tool">
-          <strong>Cursor</strong>
-          <p>AI-first IDE</p>
-        </div>
-        <div class="ai-tool">
-          <strong>Windsurf</strong>
-          <p>AI editor</p>
-        </div>
-        <div class="ai-tool">
-          <strong>Replit AI</strong>
-          <p>Online IDE</p>
-        </div>
-        <div class="ai-tool">
-          <strong>v0.dev</strong>
-          <p>Vercel AI</p>
-        </div>
-        <div class="ai-tool">
-          <strong>Cline</strong>
-          <p>VS Code agent</p>
         </div>
       </div>
     </section>
@@ -474,13 +499,13 @@ POST http://localhost:3000/api/images/generate
       <div class="code-block">
         <button class="copy-btn" onclick="copyCode(this)">Copy</button>
         <code>// Example 1: Chatbot (Library Mode)
-// See: vibe-coding/examples/example-1-chatbot.html
+// Shows simple chat interface with streaming responses
 
-// Example 2: Content Pipeline (API Mode)
-// See: vibe-coding/examples/example-2-content-pipeline.html
+// Example 2: Multi-Agent Demo (API Mode)
+// Shows Research → Write → Edit → Fact-Check workflow
 
 // Example 3: Workflow Builder
-// See: vibe-coding/examples/example-3-workflow-builder.html</code>
+// Visual builder for agent orchestration and delegation</code>
       </div>
     </section>
 
@@ -497,7 +522,7 @@ POST http://localhost:3000/api/images/generate
         </div>
 
         <div class="feature-card">
-          <h3> Example 2: Content Pipeline</h3>
+          <h3>Example 2: Multi-Agent Demo</h3>
           <p>Multi-agent workflow using <strong>raw API calls</strong></p>
           <p><small>Shows: Sequential agent delegation, API endpoints</small></p>
           <p><a href="./examples/example-2-content-pipeline.html" target="_blank">View Example </a></p>
@@ -519,18 +544,6 @@ POST http://localhost:3000/api/images/generate
       </div>
     </section>
 
-    <!-- CTA -->
-    <div class="cta">
-      <h2>Ready to Code with AI?</h2>
-      <p>Get started in under 5 minutes with comprehensive AI assistance</p>
-
-      <div class="cta-buttons">
-        <a href="./examples/example-1-chatbot.html" class="btn btn-primary">Try Examples</a>
-        <a href="../docs/code-examples-hub.html" class="btn btn-secondary">View 60+ Examples</a>
-        <a href="../docs/api-reference-swagger.html" class="btn btn-secondary">API Reference</a>
-      </div>
-    </div>
-
     <!-- Resources -->
     <section>
       <h2>Resources</h2>
@@ -549,7 +562,7 @@ POST http://localhost:3000/api/images/generate
           <h3> Interactive Examples</h3>
           <ul style="list-style: none; padding: 0;">
             <li><a href="./examples/example-1-chatbot.html">Chatbot (Library)</a></li>
-            <li><a href="./examples/example-2-content-pipeline.html">Content Pipeline (API)</a></li>
+            <li><a href="./examples/example-2-content-pipeline.html">Multi-Agent Demo (API)</a></li>
             <li><a href="./examples/example-3-workflow-builder.html">Workflow Builder</a></li>
           </ul>
         </div>
@@ -576,7 +589,7 @@ POST http://localhost:3000/api/images/generate
   </div>
 
   <footer>
-    <p><strong>Worksona.js Vibe Coding</strong> - AI-Assisted Development</p>
+    <p><strong>Worksona.js AI Engineering</strong> - Multi-Agent AI Platform</p>
     <p style="margin-top: 1rem; opacity: 0.8;">
       <a href="https://github.com/worksona/worksona-js">GitHub</a> 
       <a href="https://www.npmjs.com/package/worksona-js">NPM</a> 

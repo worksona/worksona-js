@@ -1,0 +1,628 @@
+/* 
+ * Worksona.js Unified Branding System
+ * Matches Studio design language across all www pages
+ */
+
+:root {
+  /* Worksona Color Palette - Matches Logo */
+  --worksona-primary: #62bab7;      /* Teal - Logo teal */
+  --worksona-primary-dark: #4fa8a5;
+  --worksona-primary-light: #7dccc9;
+  --worksona-secondary: #7C3AED;    /* Purple */
+  --worksona-secondary-dark: #6D28D9;
+  --worksona-accent: #3B82F6;       /* Blue accent */
+  --worksona-success: #10b981;
+  --worksona-warning: #f59e0b;
+  --worksona-danger: #ef4444;
+  
+  /* Grays */
+  --worksona-gray-50: #f8fafc;
+  --worksona-gray-100: #f1f5f9;
+  --worksona-gray-200: #e2e8f0;
+  --worksona-gray-300: #cbd5e1;
+  --worksona-gray-400: #94a3b8;
+  --worksona-gray-500: #64748b;
+  --worksona-gray-600: #475569;
+  --worksona-gray-700: #334155;
+  --worksona-gray-800: #1e293b;
+  --worksona-gray-900: #0f172a;
+  
+  /* Layout */
+  --worksona-border-radius: 0;
+  --worksona-shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.1);
+  --worksona-shadow-md: 0 2px 8px rgba(0, 0, 0, 0.1);
+  --worksona-shadow-lg: 0 4px 12px rgba(0, 0, 0, 0.15);
+  --worksona-shadow-xl: 0 8px 24px rgba(0, 0, 0, 0.2);
+  
+  /* Transitions */
+  --worksona-transition: all 0.2s ease;
+}
+
+/* Reset and Base Styles */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+  line-height: 1.6;
+  font-weight: 400;
+  color: var(--worksona-gray-800);
+  background-color: #fff;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Typography */
+h1, h2, h3, h4, h5, h6 {
+  font-weight: 700;
+  line-height: 1.2;
+  color: var(--worksona-gray-900);
+  margin-bottom: 1rem;
+}
+
+h1 { font-size: 3rem; }
+h2 { font-size: 2.25rem; }
+h3 { font-size: 1.875rem; }
+h4 { font-size: 1.5rem; }
+h5 { font-size: 1.25rem; }
+h6 { font-size: 1rem; }
+
+p {
+  margin-bottom: 1rem;
+  color: var(--worksona-gray-700);
+}
+
+a {
+  color: var(--worksona-primary);
+  text-decoration: none;
+  transition: var(--worksona-transition);
+}
+
+a:hover {
+  color: var(--worksona-primary-dark);
+}
+
+/* Header Styles - Exact Studio Match */
+.worksona-header,
+header {
+  background: white;
+  border-bottom: 1px solid var(--worksona-gray-200);
+  padding: 0.75rem 2rem;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.worksona-header-content,
+.header-content {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.worksona-logo,
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  text-decoration: none;
+  color: inherit;
+}
+
+.worksona-logo-svg,
+.logo-svg {
+  height: 48px;
+  width: auto;
+}
+
+.worksona-logo img,
+.logo img {
+  height: 48px;
+  width: auto;
+}
+
+.worksona-logo-text,
+.logo-text {
+  display: flex;
+  flex-direction: column;
+}
+
+.worksona-logo-text .brand-name,
+.logo-text .brand-name {
+  font-size: 12px;
+  font-weight: 400;
+  color: var(--worksona-gray-800);
+  letter-spacing: 0.5px;
+  margin-bottom: -4px;
+}
+
+.worksona-logo-text .product-name,
+.logo-text .product-name {
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--worksona-gray-800);
+  letter-spacing: 0.5px;
+  margin: 0;
+}
+
+.worksona-logo-text .tagline,
+.logo-text .tagline {
+  font-size: 12px;
+  color: var(--worksona-gray-500);
+  margin-top: -2px;
+}
+
+/* CTA Button in Header - Matches Studio */
+.cta-button {
+  background: var(--worksona-primary);
+  color: white;
+  padding: 0.625rem 1.25rem;
+  border-radius: 0;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 14px;
+  transition: background 0.2s;
+  border: none;
+  cursor: pointer;
+}
+
+.cta-button:hover {
+  background: var(--worksona-primary-dark);
+  color: white;
+}
+
+.cta-button.secondary {
+  background: white;
+  color: var(--worksona-primary);
+  border: 2px solid var(--worksona-primary);
+  padding: 0.525rem 1.15rem; /* Account for border */
+}
+
+.cta-button.secondary:hover {
+  background: var(--worksona-gray-50);
+  color: var(--worksona-primary);
+}
+
+/* Header Navigation */
+.header-nav {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+/* Responsive Header */
+@media (max-width: 768px) {
+  .worksona-header {
+    padding: 0.625rem 1.5rem;
+  }
+  
+  .worksona-logo-svg,
+  .worksona-logo img {
+    height: 36px;
+  }
+  
+  .worksona-logo-text .product-name {
+    font-size: 16px;
+  }
+  
+  .worksona-logo-text .tagline {
+    font-size: 10px;
+  }
+  
+  .header-nav {
+    gap: 0.5rem;
+  }
+  
+  .cta-button {
+    padding: 0.5rem 0.875rem;
+    font-size: 12px;
+  }
+  
+  .cta-button.secondary {
+    display: none; /* Hide secondary button on mobile */
+  }
+}
+
+/* Button Styles */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.5rem;
+  border: none;
+  border-radius: var(--worksona-border-radius);
+  font-weight: 600;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: var(--worksona-transition);
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.btn-primary {
+  background: var(--worksona-primary);
+  color: #fff;
+}
+
+.btn-primary:hover {
+  background: var(--worksona-primary-dark);
+  transform: translateY(-2px);
+  box-shadow: var(--worksona-shadow-lg);
+}
+
+.btn-secondary {
+  background: var(--worksona-gray-600);
+  color: #fff;
+}
+
+.btn-secondary:hover {
+  background: var(--worksona-gray-700);
+}
+
+.btn-outline {
+  background: transparent;
+  color: var(--worksona-primary);
+  border: 2px solid var(--worksona-primary);
+}
+
+.btn-outline:hover {
+  background: var(--worksona-primary);
+  color: #fff;
+}
+
+.btn-success {
+  background: var(--worksona-success);
+  color: #fff;
+}
+
+.btn-success:hover {
+  background: #059669;
+  transform: translateY(-2px);
+  box-shadow: var(--worksona-shadow-lg);
+}
+
+.btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none !important;
+}
+
+/* Hero Section */
+.hero {
+  background: var(--worksona-gray-900);
+  color: white;
+  padding: 6rem 2rem;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.hero::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(135deg, var(--worksona-primary) 0%, var(--worksona-secondary) 100%);
+  opacity: 0.95;
+}
+
+.hero-content {
+  max-width: 1200px;
+  margin: 0 auto;
+  position: relative;
+  z-index: 1;
+}
+
+.hero h1 {
+  font-size: 3.5rem;
+  font-weight: 800;
+  margin-bottom: 1.5rem;
+  line-height: 1.1;
+  color: #fff;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.hero .subtitle {
+  font-size: 1.5rem;
+  margin-bottom: 2rem;
+  opacity: 0.95;
+  font-weight: 400;
+  color: rgba(255, 255, 255, 0.95);
+}
+
+.hero-buttons {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-top: 2rem;
+}
+
+/* Section Styles */
+.section {
+  padding: 4rem 2rem;
+}
+
+.section-alt {
+  background: var(--worksona-gray-50);
+}
+
+.section-title {
+  font-size: 2.5rem;
+  color: var(--worksona-gray-900);
+  text-align: center;
+  margin-bottom: 3rem;
+  font-weight: 700;
+}
+
+.section-subtitle {
+  font-size: 1.25rem;
+  color: var(--worksona-gray-600);
+  text-align: center;
+  margin-bottom: 3rem;
+  max-width: 800px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* Card Styles */
+.card {
+  background: white;
+  border: 1px solid var(--worksona-gray-200);
+  border-radius: var(--worksona-border-radius);
+  box-shadow: var(--worksona-shadow-sm);
+  transition: var(--worksona-transition);
+}
+
+.card:hover {
+  box-shadow: var(--worksona-shadow-md);
+  transform: translateY(-2px);
+}
+
+.card-header {
+  padding: 1.5rem;
+  border-bottom: 1px solid var(--worksona-gray-200);
+  font-weight: 600;
+  color: var(--worksona-gray-900);
+}
+
+.card-body {
+  padding: 1.5rem;
+}
+
+.card-footer {
+  padding: 1rem 1.5rem;
+  border-top: 1px solid var(--worksona-gray-200);
+  background: var(--worksona-gray-50);
+}
+
+/* Feature Grid */
+.features-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.feature-card {
+  background: white;
+  padding: 2rem;
+  border: 1px solid var(--worksona-gray-200);
+  border-radius: var(--worksona-border-radius);
+  box-shadow: var(--worksona-shadow-sm);
+  transition: var(--worksona-transition);
+}
+
+.feature-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--worksona-shadow-lg);
+  border-color: var(--worksona-primary);
+}
+
+.feature-icon {
+  font-size: 3rem;
+  margin-bottom: 1rem;
+  color: var(--worksona-primary);
+}
+
+.feature-card h3 {
+  font-size: 1.5rem;
+  color: var(--worksona-gray-900);
+  margin-bottom: 0.75rem;
+}
+
+.feature-card p {
+  color: var(--worksona-gray-700);
+  line-height: 1.6;
+}
+
+/* Code Blocks */
+.code-block {
+  background: var(--worksona-gray-900);
+  color: #fff;
+  padding: 1.5rem;
+  border-radius: var(--worksona-border-radius);
+  overflow-x: auto;
+  font-family: 'Monaco', 'Menlo', 'Consolas', monospace;
+  font-size: 0.9rem;
+  line-height: 1.5;
+  box-shadow: var(--worksona-shadow-md);
+}
+
+pre {
+  margin: 0;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+}
+
+code {
+  background: var(--worksona-gray-100);
+  padding: 0.2rem 0.4rem;
+  border-radius: var(--worksona-border-radius);
+  font-family: 'Monaco', 'Menlo', 'Consolas', monospace;
+  font-size: 0.9em;
+  color: var(--worksona-gray-800);
+}
+
+pre code {
+  background: transparent;
+  padding: 0;
+  color: inherit;
+}
+
+/* Badge/Tag Styles */
+.badge {
+  display: inline-block;
+  padding: 0.25rem 0.75rem;
+  border-radius: var(--worksona-border-radius);
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.badge-primary {
+  background: var(--worksona-primary);
+  color: #fff;
+}
+
+.badge-secondary {
+  background: var(--worksona-gray-200);
+  color: var(--worksona-gray-800);
+}
+
+.badge-success {
+  background: var(--worksona-success);
+  color: #fff;
+}
+
+/* Container */
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 2rem;
+}
+
+.container-wide {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 2rem;
+}
+
+/* Responsive Utilities */
+@media (max-width: 768px) {
+  h1 { font-size: 2.5rem; }
+  h2 { font-size: 2rem; }
+  h3 { font-size: 1.5rem; }
+  
+  .hero h1 {
+    font-size: 2.5rem;
+  }
+  
+  .hero .subtitle {
+    font-size: 1.2rem;
+  }
+  
+  .section-title {
+    font-size: 2rem;
+  }
+  
+  .features-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Footer Styles */
+.footer {
+  background: var(--worksona-gray-900);
+  color: rgba(255, 255, 255, 0.8);
+  padding: 3rem 2rem 2rem 2rem;
+  margin-top: 4rem;
+}
+
+.footer-content {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 2rem;
+  margin-bottom: 2rem;
+}
+
+.footer-section h4 {
+  color: #fff;
+  margin-bottom: 1rem;
+  font-size: 1.1rem;
+}
+
+.footer-section ul {
+  list-style: none;
+  padding: 0;
+}
+
+.footer-section ul li {
+  margin-bottom: 0.5rem;
+}
+
+.footer-section a {
+  color: rgba(255, 255, 255, 0.7);
+  transition: var(--worksona-transition);
+}
+
+.footer-section a:hover {
+  color: #fff;
+}
+
+.footer-bottom {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding-top: 2rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  text-align: center;
+  font-size: 0.9rem;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+/* Utility Classes */
+.text-center { text-align: center; }
+.text-left { text-align: left; }
+.text-right { text-align: right; }
+
+.mt-1 { margin-top: 0.5rem; }
+.mt-2 { margin-top: 1rem; }
+.mt-3 { margin-top: 1.5rem; }
+.mt-4 { margin-top: 2rem; }
+
+.mb-1 { margin-bottom: 0.5rem; }
+.mb-2 { margin-bottom: 1rem; }
+.mb-3 { margin-bottom: 1.5rem; }
+.mb-4 { margin-bottom: 2rem; }
+
+.flex { display: flex; }
+.flex-col { flex-direction: column; }
+.items-center { align-items: center; }
+.justify-center { justify-content: center; }
+.gap-1 { gap: 0.5rem; }
+.gap-2 { gap: 1rem; }
+.gap-3 { gap: 1.5rem; }
+
+/* Loading Spinner */
+.spinner {
+  animation: spin 1s linear infinite;
+  color: var(--worksona-primary);
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}

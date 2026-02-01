@@ -1,0 +1,1453 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Worksona Studio - Complete How-To Guide</title>
+    <meta name="description" content="Learn how to build sophisticated AI workflows with Worksona Studio. Step-by-step tutorials for every feature.">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #00BFA5;
+            --primary-dark: #00a88f;
+            --secondary: #7C3AED;
+            --accent-blue: #3B82F6;
+            --accent-orange: #F59E0B;
+            --text-dark: #1F2937;
+            --text-light: #6B7280;
+            --bg-light: #F9FAFB;
+            --bg-yellow: #FEF3C7;
+            --border: #E5E7EB;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            color: var(--text-dark);
+            line-height: 1.6;
+        }
+
+        /* Header */
+        header {
+            background: white;
+            border-bottom: 1px solid var(--border);
+            padding: 0.75rem 2rem;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+        }
+
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .logo-svg {
+            height: 48px;
+            width: auto;
+        }
+
+        .logo-text {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .logo-text .product-name {
+            font-size: 20px;
+            font-weight: 600;
+            color: var(--text-dark);
+            letter-spacing: 0.5px;
+            margin: 0;
+        }
+
+        .logo-text .tagline {
+            font-size: 12px;
+            color: var(--text-light);
+            margin-top: -2px;
+        }
+
+        .cta-button {
+            background: var(--primary);
+            color: white;
+            padding: 0.625rem 1.25rem;
+            border-radius: 0;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 14px;
+            transition: background 0.2s;
+            border: none;
+            cursor: pointer;
+            display: inline-block;
+        }
+
+        .cta-button:hover {
+            background: var(--primary-dark);
+        }
+
+        .cta-button.secondary {
+            background: white;
+            color: var(--primary);
+            border: 2px solid var(--primary);
+        }
+
+        .cta-button.secondary:hover {
+            background: var(--bg-light);
+        }
+
+        /* Hero */
+        .hero {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white;
+            padding: 3rem 2rem;
+            text-align: center;
+        }
+
+        .hero h2 {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            font-weight: 700;
+        }
+
+        .hero p {
+            font-size: 1.25rem;
+            margin-bottom: 2rem;
+            opacity: 0.95;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        /* Section */
+        .section {
+            padding: 3rem 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .section-header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .section-header h3 {
+            font-size: 2rem;
+            margin-bottom: 0.75rem;
+            color: var(--text-dark);
+        }
+
+        .section-header p {
+            font-size: 1.125rem;
+            color: var(--text-light);
+            max-width: 700px;
+            margin: 0 auto;
+        }
+
+        /* Guide Section */
+        .guide-section {
+            margin-bottom: 5rem;
+        }
+
+        .guide-section h4 {
+            font-size: 1.75rem;
+            margin-bottom: 1.5rem;
+            color: var(--secondary);
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .guide-icon {
+            font-size: 2rem;
+            display: inline-block;
+        }
+
+        .guide-intro {
+            background: var(--bg-light);
+            padding: 1.5rem;
+            border-left: 4px solid var(--primary);
+            margin-bottom: 2rem;
+            border-radius: 0;
+        }
+
+        .guide-intro p {
+            margin: 0;
+            font-size: 1.05rem;
+            color: var(--text-dark);
+        }
+
+        /* Steps */
+        .steps {
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+        }
+
+        .step {
+            background: white;
+            border: 2px solid var(--border);
+            border-radius: 0;
+            padding: 1.5rem;
+            position: relative;
+        }
+
+        .step-number {
+            position: absolute;
+            top: -15px;
+            left: 1.5rem;
+            background: var(--primary);
+            color: white;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 0.875rem;
+        }
+
+        .step h5 {
+            font-size: 1.25rem;
+            margin-bottom: 0.75rem;
+            color: var(--text-dark);
+        }
+
+        .step p {
+            color: var(--text-light);
+            margin-bottom: 0.75rem;
+        }
+
+        .step ul {
+            margin-left: 1.5rem;
+            color: var(--text-light);
+        }
+
+        .step ul li {
+            margin-bottom: 0.5rem;
+        }
+
+        /* Code block */
+        .code-block {
+            background: var(--text-dark);
+            color: #10B981;
+            padding: 1rem;
+            border-radius: 0;
+            font-family: 'Monaco', 'Courier New', monospace;
+            font-size: 0.875rem;
+            margin: 1rem 0;
+            overflow-x: auto;
+        }
+
+        .code-block .comment {
+            color: #6B7280;
+        }
+
+        /* Tip box */
+        .tip-box {
+            background: #DBEAFE;
+            border-left: 4px solid var(--accent-blue);
+            padding: 1rem;
+            margin: 1rem 0;
+            border-radius: 0;
+        }
+
+        .tip-box strong {
+            color: var(--accent-blue);
+            display: block;
+            margin-bottom: 0.5rem;
+        }
+
+        .tip-box p {
+            margin: 0;
+            color: var(--text-dark);
+        }
+
+        /* Warning box */
+        .warning-box {
+            background: var(--bg-yellow);
+            border-left: 4px solid var(--accent-orange);
+            padding: 1rem;
+            margin: 1rem 0;
+            border-radius: 0;
+        }
+
+        .warning-box strong {
+            color: var(--accent-orange);
+            display: block;
+            margin-bottom: 0.5rem;
+        }
+
+        .warning-box p {
+            margin: 0;
+            color: var(--text-dark);
+        }
+
+        /* Image */
+        .guide-image {
+            max-width: 100%;
+            height: auto;
+            border: 1px solid var(--border);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            margin: 1.5rem 0;
+            display: block;
+        }
+
+        /* Quick nav */
+        .quick-nav {
+            background: var(--bg-light);
+            border: 2px solid var(--border);
+            padding: 2rem;
+            margin-bottom: 3rem;
+            border-radius: 0;
+        }
+
+        .quick-nav h4 {
+            font-size: 1.25rem;
+            margin-bottom: 1rem;
+            color: var(--text-dark);
+        }
+
+        .quick-nav-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+        }
+
+        .quick-nav-item {
+            background: white;
+            padding: 1rem;
+            border: 1px solid var(--border);
+            text-decoration: none;
+            color: var(--text-dark);
+            transition: all 0.2s;
+            display: block;
+        }
+
+        .quick-nav-item:hover {
+            border-color: var(--primary);
+            box-shadow: 0 2px 8px rgba(0, 191, 165, 0.2);
+        }
+
+        .quick-nav-item strong {
+            color: var(--primary);
+            display: block;
+            margin-bottom: 0.25rem;
+        }
+
+        .quick-nav-item span {
+            font-size: 0.875rem;
+            color: var(--text-light);
+        }
+
+        /* Footer */
+        footer {
+            background: var(--text-dark);
+            color: white;
+            padding: 2rem;
+            text-align: center;
+        }
+
+        footer p {
+            opacity: 0.7;
+            margin-bottom: 1rem;
+        }
+
+        footer a {
+            color: var(--primary);
+            text-decoration: none;
+        }
+
+        footer a:hover {
+            text-decoration: underline;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .hero h2 {
+                font-size: 1.75rem;
+            }
+
+            .section {
+                padding: 2rem 1.5rem;
+            }
+
+            .quick-nav-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Table of Contents */
+        .toc {
+            background: white;
+            border: 2px solid var(--border);
+            padding: 2rem;
+            margin-bottom: 3rem;
+            position: sticky;
+            top: 70px;
+        }
+
+        .toc h4 {
+            font-size: 1.25rem;
+            margin-bottom: 1rem;
+            color: var(--text-dark);
+        }
+
+        .toc ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .toc li {
+            margin-bottom: 0.5rem;
+        }
+
+        .toc a {
+            color: var(--text-dark);
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+
+        .toc a:hover {
+            color: var(--primary);
+        }
+
+        /* Example box */
+        .example-box {
+            background: #F0FDF4;
+            border-left: 4px solid var(--primary);
+            padding: 1rem;
+            margin: 1rem 0;
+            border-radius: 0;
+        }
+
+        .example-box strong {
+            color: var(--primary);
+            display: block;
+            margin-bottom: 0.5rem;
+        }
+
+        .example-box p {
+            margin: 0;
+            color: var(--text-dark);
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <div class="header-content">
+            <div class="logo">
+                <img src="img/worksona-outline-full.svg" alt="Worksona Studio" class="logo-svg">
+                <div class="logo-text">
+                    <h1 class="product-name">STUDIO GUIDE</h1>
+                    <span class="tagline">Complete how-to tutorials</span>
+                </div>
+            </div>
+            <a href="https://worksona-studio.netlify.app/" class="cta-button" target="_blank">Launch App</a>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <h2>Master Worksona Studio</h2>
+        <p>Complete step-by-step guides for every feature. Learn how to build sophisticated multi-agent AI workflows from scratch.</p>
+    </section>
+
+    <!-- Quick Navigation -->
+    <section class="section">
+        <div class="quick-nav">
+            <h4>📚 Jump to Guide</h4>
+            <div class="quick-nav-grid">
+                <a href="#visual-builder" class="quick-nav-item">
+                    <strong>▦ Visual Workflow Builder</strong>
+                    <span>Drag-and-drop workflow design</span>
+                </a>
+                <a href="#multi-agent" class="quick-nav-item">
+                    <strong>◉ Multi-Agent Orchestration</strong>
+                    <span>Chain agents together</span>
+                </a>
+                <a href="#multi-provider" class="quick-nav-item">
+                    <strong>⚡ Multi-Provider AI</strong>
+                    <span>GPT, Claude, Gemini</span>
+                </a>
+                <a href="#agent-tools" class="quick-nav-item">
+                    <strong>◈ Agent Tools</strong>
+                    <span>Extend agent capabilities</span>
+                </a>
+                <a href="#atomic-reasoning" class="quick-nav-item">
+                    <strong>⬡ Atomic & Reasoning</strong>
+                    <span>Composable intelligence</span>
+                </a>
+                <a href="#templates" class="quick-nav-item">
+                    <strong>⊞ Templates</strong>
+                    <span>Pre-built workflows</span>
+                </a>
+                <a href="#execution" class="quick-nav-item">
+                    <strong>▶ Real-Time Execution</strong>
+                    <span>Run and monitor workflows</span>
+                </a>
+                <a href="#sharing" class="quick-nav-item">
+                    <strong>⊡ Workflow Sharing</strong>
+                    <span>Save, export, share</span>
+                </a>
+                <a href="#ai-assistant" class="quick-nav-item">
+                    <strong>💬 AI Assistant</strong>
+                    <span>Natural language creation</span>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Main Content -->
+    <section class="section">
+
+        <!-- Guide 1: Visual Workflow Builder -->
+        <div id="visual-builder" class="guide-section">
+            <h4><span class="guide-icon">▦</span> Visual Workflow Builder</h4>
+            
+            <div class="guide-intro">
+                <p><strong>What you'll learn:</strong> How to design complex AI workflows using the intuitive node-based interface, connect inputs to agents to outputs, and organize your workflow canvas.</p>
+            </div>
+
+            <div class="steps">
+                <div class="step">
+                    <div class="step-number">1</div>
+                    <h5>Open the Canvas</h5>
+                    <p>Launch Worksona Studio. You'll see a blank canvas with a toolbar on the left containing different node types.</p>
+                    <div class="tip-box">
+                        <strong>💡 Pro Tip</strong>
+                        <p>Use Cmd/Ctrl + Mouse Wheel to zoom. Middle mouse button or Space + Drag to pan around the canvas.</p>
+                    </div>
+                </div>
+
+                <div class="step">
+                    <div class="step-number">2</div>
+                    <h5>Add a Start Node</h5>
+                    <p>Click the "Start" button in the sidebar or drag a Start node onto the canvas. This is the entry point for your workflow.</p>
+                    <ul>
+                        <li>Every workflow begins with a Start node</li>
+                        <li>You can only have one Start node per workflow</li>
+                        <li>The Start node triggers the workflow execution</li>
+                    </ul>
+                </div>
+
+                <div class="step">
+                    <div class="step-number">3</div>
+                    <h5>Add Input Nodes</h5>
+                    <p>Click "User Input" or "File Input" to add data sources to your workflow.</p>
+                    <div class="example-box">
+                        <strong>📝 Example</strong>
+                        <p><strong>User Input:</strong> For text prompts like "Write an article about AI"<br>
+                        <strong>File Input:</strong> For documents, images, or data files</p>
+                    </div>
+                </div>
+
+                <div class="step">
+                    <div class="step-number">4</div>
+                    <h5>Add Agent Nodes</h5>
+                    <p>Click "Agent" in the sidebar. A dialog opens where you select the agent type (e.g., Research Analyst, Content Writer, Data Analyst).</p>
+                    <ul>
+                        <li>Choose the agent that matches your task</li>
+                        <li>Select the AI model (GPT-4o, Claude 3.5, Gemini 1.5)</li>
+                        <li>Set temperature (0-1, lower = focused, higher = creative)</li>
+                        <li>Configure max tokens for response length</li>
+                    </ul>
+                </div>
+
+                <div class="step">
+                    <div class="step-number">5</div>
+                    <h5>Connect Nodes</h5>
+                    <p>Drag from a node's output handle (right side) to another node's input handle (left side). Connections define data flow.</p>
+                    <div class="tip-box">
+                        <strong>💡 Connection Rules</strong>
+                        <p>Data flows left-to-right. Each agent receives input from connected nodes and passes output to the next nodes.</p>
+                    </div>
+                </div>
+
+                <div class="step">
+                    <div class="step-number">6</div>
+                    <h5>Add an End Node</h5>
+                    <p>Click "End" to add the final node. Connect your last agent to the End node to complete the workflow.</p>
+                </div>
+
+                <div class="step">
+                    <div class="step-number">7</div>
+                    <h5>Organize Your Layout</h5>
+                    <p>Drag nodes to arrange them clearly. Use the mini-map (bottom-right) to navigate large workflows.</p>
+                    <ul>
+                        <li>Arrange nodes left-to-right following data flow</li>
+                        <li>Group related nodes vertically</li>
+                        <li>Leave space for future additions</li>
+                    </ul>
+                </div>
+            </div>
+
+            <img src="img/screenshot.png" alt="Visual Workflow Builder Example" class="guide-image">
+        </div>
+
+        <!-- Guide 2: Multi-Agent Orchestration -->
+        <div id="multi-agent" class="guide-section">
+            <h4><span class="guide-icon">◉</span> Multi-Agent Orchestration</h4>
+            
+            <div class="guide-intro">
+                <p><strong>What you'll learn:</strong> How to chain multiple AI agents together seamlessly, pass outputs between agents, and create sophisticated multi-step workflows.</p>
+            </div>
+
+            <div class="steps">
+                <div class="step">
+                    <div class="step-number">1</div>
+                    <h5>Plan Your Agent Chain</h5>
+                    <p>Identify the sequence of tasks. Example: Research → Write → Edit → Generate Image</p>
+                    <div class="example-box">
+                        <strong>📝 Blog Article Workflow</strong>
+                        <p>Input (topic) → Research Analyst → Content Writer → Content Writer (editor role) → Image Generator → End</p>
+                    </div>
+                </div>
+
+                <div class="step">
+                    <div class="step-number">2</div>
+                    <h5>Add Your First Agent</h5>
+                    <p>Add a User Input node with your starting prompt, then add your first agent (e.g., Research Analyst).</p>
+                    <ul>
+                        <li>Connect Start → User Input → Research Analyst</li>
+                        <li>Configure the Research Analyst with GPT-4o</li>
+                        <li>Set temperature to 0.3 for focused research</li>
+                    </ul>
+                </div>
+
+                <div class="step">
+                    <div class="step-number">3</div>
+                    <h5>Chain the Second Agent</h5>
+                    <p>Add a Content Writer agent. Connect Research Analyst → Content Writer.</p>
+                    <div class="tip-box">
+                        <strong>💡 Data Flow</strong>
+                        <p>The Content Writer automatically receives the Research Analyst's output as context. No manual copying needed!</p>
+                    </div>
+                </div>
+
+                <div class="step">
+                    <div class="step-number">4</div>
+                    <h5>Add Parallel Agents</h5>
+                    <p>You can split workflows! Connect one agent to multiple downstream agents for parallel processing.</p>
+                    <div class="example-box">
+                        <strong>📝 Parallel Processing</strong>
+                        <p>Content Writer → Image Generator (for blog header)<br>
+                        Content Writer → Marketing Agent (for social posts)<br>
+                        Both run simultaneously with the same article as input</p>
+                    </div>
+                </div>
+
+                <div class="step">
+                    <div class="step-number">5</div>
+                    <h5>Merge Outputs</h5>
+                    <p>Connect multiple agents to a single downstream node to combine their outputs.</p>
+                    <ul>
+                        <li>The downstream agent receives all connected outputs</li>
+                        <li>Use a "Content Writer" as a summarizer to combine results</li>
+                        <li>Or connect directly to End node to see all outputs</li>
+                    </ul>
+                </div>
+
+                <div class="step">
+                    <div class="step-number">6</div>
+                    <h5>Configure Each Agent Independently</h5>
+                    <p>Click any agent node to edit its settings. Each agent can use different models, temperatures, and prompts.</p>
+                    <div class="warning-box">
+                        <strong>⚠️ Token Limits</strong>
+                        <p>Later agents in the chain receive accumulated context from all previous agents. Consider using higher max_tokens for agents deep in the chain.</p>
+                    </div>
+                </div>
+
+                <div class="step">
+                    <div class="step-number">7</div>
+                    <h5>Test Your Chain</h5>
+                    <p>Click the "Execute" button (play icon) to run your multi-agent workflow. Watch each agent complete in sequence.</p>
+                </div>
+            </div>
+
+            <img src="img/parallel.png" alt="Multi-Agent Orchestration Example" class="guide-image">
+        </div>
+
+        <!-- Guide 3: Multi-Provider AI Support -->
+        <div id="multi-provider" class="guide-section">
+            <h4><span class="guide-icon">⚡</span> Multi-Provider AI Support</h4>
+            
+            <div class="guide-intro">
+                <p><strong>What you'll learn:</strong> How to access GPT-4o, Claude 3.5 Sonnet, and Gemini 1.5 Pro, switch between providers and models, and optimize model selection for each agent.</p>
+            </div>
+
+            <div class="steps">
+                <div class="step">
+                    <div class="step-number">1</div>
+                    <h5>Configure API Keys</h5>
+                    <p>Click the profile icon (top-right) → Settings. Add your API keys:</p>
+                    <ul>
+                        <li><strong>OpenAI API Key:</strong> For GPT-4o, GPT-4o-mini, GPT-3.5</li>
+                        <li><strong>Anthropic API Key:</strong> For Claude 3.5 Sonnet, Claude 3 Opus</li>
+                        <li><strong>Google API Key:</strong> For Gemini 1.5 Pro, Gemini 1.5 Flash</li>
+                    </ul>
+                    <div class="warning-box">
+                        <strong>⚠️ Security</strong>
+                        <p>API keys are stored locally in your browser. They're never sent to our servers—only directly to OpenAI, Anthropic, and Google.</p>
+                    </div>
+                </div>
+
+                <div class="step">
+                    <div class="step-number">2</div>
+                    <h5>Select Model Per Agent</h5>
+                    <p>When adding or editing an agent, choose from the Model dropdown:</p>
+                    <div class="code-block">
+<span class="comment">// OpenAI Models</span>
+gpt-4o           <span class="comment">// Best overall, multimodal</span>
+gpt-4o-mini      <span class="comment">// Fast and cost-effective</span>
+
+<span class="comment">// Anthropic Models</span>
+claude-3-5-sonnet <span class="comment">// Best reasoning, long context</span>
+claude-3-opus     <span class="comment">// Most capable</span>
+
+<span class="comment">// Google Models</span>
+gemini-1.5-pro    <span class="comment">// Long context (1M tokens)</span>
+gemini-1.5-flash  <span class="comment">// Fastest responses</span>
+                    </div>
+                </div>
+
+                <div class="step">
+                    <div class="step-number">3</div>
+                    <h5>Match Models to Tasks</h5>
+                    <p>Different models excel at different tasks:</p>
+                    <div class="example-box">
+                        <strong>📝 Model Selection Guide</strong>
+                        <p><strong>Research & Analysis:</strong> Claude 3.5 Sonnet (superior reasoning)<br>
+                        <strong>Creative Writing:</strong> GPT-4o (engaging, nuanced)<br>
+                        <strong>Long Documents:</strong> Gemini 1.5 Pro (1M token context)<br>
+                        <strong>Quick Tasks:</strong> GPT-4o-mini or Gemini Flash (fast, cheap)<br>
+                        <strong>Code Generation:</strong> Claude 3.5 Sonnet or GPT-4o</p>
+                    </div>
+                </div>
+
+                <div class="step">
+                    <div class="step-number">4</div>
+                    <h5>Mix Models in One Workflow</h5>
+                    <p>Use the best model for each agent:</p>
+                    <ul>
+                        <li>Research Agent: Claude 3.5 Sonnet (deep analysis)</li>
+                        <li>Writer Agent: GPT-4o (creative prose)</li>
+                        <li>Editor Agent: GPT-4o-mini (grammar, quick)</li>
+                        <li>Summary Agent: Gemini 1.5 Flash (fast final output)</li>
+                    </ul>
+                    <div class="tip-box">
+                        <strong>💡 Cost Optimization</strong>
+                        <p>Use premium models (GPT-4o, Claude Sonnet) for critical reasoning tasks. Use mini/flash models for simple tasks like formatting or summaries.</p>
+                    </div>
+                </div>
+
+                <div class="step">
+                    <div class="step-number">5</div>
+                    <h5>Test Model Performance</h5>
+                    <p>Run the same workflow with different models to compare results. Duplicate an agent, change its model, and A/B test.</p>
+                </div>
+
+                <div class="step">
+                    <div class="step-number">6</div>
+                    <h5>Handle Model Failures Gracefully</h5>
+                    <p>If a model is unavailable or times out, the workflow will show an error. You can:</p>
+                    <ul>
+                        <li>Edit the agent and switch to a different model</li>
+                        <li>Re-run just that agent (not the entire workflow)</li>
+                        <li>Check your API key and quota</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Guide 4: Agent Tools & Extensions -->
+        <div id="agent-tools" class="guide-section">
+            <h4><span class="guide-icon">◈</span> Agent Tools & Extensions</h4>
+            
+            <div class="guide-intro">
+                <p><strong>What you'll learn:</strong> How agents can use file processors, image generators, and custom tools. How to build your own tools and extend agent capabilities infinitely.</p>
+            </div>
+
+            <div class="steps">
+                <div class="step">
+                    <div class="step-number">1</div>
+                    <h5>Using File Input Nodes</h5>
+                    <p>Add a "File Input" node to process documents, images, CSVs, or code files.</p>
+                    <ul>
+                        <li>Click "File Input" in the sidebar</li>
+                        <li>Connect it to an agent</li>
+                        <li>During execution, you'll be prompted to upload a file</li>
+                        <li>The agent receives the file content as context</li>
+                    </ul>
+                    <div class="example-box">
+                        <strong>📝 Use Cases</strong>
+                        <p>• Analyze CSV data with Data Analyst<br>
+                        • Summarize PDF documents with Research Analyst<br>
+                        • Review code files with Code Reviewer<br>
+                        • Extract insights from images (with multimodal models)</p>
+                    </div>
+                </div>
+
+                <div class="step">
+                    <div class="step-number">2</div>
+                    <h5>Using Image Generation Nodes</h5>
+                    <p>Add an "Image Generation" node to create images with DALL-E or Stable Diffusion.</p>
+                    <ul>
+                        <li>Click "Image Generation" in the sidebar</li>
+                        <li>Connect an agent's output to it (the agent's output becomes the image prompt)</li>
+                        <li>Or add a User Input for manual image prompts</li>
+                        <li>Images are generated and displayed in the execution results</li>
+                    </ul>
+                    <div class="tip-box">
+                        <strong>💡 Image Workflow Pattern</strong>
+                        <p>Content Writer → Image Generation: The writer creates an image prompt, then generates the image automatically.</p>
+                    </div>
+                </div>
+
+                <div class="step">
+                    <div class="step-number">3</div>
+                    <h5>Using Note Nodes for Context</h5>
+                    <p>Add "Note" nodes to inject static context, instructions, or reference material.</p>
+                    <ul>
+                        <li>Click "Note" in the sidebar</li>
+                        <li>Enter your reference text or guidelines</li>
+                        <li>Connect the Note to agents that need this context</li>
+                        <li>Notes are always included in agent prompts</li>
+                    </ul>
+                    <div class="example-box">
+                        <strong>📝 Note Uses</strong>
+                        <p>• Brand guidelines for marketing content<br>
+                        • Style guides for writers<br>
+                        • Data schemas for analysts<br>
+                        • API documentation for code agents</p>
+                    </div>
+                </div>
+
+                <div class="step">
+                    <div class="step-number">4</div>
+                    <h5>Using MCP Tool Nodes</h5>
+                    <p>Add "MCP Tool" nodes to extend agents with custom capabilities via the Model Context Protocol.</p>
+                    <ul>
+                        <li>MCP tools provide agents with access to external APIs, databases, or custom functions</li>
+                        <li>Examples: Web search, database queries, file system operations, API calls</li>
+                        <li>Click "MCP Tool" in the sidebar and configure the tool</li>
+                    </ul>
+                    <div class="warning-box">
+                        <strong>⚠️ Advanced Feature</strong>
+                        <p>MCP Tools require server configuration. See the MCP Integration docs for setup instructions.</p>
+                    </div>
+                </div>
+
+                <div class="step">
+                    <div class="step-number">5</div>
+                    <h5>Building Custom Agent Tools</h5>
+                    <p>You can create custom agent definitions with specialized capabilities:</p>
+                    <ul>
+                        <li>Copy an agent JSON file from the <code>agents/</code> directory</li>
+                        <li>Modify the system prompt to define new behaviors</li>
+                        <li>Specify tool access and capabilities</li>
+                        <li>Save as a new agent type</li>
+                    </ul>
+                    <div class="code-block">
+{
+  "name": "custom-analyst",
+  "description": "Your custom agent",
+  "systemPrompt": "You are a specialized agent...",
+  "temperature": 0.5,
+  "tools": ["file_processor", "web_search"]
+}
+                    </div>
+                </div>
+
+                <div class="step">
+                    <div class="step-number">6</div>
+                    <h5>Combining Multiple Tools</h5>
+                    <p>Create workflows where agents use multiple tools in sequence:</p>
+                    <div class="example-box">
+                        <strong>📝 Multi-Tool Workflow</strong>
+                        <p>File Input → Data Analyst (processes file) → Content Writer (writes report) → Image Generator (creates charts) → End</p>
+                    </div>
+                </div>
+            </div>
+
+            <img src="img/file-processing.png" alt="Agent Tools Example" class="guide-image">
+        </div>
+
+        <!-- Guide 5: Atomic & Reasoning Agents -->
+        <div id="atomic-reasoning" class="guide-section">
+            <h4><span class="guide-icon">⬡</span> Atomic & Reasoning Agents</h4>
+            
+            <div class="guide-intro">
+                <p><strong>What you'll learn:</strong> How to combine simple atomic agents with complex reasoning agents, build emergent intelligence from composable parts, and create workflows that think.</p>
+            </div>
+
+            <div class="steps">
+                <div class="step">
+                    <div class="step-number">1</div>
+                    <h5>Understanding Atomic Agents</h5>
+                    <p>Atomic agents perform single, focused tasks with no complex reasoning:</p>
+                    <ul>
+                        <li><strong>Format Converter:</strong> Transforms data from one format to another</li>
+                        <li><strong>Extractor:</strong> Pulls specific information from text</li>
+                        <li><strong>Validator:</strong> Checks data against rules</li>
+                        <li><strong>Summarizer:</strong> Condenses text to key points</li>
+                    </ul>
+                    <div class="example-box">
+                        <strong>📝 Atomic Agent Characteristics</strong>
+                        <p>• Single responsibility<br>
+                        • Low temperature (0.1-0.3) for consistency<br>
+                        • Fast, cheap models (GPT-4o-mini, Gemini Flash)<br>
+                        • Predictable, deterministic output</p>
+                    </div>
+                </div>
+
+                <div class="step">
+                    <div class="step-number">2</div>
+                    <h5>Understanding Reasoning Agents</h5>
+                    <p>Reasoning agents perform complex analysis, planning, and decision-making:</p>
+                    <ul>
+                        <li><strong>Research Analyst:</strong> Deep analysis and synthesis</li>
+                        <li><strong>Business Strategist:</strong> Strategic planning and recommendations</li>
+                        <li><strong>Legal Agent:</strong> Contract analysis and risk assessment</li>
+                        <li><strong>Financial Analyst:</strong> Market analysis and forecasting</li>
+                    </ul>
+                    <div class="example-box">
+                        <strong>📝 Reasoning Agent Characteristics</strong>
+                        <p>• Multi-step thinking<br>
+                        • Higher temperature (0.5-0.7) for creativity<br>
+                        • Premium models (Claude 3.5, GPT-4o)<br>
+                        • Nuanced, adaptive output</p>
+                    </div>
+                </div>
+
+                <div class="step">
+                    <div class="step-number">3</div>
+                    <h5>Composing Atomic Agents</h5>
+                    <p>Build complex behaviors from simple agents:</p>
+                    <div class="example-box">
+                        <strong>📝 Data Processing Pipeline</strong>
+                        <p>File Input → Validator (check format) → Extractor (pull fields) → Format Converter (to JSON) → Data Analyst (reasoning) → Content Writer (report)</p>
+                        <p><em>Three atomic agents (validate, extract, convert) prepare data for the reasoning agent.</em></p>
+                    </div>
+                </div>
+
+                <div class="step">
+                    <div class="step-number">4</div>
+                    <h5>Reasoning Before and After Atomic Tasks</h5>
+                    <p>Use reasoning agents to plan, then atomic agents to execute, then reasoning agents to synthesize:</p>
+                    <ul>
+                        <li><strong>Plan:</strong> Business Strategist defines requirements</li>
+                        <li><strong>Execute:</strong> Atomic agents gather and process data</li>
+                        <li><strong>Synthesize:</strong> Financial Analyst creates final report</li>
+                    </ul>
+                </div>
+
+                <div class="step">
+                    <div class="step-number">5</div>
+                    <h5>Creating Feedback Loops</h5>
+                    <p>Combine reasoning and atomic agents in iterative patterns:</p>
+                    <div class="example-box">
+                        <strong>📝 Iterative Refinement</strong>
+                        <p>Content Writer (draft) → Validator (check quality) → If issues → Content Writer (revise) → Validator (re-check)</p>
+                        <p><em>Note: Currently requires manual iteration. Future versions will support automatic loops.</em></p>
+                    </div>
+                </div>
+
+                <div class="step">
+                    <div class="step-number">6</div>
+                    <h5>Building Emergent Intelligence</h5>
+                    <p>When atomic and reasoning agents work together, the system can:</p>
+                    <ul>
+                        <li>Handle complex, multi-faceted problems</li>
+                        <li>Maintain consistency while being creative</li>
+                        <li>Scale to large data volumes</li>
+                        <li>Adapt to changing requirements</li>
+                    </ul>
+                    <div class="tip-box">
+                        <strong>💡 Design Pattern</strong>
+                        <p>Think of atomic agents as "hands" (doing specific tasks) and reasoning agents as "brain" (thinking, planning, judging).</p>
+                    </div>
+                </div>
+            </div>
+
+            <img src="img/research.png" alt="Atomic and Reasoning Agents Example" class="guide-image">
+        </div>
+
+        <!-- Guide 6: Pre-Built Templates -->
+        <div id="templates" class="guide-section">
+            <h4><span class="guide-icon">⊞</span> Pre-Built Templates</h4>
+            
+            <div class="guide-intro">
+                <p><strong>What you'll learn:</strong> How to use professionally designed workflow templates for content creation, research, infographic generation, and business analysis.</p>
+            </div>
+
+            <div class="steps">
+                <div class="step">
+                    <div class="step-number">1</div>
+                    <h5>Browse Templates</h5>
+                    <p>Click the "Templates" button in the sidebar (☰ menu icon). You'll see organized categories:</p>
+                    <ul>
+                        <li><strong>Tutorial:</strong> Interactive learning workflows</li>
+                        <li><strong>Content:</strong> Article writing, blog posts, social media</li>
+                        <li><strong>Analysis:</strong> Data analysis, research, insights</li>
+                        <li><strong>Business:</strong> Strategy, marketing, financial reports</li>
+                        <li><strong>Research:</strong> Academic research, literature reviews</li>
+                        <li><strong>Delegation:</strong> Advanced orchestration patterns</li>
+                    </ul>
+                </div>
+
+                <div class="step">
+                    <div class="step-number">2</div>
+                    <h5>Load a Template</h5>
+                    <p>Click any template card to preview it. Click "Load Template" to add it to your canvas.</p>
+                    <div class="warning-box">
+                        <strong>⚠️ Canvas Will Be Cleared</strong>
+                        <p>Loading a template replaces your current workflow. Save your work first if needed.</p>
+                    </div>
+                </div>
+
+                <div class="step">
+                    <div class="step-number">3</div>
+                    <h5>Understanding Template Structure</h5>
+                    <p>Each template includes:</p>
+                    <ul>
+                        <li>Pre-configured agents with optimal models</li>
+                        <li>Proper connections for data flow</li>
+                        <li>Input nodes for your custom data</li>
+                        <li>Comments/notes explaining the workflow</li>
+                    </ul>
+                </div>
+
+                <div class="step">
+                    <div class="step-number">4</div>
+                    <h5>Customize the Template</h5>
+                    <p>Templates are starting points. Modify them for your needs:</p>
+                    <ul>
+                        <li>Change agent models or temperatures</li>
+                        <li>Add or remove agents</li>
+                        <li>Modify connections</li>
+                        <li>Update input prompts</li>
+                    </ul>
+                    <div class="tip-box">
+                        <strong>💡 Learning by Example</strong>
+                        <p>Study template structures to learn workflow design patterns. See how professional workflows handle complex tasks.</p>
+                    </div>
+                </div>
+
+                <div class="step">
+                    <div class="step-number">5</div>
+                    <h5>Popular Templates</h5>
+                    <p>Recommended templates for common use cases:</p>
+                    <div class="example-box">
+                        <strong>📝 Starter Templates</strong>
+                        <p><strong>Blog Article Generator:</strong> Research → Write → Edit → Images → Social posts<br>
+                        <strong>Data Analysis Pipeline:</strong> File input → Clean → Analyze → Visualize → Report<br>
+                        <strong>Infographic Creator:</strong> Topic input → Research → Design prompts → 10 images<br>
+                        <strong>Business Strategy:</strong> Context → Market analysis → SWOT → Recommendations<br>
+                        <strong>Research Synthesis:</strong> Papers input → Extract → Analyze → Literature review</p>
+                    </div>
+                </div>
+
+                <div class="step">
+                    <div class="step-number">6</div>
+                    <h5>Save Your Modified Templates</h5>
+                    <p>After customizing a template, save it as your own workflow. Click the save icon or use Cmd/Ctrl + S.</p>
+                </div>
+            </div>
+
+            <img src="img/template-library.png" alt="Template Library" class="guide-image">
+        </div>
+
+        <!-- Guide 7: Real-Time Execution -->
+        <div id="execution" class="guide-section">
+            <h4><span class="guide-icon">▶</span> Real-Time Execution</h4>
+            
+            <div class="guide-intro">
+                <p><strong>What you'll learn:</strong> How to run workflows, watch live execution, view intermediate outputs, debug issues instantly, and monitor progress in real-time.</p>
+            </div>
+
+            <div class="steps">
+                <div class="step">
+                    <div class="step-number">1</div>
+                    <h5>Start Workflow Execution</h5>
+                    <p>Click the "Execute" button (▶ play icon) in the top toolbar.</p>
+                    <ul>
+                        <li>The workflow validates before starting</li>
+                        <li>If validation fails, errors are shown on the canvas</li>
+                        <li>If validation passes, execution begins immediately</li>
+                    </ul>
+                    <div class="warning-box">
+                        <strong>⚠️ Required: API Keys</strong>
+                        <p>Ensure you've configured API keys in Settings before executing workflows.</p>
+                    </div>
+                </div>
+
+                <div class="step">
+                    <div class="step-number">2</div>
+                    <h5>Provide Input Data</h5>
+                    <p>If your workflow has User Input or File Input nodes, you'll be prompted:</p>
+                    <ul>
+                        <li><strong>User Input:</strong> Type or paste your text</li>
+                        <li><strong>File Input:</strong> Click "Upload" and select a file</li>
+                        <li>After providing all inputs, execution starts</li>
+                    </ul>
+                </div>
+
+                <div class="step">
+                    <div class="step-number">3</div>
+                    <h5>Watch Real-Time Progress</h5>
+                    <p>The execution modal shows live progress:</p>
+                    <ul>
+                        <li>✅ <strong>Green checkmark:</strong> Agent completed successfully</li>
+                        <li>⏳ <strong>Spinner:</strong> Agent currently executing</li>
+                        <li>⏸️ <strong>Gray:</strong> Agent waiting for dependencies</li>
+                        <li>❌ <strong>Red X:</strong> Agent failed with error</li>
+                    </ul>
+                    <div class="tip-box">
+                        <strong>💡 Execution Order</strong>
+                        <p>Agents execute in topological order based on connections. Parallel branches run simultaneously.</p>
+                    </div>
+                </div>
+
+                <div class="step">
+                    <div class="step-number">4</div>
+                    <h5>View Intermediate Outputs</h5>
+                    <p>Click any completed agent in the execution modal to view its output:</p>
+                    <ul>
+                        <li>See the full response from that agent</li>
+                        <li>Check token usage and timing</li>
+                        <li>Verify the agent did what you expected</li>
+                        <li>Copy output for debugging</li>
+                    </ul>
+                </div>
+
+                <div class="step">
+                    <div class="step-number">5</div>
+                    <h5>Debug Execution Issues</h5>
+                    <p>If an agent fails, click it to see the error:</p>
+                    <ul>
+                        <li><strong>API Key Error:</strong> Check your keys in Settings</li>
+                        <li><strong>Timeout:</strong> Agent took too long, try lower max_tokens</li>
+                        <li><strong>Invalid Prompt:</strong> Check agent input/connections</li>
+                        <li><strong>Rate Limit:</strong> API provider rate limited you, wait and retry</li>
+                    </ul>
+                    <div class="tip-box">
+                        <strong>💡 Quick Fix</strong>
+                        <p>You can edit agent settings during execution failure, then click "Retry" to re-run just that agent.</p>
+                    </div>
+                </div>
+
+                <div class="step">
+                    <div class="step-number">6</div>
+                    <h5>View Final Results</h5>
+                    <p>When execution completes, the modal shows all outputs:</p>
+                    <ul>
+                        <li>Scroll through each agent's result</li>
+                        <li>Copy outputs to clipboard</li>
+                        <li>Download results as JSON</li>
+                        <li>View execution time and token counts</li>
+                    </ul>
+                </div>
+
+                <div class="step">
+                    <div class="step-number">7</div>
+                    <h5>Access Execution History</h5>
+                    <p>Click the "History" button (clock icon) to view past executions:</p>
+                    <ul>
+                        <li>See all previous runs with timestamps</li>
+                        <li>Re-open any execution to view its results</li>
+                        <li>Compare outputs across runs</li>
+                        <li>Use history for debugging and optimization</li>
+                    </ul>
+                </div>
+            </div>
+
+            <img src="img/workflow-execution.png" alt="Real-Time Execution" class="guide-image">
+        </div>
+
+        <!-- Guide 8: Workflow Sharing -->
+        <div id="sharing" class="guide-section">
+            <h4><span class="guide-icon">⊡</span> Workflow Sharing</h4>
+            
+            <div class="guide-intro">
+                <p><strong>What you'll learn:</strong> How to auto-save workflows, export/import as JSON, share via URL, and track execution history.</p>
+            </div>
+
+            <div class="steps">
+                <div class="step">
+                    <div class="step-number">1</div>
+                    <h5>Auto-Save with IndexedDB</h5>
+                    <p>Worksona Studio automatically saves your work to your browser's local storage:</p>
+                    <ul>
+                        <li>Saves every 15 seconds after changes</li>
+                        <li>No account or login required</li>
+                        <li>Persists across browser sessions</li>
+                        <li>Watch for the "✓ Saved" indicator</li>
+                    </ul>
+                    <div class="tip-box">
+                        <strong>💡 Auto-Save Status</strong>
+                        <p>The save indicator appears in the top-right corner. Green = saved, Orange = saving, Red = error.</p>
+                    </div>
+                </div>
+
+                <div class="step">
+                    <div class="step-number">2</div>
+                    <h5>Manual Save</h5>
+                    <p>Force a save anytime with Cmd/Ctrl + S or click the save icon.</p>
+                    <div class="warning-box">
+                        <strong>⚠️ Browser Storage Limits</strong>
+                        <p>IndexedDB has storage limits (~50-100MB). For large workflows with many executions, export to JSON periodically.</p>
+                    </div>
+                </div>
+
+                <div class="step">
+                    <div class="step-number">3</div>
+                    <h5>Export Workflow as JSON</h5>
+                    <p>Click the menu (☰) → "Export Workflow":</p>
+                    <ul>
+                        <li>Downloads a <code>.json</code> file</li>
+                        <li>Contains complete workflow definition</li>
+                        <li>Includes all nodes, connections, and settings</li>
+                        <li>Does NOT include execution history (for privacy)</li>
+                    </ul>
+                    <div class="example-box">
+                        <strong>📝 Use Cases for Export</strong>
+                        <p>• Backup important workflows<br>
+                        • Share workflows with team members<br>
+                        • Version control (commit to Git)<br>
+                        • Transfer between devices</p>
+                    </div>
+                </div>
+
+                <div class="step">
+                    <div class="step-number">4</div>
+                    <h5>Import Workflow from JSON</h5>
+                    <p>Click the menu (☰) → "Import Workflow":</p>
+                    <ul>
+                        <li>Select a <code>.json</code> workflow file</li>
+                        <li>The workflow loads onto your canvas</li>
+                        <li>Replaces current workflow (save first!)</li>
+                        <li>All agents and settings are restored</li>
+                    </ul>
+                </div>
+
+                <div class="step">
+                    <div class="step-number">5</div>
+                    <h5>Share via URL</h5>
+                    <p>Click the "Share" button (🔗 icon) to generate a shareable link:</p>
+                    <ul>
+                        <li>Uploads workflow to secure cloud storage</li>
+                        <li>Generates a unique URL</li>
+                        <li>Anyone with the link can import the workflow</li>
+                        <li>Links expire after 30 days</li>
+                    </ul>
+                    <div class="warning-box">
+                        <strong>⚠️ Shared Workflows Are Public</strong>
+                        <p>Don't include sensitive data, API keys, or confidential information in shared workflows.</p>
+                    </div>
+                </div>
+
+                <div class="step">
+                    <div class="step-number">6</div>
+                    <h5>View Execution History</h5>
+                    <p>Click the "History" button (🕐 clock icon):</p>
+                    <ul>
+                        <li>See all workflow executions with timestamps</li>
+                        <li>Click any execution to view its results</li>
+                        <li>Compare outputs from different runs</li>
+                        <li>Delete old executions to save space</li>
+                    </ul>
+                </div>
+
+                <div class="step">
+                    <div class="step-number">7</div>
+                    <h5>Clear Canvas</h5>
+                    <p>Click the menu (☰) → "New Workflow" to start fresh:</p>
+                    <ul>
+                        <li>Clears all nodes from canvas</li>
+                        <li>Prompts to save current workflow first</li>
+                        <li>Keeps execution history and settings</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Guide 9: AI Assistant -->
+        <div id="ai-assistant" class="guide-section">
+            <h4><span class="guide-icon">💬</span> AI Assistant (Natural Language Workflow Creation)</h4>
+            
+            <div class="guide-intro">
+                <p><strong>What you'll learn:</strong> How to use the AI chatbot to create and modify workflows using natural language, with no coding or technical knowledge required.</p>
+            </div>
+
+            <div class="steps">
+                <div class="step">
+                    <div class="step-number">1</div>
+                    <h5>Open the AI Assistant</h5>
+                    <p>Click the "AI Assistant" button on the right edge of the canvas. The chat panel slides in.</p>
+                    <div class="tip-box">
+                        <strong>💡 Keyboard Shortcut</strong>
+                        <p>Press Cmd/Ctrl + K to quickly toggle the AI Assistant panel.</p>
+                    </div>
+                </div>
+
+                <div class="step">
+                    <div class="step-number">2</div>
+                    <h5>Describe Your Workflow</h5>
+                    <p>Type a natural description of what you want to build. Be specific about:</p>
+                    <ul>
+                        <li>The input (topic, data, file)</li>
+                        <li>The steps/agents needed (research, write, analyze)</li>
+                        <li>The output (article, report, images)</li>
+                    </ul>
+                    <div class="example-box">
+                        <strong>📝 Example Prompts</strong>
+                        <p><strong>Simple:</strong> "Create a workflow that researches a topic and writes an article"<br><br>
+                        <strong>Detailed:</strong> "Build a blog post generator: start with a topic input, use a research agent to gather information, a writer to create the article, an editor to polish it, and two image generators for header and inline images. End with a summary."<br><br>
+                        <strong>Technical:</strong> "I need a data analysis pipeline: file input for CSV, data analyst to clean and analyze, then generate visualizations, and a business strategist to write executive summary."</p>
+                    </div>
+                </div>
+
+                <div class="step">
+                    <div class="step-number">3</div>
+                    <h5>Review the AI's Plan</h5>
+                    <p>The AI will show you what it plans to create:</p>
+                    <ul>
+                        <li>List of nodes it will add</li>
+                        <li>How they'll be connected</li>
+                        <li>Which models it will use</li>
+                        <li>Any settings or configurations</li>
+                    </ul>
+                    <p>Review this plan. If it looks good, proceed. If not, provide feedback.</p>
+                </div>
+
+                <div class="step">
+                    <div class="step-number">4</div>
+                    <h5>Apply the Workflow</h5>
+                    <p>Click "Apply Changes" in the chat. The AI instantly:</p>
+                    <ul>
+                        <li>Adds all nodes to your canvas</li>
+                        <li>Connects them properly</li>
+                        <li>Configures agents with optimal settings</li>
+                        <li>Positions nodes in a clear layout</li>
+                    </ul>
+                    <div class="tip-box">
+                        <strong>💡 Watch the Magic</strong>
+                        <p>You'll see nodes appear and connect in real-time. The workflow is immediately ready to execute!</p>
+                    </div>
+                </div>
+
+                <div class="step">
+                    <div class="step-number">5</div>
+                    <h5>Modify the Workflow</h5>
+                    <p>Continue chatting to refine the workflow:</p>
+                    <div class="example-box">
+                        <strong>📝 Modification Examples</strong>
+                        <p>"Add a marketing agent to create social media posts"<br>
+                        "Change the research agent to use Claude instead of GPT"<br>
+                        "Remove the image generator"<br>
+                        "Connect the editor directly to the summary, skip the social posts"<br>
+                        "Add a file input at the beginning for document upload"</p>
+                    </div>
+                </div>
+
+                <div class="step">
+                    <div class="step-number">6</div>
+                    <h5>Iterative Refinement</h5>
+                    <p>The AI remembers your conversation and current workflow state:</p>
+                    <ul>
+                        <li>Make changes incrementally</li>
+                        <li>Test after each change</li>
+                        <li>Ask the AI for suggestions: "How can I improve this?"</li>
+                        <li>Request optimizations: "Make this faster and cheaper"</li>
+                    </ul>
+                </div>
+
+                <div class="step">
+                    <div class="step-number">7</div>
+                    <h5>Load Existing Workflows</h5>
+                    <p>The AI can also help you work with existing workflows:</p>
+                    <div class="example-box">
+                        <strong>📝 Loading Commands</strong>
+                        <p>"Load my blog workflow"<br>
+                        "Show me all my saved workflows"<br>
+                        "Load the research template"<br>
+                        "Clear the canvas and start fresh"</p>
+                    </div>
+                </div>
+
+                <div class="step">
+                    <div class="step-number">8</div>
+                    <h5>AI Assistant Best Practices</h5>
+                    <p>Get the best results from the AI:</p>
+                    <ul>
+                        <li><strong>Be specific:</strong> More detail = better results</li>
+                        <li><strong>Iterate:</strong> Start simple, refine gradually</li>
+                        <li><strong>Ask questions:</strong> "What models should I use for research?"</li>
+                        <li><strong>Request explanations:</strong> "Why did you connect it that way?"</li>
+                        <li><strong>Test frequently:</strong> Execute workflows after AI changes to verify</li>
+                    </ul>
+                    <div class="warning-box">
+                        <strong>⚠️ Review AI Changes</strong>
+                        <p>Always review what the AI created before executing. The AI is smart but can make mistakes.</p>
+                    </div>
+                </div>
+
+                <div class="step">
+                    <div class="step-number">9</div>
+                    <h5>Advanced: Context-Aware Suggestions</h5>
+                    <p>The AI understands your workflow and can suggest improvements:</p>
+                    <div class="example-box">
+                        <strong>📝 Ask for Help</strong>
+                        <p>"This workflow is slow, how can I speed it up?"<br>
+                        → AI suggests using faster models or parallel processing<br><br>
+                        "I need better quality research output"<br>
+                        → AI recommends Claude 3.5 Sonnet and increased max_tokens<br><br>
+                        "How do I add image generation?"<br>
+                        → AI explains and offers to add Image Generation nodes</p>
+                    </div>
+                </div>
+            </div>
+
+            <img src="img/studio-chatbot.png" alt="AI Assistant Interface" class="guide-image">
+            <img src="img/chat-workflow.png" alt="AI-Generated Workflow Result" class="guide-image" style="margin-top: 2rem;">
+        </div>
+
+    </section>
+
+    <!-- CTA Section -->
+    <section class="section" style="background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%); color: white; text-align: center; padding: 4rem 2rem;">
+        <h3 style="font-size: 2rem; margin-bottom: 1rem; color: white;">Ready to Build Your First Workflow?</h3>
+        <p style="font-size: 1.125rem; margin-bottom: 2rem; opacity: 0.9;">Launch Worksona Studio and start creating sophisticated AI workflows in minutes</p>
+        <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
+            <a href="https://worksona-studio.netlify.app/" class="cta-button" style="background: white; color: var(--primary); font-size: 1.125rem; padding: 1rem 2.5rem;" target="_blank">Launch Studio</a>
+            <a href="studio.html" class="cta-button secondary" style="background: transparent; border: 2px solid white; color: white; font-size: 1.125rem; padding: 1rem 2.5rem;">Back to Overview</a>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <p>&copy; 2026 Worksona Studio. Built for AI automation.</p>
+        <p>
+            <a href="https://github.com/worksona/worksona-studio" target="_blank">GitHub</a> | 
+            <a href="studio.html">Studio Overview</a> | 
+            <a href="guide.html">How-To Guide</a>
+        </p>
+    </footer>
+
+</body>
+</html>

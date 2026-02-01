@@ -10,13 +10,6 @@
         title: 'Overview',
         links: [
           { label: 'Home', href: '/index.html' },
-          { label: 'GitHub', href: 'https://github.com/worksona/worksona-js', external: true },
-          { label: 'NPM', href: 'https://www.npmjs.com/package/worksona-js', external: true }
-        ]
-      },
-      {
-        title: 'Documentation',
-        links: [
           { label: 'Core Documentation', href: '/docs/index.html' },
           { label: 'API', href: '/docs/api-reference-swagger.html' }
         ]
@@ -26,7 +19,8 @@
         links: [
           { label: 'Endpoint API Demo', href: '/demos/endpoint-api-demo.html' },
           { label: 'Library Demo', href: '/demos/library-internal-demo.html' },
-          { label: 'Delegation Demo', href: '/demos/delegation-demo.html' }
+          { label: 'Delegation Demo', href: '/demos/delegation-demo.html' },
+          { label: 'Multi-Agent Demo', href: '/vibe-coding/examples/example-2-content-pipeline.html' }
         ]
       },
       {
@@ -34,19 +28,26 @@
         links: [
           { label: 'Reference', href: '/vibe-coding/index.html' },
           { label: 'AI Coding Prompt', href: '/vibe-coding/AI_CODING_PROMPT.md' },
-          { label: 'LLM.txt', href: '/llm.txt' },
-          { label: 'Example Chatbot', href: '/vibe-coding/examples/example-1-chatbot.html' },
-          { label: 'Content Pipeline', href: '/vibe-coding/examples/example-2-content-pipeline.html' }
+          { label: 'LLM.txt', href: '/llm.txt' }
         ]
       },
       {
         title: 'Downloads',
         links: [
+          { label: 'GitHub', href: 'https://github.com/worksona/worksona-js', external: true },
+          { label: 'NPM', href: 'https://www.npmjs.com/package/worksona-js', external: true },
           { label: 'worksona.js', href: '/downloads/worksona.js', download: true },
           { label: 'worksona.min.js', href: '/downloads/worksona.min.js', download: true },
           { label: 'worksona.min.js.zip', href: '/downloads/worksona.min.js.zip', download: true },
           { label: 'worksona-server.js', href: '/downloads/worksona-server.js', download: true },
           { label: 'Type Definitions', href: '/downloads/worksona.d.ts', download: true }
+        ]
+      },
+      {
+        title: 'Apps',
+        links: [
+          { label: 'Studio', href: 'https://studio.worksona.io/studio.html', external: true },
+          { label: 'Chat', href: 'https://chat.worksona.io/chat.html', external: true }
         ]
       },
       {
@@ -125,8 +126,7 @@
     return `
       <div class="worksona-header-content">
         <a href="${basePath}/index.html" class="worksona-logo">
-          <div class="worksona-logo-icon">W</div>
-          <span class="worksona-logo-text">WORKSONA</span>
+          <img src="${basePath}/img/worksona-logo.svg" alt="Worksona" />
         </a>
         <button class="worksona-hamburger" id="worksonaHamburger" aria-label="Toggle navigation">
           <span></span>

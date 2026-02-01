@@ -1,4 +1,4 @@
-# Worksona.js Vibe Coding Package 🎵
+# Worksona.js AI Engineering Package 🤖
 
 Enable AI coding assistants (Claude, ChatGPT, Copilot, Cursor) to write Worksona.js code naturally.
 
@@ -151,7 +151,7 @@ await worksona.textToSpeech(text, options)
 worksona.getDocs()
 
 // Get AI coding prompt
-worksona.getVibeCodingPrompt()
+worksona.getAICodingPrompt()
 
 // Get code snippet
 worksona.getSnippet(patternName)
@@ -173,13 +173,13 @@ worksona.getSnippet(patternName)
 ### Claude Code
 Create `.claude/instructions.md`:
 ```markdown
-@file:vibe-coding/AI_CODING_PROMPT.md
+@file:ai-engineering/AI_CODING_PROMPT.md
 ```
 
 ### Cursor / Windsurf
 Add to `.cursorrules`:
 ```
-@worksona-vibe-coding
+@worksona-ai-engineering
 ```
 
 ### ChatGPT / Claude Web

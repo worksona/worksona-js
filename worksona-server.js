@@ -27,7 +27,8 @@ const path = require('path');
 const mammoth = require('mammoth');
 const XLSX = require('xlsx');
 const pdfParse = require('pdf-parse');
-const { marked } = require('marked');
+// marked is an ES Module - will be loaded dynamically when needed
+let marked = null;
 
 // Tool libraries
 const axios = require('axios');
@@ -38,11 +39,23 @@ const app = express();
 const port = process.env.PORT || 3000;
 
 // File upload configuration
+// Use /tmp for Vercel serverless functions (only writable directory)
+const isVercel = process.env.VERCEL || process.env.VERCEL_ENV;
+const uploadBaseDir = isVercel ? '/tmp' : __dirname;
+
 const storage = multer.diskStorage({
   destination: async (req, file, cb) => {
-    const uploadDir = path.join(__dirname, 'uploads');
-    await fs.mkdir(uploadDir, { recursive: true });
-    cb(null, uploadDir);
+    try {
+      const uploadDir = path.join(uploadBaseDir, 'uploads');
+      await fs.mkdir(uploadDir, { recursive: true });
+      cb(null, uploadDir);
+    } catch (error) {
+      console.error('Error creating upload directory:', error);
+      // Fallback to /tmp/uploads for Vercel
+      const fallbackDir = '/tmp/uploads';
+      await fs.mkdir(fallbackDir, { recursive: true }).catch(() => {});
+      cb(null, fallbackDir);
+    }
   },
   filename: (req, file, cb) => {
     const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
@@ -91,7 +104,37 @@ const upload = multer({
 // Middleware
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use(cors());
+// CORS configuration - allow Vercel and Netlify domains
+app.use(cors({
+  origin: function (origin, callback) {
+    // Allow requests with no origin (like mobile apps or curl requests)
+    if (!origin) return callback(null, true);
+    
+    // Allow localhost for development
+    if (origin.includes('localhost') || origin.includes('127.0.0.1')) {
+      return callback(null, true);
+    }
+    
+    // Allow Vercel domains
+    if (origin.includes('vercel.app')) {
+      return callback(null, true);
+    }
+    
+    // Allow Netlify domains
+    if (origin.includes('netlify.app')) {
+      return callback(null, true);
+    }
+    
+    // Allow all origins in development/test
+    if (process.env.NODE_ENV !== 'production') {
+      return callback(null, true);
+    }
+    
+    // Default: allow all (you can restrict this in production)
+    callback(null, true);
+  },
+  credentials: true
+}));
 app.use(helmet({
   contentSecurityPolicy: {
     directives: {
@@ -100,22 +143,26 @@ app.use(helmet({
       styleSrc: ["'self'", "'unsafe-inline'", "https://cdn.jsdelivr.net", "https://unpkg.com"],
       imgSrc: ["'self'", "data:", "https:"],
       fontSrc: ["'self'", "https:", "data:"],
-      connectSrc: ["'self'"],
+      connectSrc: ["'self'", "https://*.vercel.app", "https://*.netlify.app"],
       frameSrc: ["'self'"],
       objectSrc: ["'none'"],
       upgradeInsecureRequests: []
     }
-  }
+  },
+  crossOriginResourcePolicy: { policy: "cross-origin" }
 }));
 
 // Serve API Console at /console
-app.use('/console', express.static(path.join(__dirname, 'public')));
-
-// Keep legacy /public route for backward compatibility
-app.use('/public', express.static(path.join(__dirname, 'public')));
-
-// Serve documentation site from www as root website
-app.use('/', express.static(path.join(__dirname, 'www')));
+// Skip static file serving in Vercel (handled by Vercel itself via rewrites)
+if (!isVercel) {
+  app.use('/console', express.static(path.join(__dirname, 'public')));
+  
+  // Keep legacy /public route for backward compatibility
+  app.use('/public', express.static(path.join(__dirname, 'public')));
+  
+  // Serve documentation site from www as root website
+  app.use('/', express.static(path.join(__dirname, 'www')));
+}
 
 // Also serve at /docs for backward compatibility
 app.use('/docs', express.static(path.join(__dirname, 'www')));
@@ -140,10 +187,25 @@ const worksona = new Worksona({
 
 // Auto-load agents from agents/ directory
 async function loadAgentsFromDirectory() {
+  // Use agents directory - works in both local and Vercel
+  // In Vercel, agents should be in the same directory as worksona-server.js
   const agentsDir = path.join(__dirname, 'agents');
   try {
+    // Check if directory exists first (non-blocking)
+    try {
+      await fs.access(agentsDir);
+    } catch (accessError) {
+      console.log('Agents directory not found, skipping auto-load:', agentsDir);
+      return;
+    }
+    
     const files = await fs.readdir(agentsDir);
     const jsonFiles = files.filter(f => f.endsWith('.json'));
+
+    if (jsonFiles.length === 0) {
+      console.log('No agent JSON files found in agents directory');
+      return;
+    }
 
     console.log(`\nLoading ${jsonFiles.length} agents from agents/ directory...`);
 
@@ -159,12 +221,20 @@ async function loadAgentsFromDirectory() {
     }
     console.log('Agent loading complete.\n');
   } catch (err) {
+    // Don't throw - just log the error so module can still load
     console.error('Could not read agents directory:', err.message);
   }
 }
 
-// Load agents on startup
-loadAgentsFromDirectory();
+// Load agents on startup (non-blocking)
+// Wrap in try-catch to prevent module load failures
+try {
+  loadAgentsFromDirectory().catch(err => {
+    console.error('Unhandled error in loadAgentsFromDirectory:', err);
+  });
+} catch (err) {
+  console.error('Error calling loadAgentsFromDirectory:', err);
+}
 
 // Utility: Validate provider API keys
 function validateProviderKeys(provider) {
@@ -266,6 +336,11 @@ async function extractTextFromDocument(filePath, mimeType) {
     if (mimeType === 'text/markdown' || filePath.endsWith('.md')) {
       const markdown = await fs.readFile(filePath, 'utf8');
       // Convert markdown to plain text (strip formatting)
+      // Lazy-load marked (ES Module) when needed
+      if (!marked) {
+        const markedModule = await import('marked');
+        marked = markedModule.marked || markedModule.default;
+      }
       return marked.parse(markdown, { gfm: true })
         .replace(/<[^>]*>/g, '') // Remove HTML tags
         .replace(/\n{3,}/g, '\n\n') // Normalize line breaks
@@ -332,6 +407,9 @@ app.get('/', async (req, res) => {
     res.status(500).send('Error loading landing page');
   }
 });
+
+// CORS preflight requests are handled by the cors() middleware above
+// No need for explicit OPTIONS handler - cors middleware handles it automatically
 
 app.get('/health', (req, res) => {
   res.json({

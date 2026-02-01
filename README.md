@@ -406,10 +406,13 @@ cd www
 netlify deploy --prod
 ```
 
-**Vercel**
+**Vercel** (Recommended - Hosts both site AND API!)
 ```bash
-cd www
+# Deploy everything (site + API) from repository root
 vercel --prod
+
+# Your site: https://worksona-js.vercel.app/
+# Your API: https://worksona-js.vercel.app/api
 ```
 
 **GitHub Pages**

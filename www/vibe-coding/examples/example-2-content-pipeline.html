@@ -1,10 +1,11 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <link rel="stylesheet" href="/assets/css/navigation.css">
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Example 2: Content Pipeline - Worksona Vibe Coding</title>
+  <title>Multi-Agent Demo - Worksona</title>
+  <link rel="stylesheet" href="/assets/css/worksona-branding.css">
+  <link rel="stylesheet" href="/assets/css/navigation.css">
   <style>
     * {
       margin: 0;
@@ -12,315 +13,393 @@
       box-sizing: border-box;
     }
 
+    :root {
+      --bg-light: #ffffff;
+      --bg-card: #ffffff;
+      --bg-card-hover: #f8fafc;
+      --text-primary: #0f172a;
+      --text-secondary: #64748b;
+      --accent-blue: #2563eb;
+      --accent-purple: #7c3aed;
+      --accent-pink: #10b981;
+      --border-color: #e2e8f0;
+      --primary-500: #3b82f6;
+      --primary-600: #2563eb;
+      --secondary-500: #8b5cf6;
+      --success: #10b981;
+      --warning: #f59e0b;
+      --error: #ef4444;
+      --gray-50: #f8fafc;
+      --gray-100: #f1f5f9;
+      --gray-200: #e2e8f0;
+      --gray-500: #94a3b8;
+      --gray-700: #cbd5e1;
+      --gray-900: #0f172a;
+    }
+
     body {
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      min-height: 100vh;
-      padding: 2rem;
-    ;}
-
-.container {
-      max-width: 1200px;
-      margin: 0 auto;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
       background: white;
-      
-      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-      overflow: hidden;
-    ;}
+      color: var(--gray-900);
+    }
 
-.header {
-      background: linear-gradient(135deg, #2563eb 0%, #7c3aed 100%);
+    /* Header */
+    .header {
+      background: var(--primary-600);
       color: white;
       padding: 2rem;
-      text-align: center;
-    ;}
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+      position: relative;
+      overflow: hidden;
+    }
 
-.header h1 {
+    .header::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: var(--primary-600);
+      animation: shimmer 3s infinite;
+    }
+
+    @keyframes shimmer {
+      0%, 100% { transform: translateX(-100%); }
+      50% { transform: translateX(100%); }
+    }
+
+    .header h1 {
       font-size: 2rem;
       margin-bottom: 0.5rem;
-    ;}
+      position: relative;
+      z-index: 1;
+      text-shadow: 0 2px 10px rgba(0,0,0,0.3);
+    }
 
-.header p {
-      opacity: 0.9;
-      font-size: 0.9rem;
-    ;}
+    .header p {
+      opacity: 0.95;
+      margin-bottom: 1rem;
+      position: relative;
+      z-index: 1;
+    }
 
-.main-content {
+    /* Container */
+    .container {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 2rem;
+    }
+
+    .info-box {
+      background: #eff6ff;
+      border-left: 4px solid var(--accent-blue);
+      padding: 1.5rem;
+      margin: 2rem 0;
+      font-size: 0.95rem;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    }
+
+    .info-box strong {
+      color: var(--text-primary);
+      font-weight: 600;
+    }
+
+    .info-box code {
+      background: white;
+      padding: 0.3rem 0.5rem;
+      color: var(--accent-purple);
+      font-family: 'Courier New', monospace;
+      font-size: 0.85rem;
+      border: 1px solid var(--gray-200);
+    }
+
+    .config-section {
+      padding: 1.5rem;
+      background: var(--gray-50);
+      border: 1px solid var(--gray-200);
+      margin-bottom: 2rem;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    }
+
+    .config-row {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .config-row label {
+      font-weight: 600;
+      min-width: 120px;
+      color: var(--gray-900);
+    }
+
+    .config-row input {
+      flex: 1;
+      padding: 0.75rem;
+      border: 2px solid var(--gray-200);
+      font-family: inherit;
+      transition: border-color 0.3s;
+    }
+
+    .config-row input:focus {
+      outline: none;
+      border-color: var(--accent-blue);
+    }
+
+    .main-content {
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 2rem;
+      margin-top: 2rem;
+    }
+
+    .input-section {
+      background: white;
       padding: 2rem;
-    ;}
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+      border: 1px solid var(--border-color);
+      transition: all 0.3s ease;
+    }
 
-.input-section {
-      display: flex;
-      flex-direction: column;
-      gap: 1rem;
-    ;}
+    .input-section:hover {
+      border-color: var(--accent-blue);
+      box-shadow: 0 12px 32px rgba(59, 130, 246, 0.15);
+    }
 
-.input-section h3 {
-      color: #1e293b;
+    .input-section h3 {
+      color: var(--accent-blue);
+      margin-bottom: 1.5rem;
+      padding-bottom: 0.75rem;
+      border-bottom: 3px solid;
+      border-image: linear-gradient(90deg, var(--accent-blue), var(--accent-purple)) 1;
       font-size: 1.3rem;
-    ;}
+    }
 
-.input-section textarea {
+    .input-section textarea {
+      width: 100%;
       padding: 1rem;
-      border: 2px solid #e2e8f0;
-      
+      border: 2px solid var(--gray-200);
       font-family: inherit;
       font-size: 0.95rem;
       resize: vertical;
       min-height: 150px;
-    ;}
+      transition: border-color 0.3s;
+    }
 
-.input-section textarea:focus {
+    .input-section textarea:focus {
       outline: none;
-      border-color: #2563eb;
-    ;}
+      border-color: var(--accent-blue);
+    }
 
-.btn-primary {
+    .btn-primary {
+      width: 100%;
       padding: 1rem 2rem;
-      background: linear-gradient(135deg, #2563eb 0%, #7c3aed 100%);
+      background: var(--accent-blue);
       color: white;
       border: none;
-      
       cursor: pointer;
       font-weight: 600;
       font-size: 1rem;
       transition: all 0.3s;
-    ;}
+      margin-top: 1rem;
+    }
 
-.btn-primary:hover {
+    .btn-primary:hover {
+      background: var(--primary-600);
       transform: translateY(-2px);
       box-shadow: 0 8px 16px rgba(37, 99, 235, 0.3);
-    ;}
+    }
 
-.btn-primary:disabled {
+    .btn-primary:disabled {
       opacity: 0.5;
       cursor: not-allowed;
       transform: none;
-    ;}
+    }
 
-.workflow-section {
-      display: flex;
-      flex-direction: column;
-      gap: 1rem;
-    ;}
+    .workflow-section {
+      background: white;
+      padding: 2rem;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+      border: 1px solid var(--border-color);
+      transition: all 0.3s ease;
+    }
 
-.workflow-section h3 {
-      color: #1e293b;
+    .workflow-section:hover {
+      border-color: var(--accent-blue);
+      box-shadow: 0 12px 32px rgba(59, 130, 246, 0.15);
+    }
+
+    .workflow-section h3 {
+      color: var(--accent-blue);
+      margin-bottom: 1.5rem;
+      padding-bottom: 0.75rem;
+      border-bottom: 3px solid;
+      border-image: linear-gradient(90deg, var(--accent-blue), var(--accent-purple)) 1;
       font-size: 1.3rem;
-    ;}
+    }
 
-.workflow-steps {
+    .workflow-steps {
       display: flex;
       flex-direction: column;
       gap: 1rem;
-    ;}
+    }
 
-.step {
-      background: #f8fafc;
-      border-left: 4px solid #cbd5e1;
-      
-      padding: 1rem;
+    .step {
+      background: white;
+      padding: 1.5rem;
+      border-left: 4px solid var(--gray-200);
       transition: all 0.3s;
-    ;}
+      margin-bottom: 1rem;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+    }
 
-.step.active {
-      border-left-color: #2563eb;
-      background: #dbeafe;
-    ;}
+    .step.active {
+      border-left-color: var(--warning);
+      background: #fffbeb;
+      box-shadow: 0 2px 8px rgba(245, 158, 11, 0.15);
+    }
 
-.step.complete {
-      border-left-color: #10b981;
-      background: #d1fae5;
-    ;}
+    .step.complete {
+      border-left-color: var(--success);
+      background: #f0fdf4;
+      box-shadow: 0 2px 8px rgba(16, 185, 129, 0.15);
+    }
 
-.step.error {
-      border-left-color: #ef4444;
-      background: #fee2e2;
-    ;}
+    .step.error {
+      border-left-color: var(--error);
+      background: #fef2f2;
+      box-shadow: 0 2px 8px rgba(239, 68, 68, 0.15);
+    }
 
-.step-header {
+    .step-header {
       display: flex;
       justify-content: space-between;
       align-items: center;
       margin-bottom: 0.5rem;
-    ;}
+    }
 
-.step-title {
+    .step-title {
       font-weight: 600;
-      color: #1e293b;
+      color: var(--gray-900);
       display: flex;
       align-items: center;
       gap: 0.5rem;
-    ;}
+    }
 
-.step-status {
+    .step-status {
       padding: 0.25rem 0.75rem;
-      
       font-size: 0.8rem;
       font-weight: 600;
-    ;}
+      border-radius: 4px;
+    }
 
-.step-status.pending {
-      background: #f1f5f9;
-      color: #64748b;
-    ;}
+    .step-status.pending {
+      background: var(--gray-100);
+      color: var(--gray-500);
+    }
 
-.step-status.processing {
-      background: #2563eb;
+    .step-status.processing {
+      background: var(--accent-blue);
       color: white;
       animation: pulse 1.5s infinite;
-    ;}
+    }
 
-.step-status.complete {
-      background: #10b981;
+    .step-status.complete {
+      background: var(--success);
       color: white;
-    ;}
+    }
 
-.step-status.error {
-      background: #ef4444;
+    .step-status.error {
+      background: var(--error);
       color: white;
     }
 
     @keyframes pulse {
       0%, 100% { opacity: 1; }
       50% { opacity: 0.7; }
-    ;}
+    }
 
-.step-info {
+    .step-info {
       font-size: 0.85rem;
-      color: #64748b;
+      color: var(--gray-500);
       margin-bottom: 0.5rem;
-    ;}
+    }
 
-.step-output {
+    .step-output {
       margin-top: 0.75rem;
       padding: 0.75rem;
-      background: white;
-      
+      background: var(--gray-50);
       font-size: 0.9rem;
       line-height: 1.6;
       max-height: 150px;
       overflow-y: auto;
       display: none;
-    ;}
+      border: 1px solid var(--gray-200);
+    }
 
-.step-output.visible {
+    .step-output.visible {
       display: block;
-    ;}
+    }
 
-.step-duration {
+    .step-duration {
       font-size: 0.75rem;
-      color: #64748b;
+      color: var(--gray-500);
       margin-top: 0.5rem;
-    ;}
+    }
 
-.results-section {
+    .results-section {
       grid-column: 1 / -1;
-      margin-top: 1rem;
+      margin-top: 2rem;
       padding: 2rem;
-      background: #f8fafc;
-      
-      display: none;
-    ;}
-
-.results-section.visible {
-      display: block;
-    ;}
-
-.results-section h3 {
-      color: #1e293b;
-      margin-bottom: 1rem;
-      font-size: 1.5rem;
-    ;}
-
-.final-output {
       background: white;
+      border: 1px solid var(--border-color);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+      display: none;
+    }
+
+    .results-section.visible {
+      display: block;
+    }
+
+    .results-section h3 {
+      color: var(--accent-blue);
+      margin-bottom: 1.5rem;
+      padding-bottom: 0.75rem;
+      border-bottom: 3px solid;
+      border-image: linear-gradient(90deg, var(--accent-blue), var(--accent-purple)) 1;
+      font-size: 1.5rem;
+    }
+
+    .final-output {
+      background: var(--gray-50);
       padding: 1.5rem;
-      
       line-height: 1.8;
       white-space: pre-wrap;
       max-height: 500px;
       overflow-y: auto;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-    ;}
+      border: 1px solid var(--gray-200);
+    }
 
-.action-buttons {
+    .action-buttons {
       display: flex;
       gap: 1rem;
       margin-top: 1rem;
-    ;}
+    }
 
-.btn-secondary {
+    .btn-secondary {
       padding: 0.75rem 1.5rem;
       background: white;
-      color: #2563eb;
-      border: 2px solid #2563eb;
-      
+      color: var(--accent-blue);
+      border: 2px solid var(--accent-blue);
       cursor: pointer;
       font-weight: 600;
       transition: all 0.2s;
-    ;}
+    }
 
-.btn-secondary:hover {
-      background: #2563eb;
+    .btn-secondary:hover {
+      background: var(--accent-blue);
       color: white;
-    ;}
-
-.info-box {
-      background: #dbeafe;
-      padding: 1.5rem;
-      margin: 1.5rem 2rem;
-      
-      border-left: 4px solid #2563eb;
-      font-size: 0.9rem;
-      line-height: 1.6;
-    ;}
-
-.info-box strong {
-      color: #1e40af;
-      display: block;
-      margin-bottom: 0.5rem;
-    ;}
-
-.info-box code {
-      background: #1e293b;
-      color: #e2e8f0;
-      padding: 0.2rem 0.5rem;
-      
-      font-family: monospace;
-      font-size: 0.85rem;
-    ;}
-
-.config-section {
-      padding: 1.5rem;
-      background: #f8fafc;
-      border-bottom: 1px solid #e2e8f0;
-      margin: 1.5rem 2rem;
-      
-    ;}
-
-.config-row {
-      display: flex;
-      gap: 1rem;
-      margin-bottom: 1rem;
-      align-items: center;
-    ;}
-
-.config-row label {
-      min-width: 120px;
-      font-weight: 600;
-      color: #334155;
-    ;}
-
-.config-row input {
-      flex: 1;
-      padding: 0.5rem;
-      border: 2px solid #e2e8f0;
-      
-      font-size: 0.9rem;
     }
 
     @media (max-width: 968px) {
@@ -332,14 +411,15 @@
 </head>
 <body>
 <div class="worksona-content">
-  <div class="container">
-    <div class="header">
-      <h1> Multi-Agent Content Pipeline</h1>
-      <p>Example 2: Research  Write  Edit  Fact-Check workflow using Worksona API</p>
-    </div>
+  <!-- Header -->
+  <header class="header">
+    <h1>Multi-Agent Demo</h1>
+    <p>Research → Write → Edit → Fact-Check workflow using Worksona API</p>
+  </header>
 
+  <div class="container">
     <div class="info-box">
-      <strong> How this works:</strong>
+      <strong>🔍 How this works:</strong>
       This example uses <strong>raw API calls</strong> to the Worksona API server.
       Each agent specializes in a different task: researching, writing, editing, and fact-checking.
       The output of each step becomes the input for the next. Start the API server with <code>node worksona-server.js</code>
@@ -354,335 +434,234 @@
 
     <div class="main-content">
       <div class="input-section">
-        <h3> Input Topic</h3>
+        <h3>📝 Input Topic</h3>
         <textarea
           id="topicInput"
           placeholder="Enter a topic to research and write about...
 
 Example topics:
- AI trends in 2026
- Benefits of renewable energy
- Future of remote work
- Quantum computing basics"
+• AI trends in 2026
+• Benefits of renewable energy
+• Future of remote work
+• Quantum computing basics"
         >AI trends in 2026</textarea>
         <button class="btn-primary" id="executeBtn" onclick="executeWorkflow()">
-           Execute Workflow
+          ▶️ Execute Workflow
         </button>
       </div>
 
       <div class="workflow-section">
-        <h3> Workflow Steps</h3>
+        <h3>🔄 Workflow Steps</h3>
         <div class="workflow-steps">
           <div class="step" id="step-research">
             <div class="step-header">
               <div class="step-title">
-                 Step 1: Research
+                <span>🔍</span>
+                <span>Research Agent</span>
               </div>
-              <div class="step-status pending">Pending</div>
+              <span class="step-status pending" id="status-research">Pending</span>
             </div>
-            <div class="step-info">Agent: research-analyst  Model: Claude Opus 4.5  Temp: 0.3</div>
+            <div class="step-info">Gathers information on the topic</div>
             <div class="step-output" id="output-research"></div>
             <div class="step-duration" id="duration-research"></div>
           </div>
 
-          <div class="step" id="step-write">
+          <div class="step" id="step-writer">
             <div class="step-header">
               <div class="step-title">
-                 Step 2: Write
+                <span>✍️</span>
+                <span>Writer Agent</span>
               </div>
-              <div class="step-status pending">Pending</div>
+              <span class="step-status pending" id="status-writer">Pending</span>
             </div>
-            <div class="step-info">Agent: content-writer  Model: GPT-4o  Temp: 0.7</div>
-            <div class="step-output" id="output-write"></div>
-            <div class="step-duration" id="duration-write"></div>
+            <div class="step-info">Creates well-structured content</div>
+            <div class="step-output" id="output-writer"></div>
+            <div class="step-duration" id="duration-writer"></div>
           </div>
 
-          <div class="step" id="step-edit">
+          <div class="step" id="step-editor">
             <div class="step-header">
               <div class="step-title">
-                 Step 3: Edit
+                <span>✏️</span>
+                <span>Editor Agent</span>
               </div>
-              <div class="step-status pending">Pending</div>
+              <span class="step-status pending" id="status-editor">Pending</span>
             </div>
-            <div class="step-info">Agent: editor-agent  Model: GPT-4o  Temp: 0.5</div>
-            <div class="step-output" id="output-edit"></div>
-            <div class="step-duration" id="duration-edit"></div>
+            <div class="step-info">Refines and improves the writing</div>
+            <div class="step-output" id="output-editor"></div>
+            <div class="step-duration" id="duration-editor"></div>
           </div>
 
-          <div class="step" id="step-factcheck">
+          <div class="step" id="step-factchecker">
             <div class="step-header">
               <div class="step-title">
-                 Step 4: Fact-Check
+                <span>✅</span>
+                <span>Fact-Checker Agent</span>
               </div>
-              <div class="step-status pending">Pending</div>
+              <span class="step-status pending" id="status-factchecker">Pending</span>
             </div>
-            <div class="step-info">Agent: research-analyst  Model: Claude Opus 4.5  Temp: 0.2</div>
-            <div class="step-output" id="output-factcheck"></div>
-            <div class="step-duration" id="duration-factcheck"></div>
+            <div class="step-info">Verifies accuracy and adds citations</div>
+            <div class="step-output" id="output-factchecker"></div>
+            <div class="step-duration" id="duration-factchecker"></div>
           </div>
         </div>
       </div>
 
       <div class="results-section" id="resultsSection">
-        <h3> Final Article</h3>
+        <h3>📄 Final Result</h3>
         <div class="final-output" id="finalOutput"></div>
         <div class="action-buttons">
-          <button class="btn-secondary" onclick="copyToClipboard()"> Copy to Clipboard</button>
-          <button class="btn-secondary" onclick="downloadArticle()"> Download as Text</button>
-          <button class="btn-secondary" onclick="resetWorkflow()"> Start Over</button>
+          <button class="btn-secondary" onclick="copyToClipboard()">📋 Copy to Clipboard</button>
+          <button class="btn-secondary" onclick="downloadAsMarkdown()">💾 Download as Markdown</button>
         </div>
       </div>
     </div>
   </div>
+</div>
 
-  <script>
-    let workflowResults = {};
-    let apiBase = 'http://localhost:3000/api';
+<script>
+  let API_BASE = 'http://localhost:3000/api';
 
-    // Execute the workflow
-    async function executeWorkflow() {
-      const topic = document.getElementById('topicInput').value.trim();
-      apiBase = document.getElementById('apiBaseInput').value.trim();
+  // Update API base URL
+  document.getElementById('apiBaseInput').addEventListener('change', (e) => {
+    API_BASE = e.target.value;
+  });
 
-      if (!topic) {
-        alert('Please enter a topic!');
-        return;
-      }
-
-      // Disable button
-      const btn = document.getElementById('executeBtn');
-      btn.disabled = true;
-      btn.textContent = ' Processing...';
-
-      // Reset UI
-      resetUI();
-
-      try {
-        // Define workflow steps
-        const steps = [
-          {
-            id: 'research',
-            agentConfig: {
-              id: 'research-analyst',
-              name: 'Research Analyst',
-              config: {
-                provider: 'anthropic',
-                model: 'claude-opus-4-5-20251101',
-                temperature: 0.3,
-                systemPrompt: 'You are an expert research analyst. Provide thorough, fact-based research.'
-              }
-            },
-            prompt: `Research the following topic in depth. Provide key facts, statistics, and insights: ${topic}`,
-            outputVariable: 'research'
-          },
-          {
-            id: 'write',
-            agentConfig: {
-              id: 'content-writer',
-              name: 'Content Writer',
-              config: {
-                provider: 'openai',
-                model: 'gpt-4o',
-                temperature: 0.7,
-                systemPrompt: 'You are a skilled content writer. Create engaging, well-structured articles.'
-              }
-            },
-            prompt: 'Write a comprehensive, engaging article based on this research. Make it informative and well-structured with an introduction, body paragraphs, and conclusion:\n\n\${research}',
-            outputVariable: 'draft'
-          },
-          {
-            id: 'edit',
-            agentConfig: {
-              id: 'editor-agent',
-              name: 'Editor',
-              config: {
-                provider: 'openai',
-                model: 'gpt-4o',
-                temperature: 0.5,
-                systemPrompt: 'You are a professional editor. Polish content for clarity, flow, and engagement.'
-              }
-            },
-            prompt: 'Edit and polish this article for clarity, flow, and engagement. Fix any grammar or style issues:\n\n\${draft}',
-            outputVariable: 'edited'
-          },
-          {
-            id: 'factcheck',
-            agentConfig: {
-              id: 'fact-checker',
-              name: 'Fact Checker',
-              config: {
-                provider: 'anthropic',
-                model: 'claude-opus-4-5-20251101',
-                temperature: 0.2,
-                systemPrompt: 'You are a meticulous fact-checker. Verify accuracy and suggest improvements.'
-              }
-            },
-            prompt: 'Review this article for accuracy. Verify facts and suggest any corrections or improvements:\n\n\${edited}',
-            outputVariable: 'final'
-          }
-        ];
-
-        // Execute each step sequentially
-        for (const step of steps) {
-          await executeStep(step);
-        }
-
-        // Show results
-        displayFinalResults();
-
-      } catch (error) {
-        console.error('Workflow error:', error);
-        alert('Error: ' + error.message);
-      } finally {
-        btn.disabled = false;
-        btn.textContent = ' Execute Workflow';
-      }
-    }
-
-    // Execute a single step using raw API calls
-    async function executeStep(step) {
-      const stepElement = document.getElementById(`step-${step.id}`);
-      const statusElement = stepElement.querySelector('.step-status');
-      const outputElement = document.getElementById(`output-${step.id}`);
-      const durationElement = document.getElementById(`duration-${step.id}`);
-
-      // Update status
-      stepElement.classList.add('active');
-      statusElement.textContent = 'Processing';
-      statusElement.className = 'step-status processing';
-
-      const startTime = Date.now();
-
-      try {
-        // Resolve prompt variables
-        let prompt = step.prompt;
-        for (const [key, value] of Object.entries(workflowResults)) {
-          prompt = prompt.replace(`\${${key}}`, value);
-        }
-
-        // Step 1: Load agent via API
-        const loadResponse = await fetch(`${apiBase}/agents/load`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(step.agentConfig)
-        });
-
-        if (!loadResponse.ok) {
-          const errorData = await loadResponse.json();
-          throw new Error(errorData.error || 'Failed to load agent');
-        }
-
-        // Step 2: Send chat message via API
-        const chatResponse = await fetch(`${apiBase}/agents/${step.agentConfig.id}/chat`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ message: prompt })
-        });
-
-        if (!chatResponse.ok) {
-          const errorData = await chatResponse.json();
-          throw new Error(errorData.error || 'Failed to get response');
-        }
-
-        const chatData = await chatResponse.json();
-        const response = chatData.response || chatData.message || '';
-
-        // Store result
-        workflowResults[step.outputVariable] = response;
-
-        // Update UI
-        const duration = Date.now() - startTime;
-        stepElement.classList.remove('active');
-        stepElement.classList.add('complete');
-        statusElement.textContent = 'Complete';
-        statusElement.className = 'step-status complete';
-        outputElement.textContent = response.substring(0, 500) + (response.length > 500 ? '...' : '');
-        outputElement.classList.add('visible');
-        durationElement.textContent = `Completed in ${(duration / 1000).toFixed(2)}s`;
-        durationElement.style.display = 'block';
-
-      } catch (error) {
-        // Update error state
-        stepElement.classList.remove('active');
-        stepElement.classList.add('error');
-        statusElement.textContent = 'Error';
-        statusElement.className = 'step-status error';
-        outputElement.textContent = 'Error: ' + error.message;
-        outputElement.classList.add('visible');
-
-        throw error;
-      }
-    }
-
-    // Display final results
-    function displayFinalResults() {
-      const resultsSection = document.getElementById('resultsSection');
-      const finalOutput = document.getElementById('finalOutput');
-
-      finalOutput.textContent = workflowResults.final || workflowResults.edited || 'No output generated';
-      resultsSection.classList.add('visible');
-
-      // Scroll to results
-      resultsSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  async function executeWorkflow() {
+    const topic = document.getElementById('topicInput').value.trim();
+    
+    if (!topic) {
+      alert('Please enter a topic');
+      return;
     }
 
     // Reset UI
-    function resetUI() {
-      workflowResults = {};
+    resetWorkflow();
+    document.getElementById('executeBtn').disabled = true;
 
-      // Reset steps
-      document.querySelectorAll('.step').forEach(step => {
-        step.className = 'step';
-        step.querySelector('.step-status').textContent = 'Pending';
-        step.querySelector('.step-status').className = 'step-status pending';
-        step.querySelector('.step-output').textContent = '';
-        step.querySelector('.step-output').classList.remove('visible');
-        const duration = step.querySelector('.step-duration');
-        if (duration) {
-          duration.textContent = '';
-          duration.style.display = 'none';
-        }
+    try {
+      // Step 1: Research
+      const researchResult = await executeStep('research', 'research', topic);
+      
+      // Step 2: Write
+      const writerResult = await executeStep('writer', 'writer', researchResult);
+      
+      // Step 3: Edit
+      const editorResult = await executeStep('editor', 'editor', writerResult);
+      
+      // Step 4: Fact-check
+      const factcheckerResult = await executeStep('factchecker', 'factchecker', editorResult);
+      
+      // Show final results
+      showFinalResults(factcheckerResult);
+      
+    } catch (error) {
+      console.error('Workflow error:', error);
+      alert('Workflow failed: ' + error.message);
+    } finally {
+      document.getElementById('executeBtn').disabled = false;
+    }
+  }
+
+  async function executeStep(stepId, agentId, input) {
+    const startTime = Date.now();
+    
+    // Update step status
+    updateStepStatus(stepId, 'processing');
+    
+    try {
+      const response = await fetch(`${API_BASE}/agent/${agentId}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ message: input })
       });
 
-      // Hide results
-      document.getElementById('resultsSection').classList.remove('visible');
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+      }
+
+      const data = await response.json();
+      const duration = Date.now() - startTime;
+      
+      // Update UI
+      updateStepStatus(stepId, 'complete');
+      updateStepOutput(stepId, data.response);
+      updateStepDuration(stepId, duration);
+      
+      return data.response;
+      
+    } catch (error) {
+      updateStepStatus(stepId, 'error');
+      updateStepOutput(stepId, `Error: ${error.message}`);
+      throw error;
     }
+  }
 
-    // Reset workflow
-    function resetWorkflow() {
-      resetUI();
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    }
+  function resetWorkflow() {
+    const steps = ['research', 'writer', 'editor', 'factchecker'];
+    steps.forEach(step => {
+      document.getElementById(`step-${step}`).className = 'step';
+      document.getElementById(`status-${step}`).className = 'step-status pending';
+      document.getElementById(`status-${step}`).textContent = 'Pending';
+      document.getElementById(`output-${step}`).className = 'step-output';
+      document.getElementById(`output-${step}`).textContent = '';
+      document.getElementById(`duration-${step}`).textContent = '';
+    });
+    document.getElementById('resultsSection').className = 'results-section';
+    document.getElementById('finalOutput').textContent = '';
+  }
 
-    // Copy to clipboard
-    function copyToClipboard() {
-      const text = document.getElementById('finalOutput').textContent;
-      navigator.clipboard.writeText(text).then(() => {
-        alert('Copied to clipboard!');
-      });
-    }
+  function updateStepStatus(stepId, status) {
+    const stepEl = document.getElementById(`step-${stepId}`);
+    const statusEl = document.getElementById(`status-${stepId}`);
+    
+    stepEl.className = `step ${status}`;
+    statusEl.className = `step-status ${status}`;
+    
+    const statusText = {
+      'pending': 'Pending',
+      'processing': 'Processing...',
+      'complete': 'Complete ✓',
+      'error': 'Error ✗'
+    };
+    
+    statusEl.textContent = statusText[status] || status;
+  }
 
-    // Download article
-    function downloadArticle() {
-      const text = document.getElementById('finalOutput').textContent;
-      const topic = document.getElementById('topicInput').value.trim();
-      const filename = topic.replace(/[^a-z0-9]/gi, '-').toLowerCase() + '.txt';
+  function updateStepOutput(stepId, output) {
+    const outputEl = document.getElementById(`output-${stepId}`);
+    outputEl.textContent = output;
+    outputEl.className = 'step-output visible';
+  }
 
-      const blob = new Blob([text], { type: 'text/plain' });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = filename;
-      a.click();
-      URL.revokeObjectURL(url);
-    }
+  function updateStepDuration(stepId, duration) {
+    const durationEl = document.getElementById(`duration-${stepId}`);
+    durationEl.textContent = `⏱️ Completed in ${(duration / 1000).toFixed(2)}s`;
+  }
 
-    // Log ready state
-    console.log(' Worksona API Example - Multi-Agent Content Pipeline');
-    console.log(' This example uses raw API calls to the Worksona server');
-    console.log(' Make sure to start the API server: node worksona-server.js');
-  </script>
-  <script src="/assets/js/navigation.js"></script>
-</div>
+  function showFinalResults(content) {
+    document.getElementById('resultsSection').className = 'results-section visible';
+    document.getElementById('finalOutput').textContent = content;
+  }
+
+  function copyToClipboard() {
+    const output = document.getElementById('finalOutput').textContent;
+    navigator.clipboard.writeText(output).then(() => {
+      alert('Copied to clipboard!');
+    });
+  }
+
+  function downloadAsMarkdown() {
+    const output = document.getElementById('finalOutput').textContent;
+    const blob = new Blob([output], { type: 'text/markdown' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'worksona-output.md';
+    a.click();
+    URL.revokeObjectURL(url);
+  }
+</script>
+<script src="/assets/js/navigation.js"></script>
 </body>
 </html>

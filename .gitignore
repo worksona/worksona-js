@@ -49,3 +49,4 @@ uploads/*.webp
 
 # Keep uploads directory but ignore contents
 !uploads/.gitkeep
+.vercel

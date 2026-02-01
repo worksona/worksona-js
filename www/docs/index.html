@@ -1,11 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <link rel="stylesheet" href="/assets/css/navigation.css">
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Worksona.js Documentation</title>
   <meta name="description" content="Complete documentation for Worksona.js - AI Agent Management Library & API Server with multi-provider support">
+
+  <link rel="stylesheet" href="/assets/css/worksona-branding.css">
+  <link rel="stylesheet" href="/assets/css/navigation.css">
 
   <!-- Mermaid for diagrams -->
   <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
@@ -47,25 +49,49 @@
 
     /* Page header styles */
     .header {
-      background: white;
-      border-bottom: 2px solid var(--gray-200);
+      background: var(--primary);
+      color: white;
       padding: 3rem 2rem;
       text-align: center;
-      margin-top: 60px;
-    ;}
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .header::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
+      animation: shimmer 3s infinite;
+    }
+
+    @keyframes shimmer {
+      0%, 100% { transform: translateX(-100%); }
+      50% { transform: translateX(100%); }
+    }
 
 .header h1 {
       font-size: 2.5rem;
       font-weight: 700;
       margin-bottom: 0.5rem;
-      color: var(--gray-900);
-    ;}
+      color: white;
+      position: relative;
+      z-index: 1;
+      text-shadow: 0 2px 10px rgba(0,0,0,0.3);
+    }
 
 .header p {
       font-size: 1.25rem;
-      margin-bottom: 1.5rem;
-      color: var(--gray-700);
-    ;}
+      margin-bottom: 0;
+      color: white;
+      opacity: 0.95;
+      position: relative;
+      z-index: 1;
+    }
 
 
 
@@ -351,31 +377,14 @@
   </style>
 </head>
 <body>
-  <!-- Worksona Header -->
-  <header class="worksona-header">
-    <div class="worksona-header-content">
-      <a href="/" class="worksona-logo">
-        <div class="worksona-logo-icon">W</div>
-        <span class="worksona-logo-text">WORKSONA</span>
-      </a>
-      <button class="worksona-hamburger" id="worksonaHamburger" aria-label="Toggle navigation">
-        <span></span>
-        <span></span>
-        <span></span>
-      </button>
+  <main class="worksona-content">
+    <!-- Page Header -->
+    <div class="header">
+      <h1>Worksona.js Documentation</h1>
+      <p>AI Agent Management - Library & API Server</p>
     </div>
-  </header>
 
-  
-
-  <!-- Header -->
-  <header class="header">
-    <h1> Worksona.js Documentation</h1>
-    <p>AI Agent Management - Library & API Server</p>
-    
-  </header>
-
-  <main class="worksona-content container">
+    <div class="container">
     <!-- Core Library Section -->
     <section id="core" class="section">
       <h2>Core Library Overview</h2>
@@ -495,28 +504,6 @@ worksona.on('error', (error) => console.error('Error:', error));</pre>
       <h2>Delegators Explained</h2>
 
       <p>Delegators are the orchestration layer in Worksona.js that enable <strong>multi-agent workflows</strong>. A delegator agent can break down complex tasks and delegate subtasks to specialized agents, creating powerful AI pipelines.</p>
-
-      <h3>How Delegation Works</h3>
-
-      <div class="diagram-container">
-        <div class="mermaid">
-sequenceDiagram
-    participant U as User
-    participant D as Delegator Agent
-    participant R as Research Agent
-    participant W as Writer Agent
-    participant E as Editor Agent
-
-    U->>D: "Create article about AI"
-    D->>R: Research AI trends
-    R-->>D: Research findings
-    D->>W: Write article with findings
-    W-->>D: Draft article
-    D->>E: Edit and improve
-    E-->>D: Final article
-    D-->>U: Polished article
-        </div>
-      </div>
 
       <h3>Multi-Agent Workflow Example</h3>
 
@@ -920,6 +907,7 @@ GET /api/agents/marketing-agent/tools/dalle/generate?prompt=logo
         </a>
       </div>
     </section>
+    </div>
   </main>
 
   <!-- Footer -->

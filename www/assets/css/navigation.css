@@ -3,11 +3,14 @@
 :root {
   --nav-width: 280px;
   --header-height: 64px;
-  --primary: #2563eb;
-  --primary-dark: #1d4ed8;
+  --nav-text: #0f172a;
+  --nav-text-secondary: #334155;
+  --nav-highlight: #62bab7;
+  --nav-highlight-bg: rgba(98, 186, 183, 0.1);
   --gray-50: #f8fafc;
   --gray-100: #f1f5f9;
   --gray-200: #e2e8f0;
+  --gray-300: #cbd5e1;
   --gray-700: #334155;
   --gray-800: #1e293b;
   --gray-900: #0f172a;
@@ -53,9 +56,9 @@ body {
 .worksona-logo {
   display: flex;
   align-items: center;
-  gap: 0.75rem;
+  gap: 0.5rem;
   text-decoration: none;
-  color: var(--gray-900);
+  color: var(--nav-text);
   font-weight: 700;
   font-size: 1.25rem;
   transition: opacity 0.2s;
@@ -65,17 +68,10 @@ body {
   opacity: 0.8;
 }
 
-.worksona-logo-icon {
-  width: 36px;
+.worksona-logo img,
+.worksona-logo svg {
   height: 36px;
-  background: linear-gradient(135deg, var(--primary) 0%, #7c3aed 100%);
-  color: white;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-weight: 800;
-  font-size: 1.25rem;
-  border-radius: 0;
+  width: auto;
 }
 
 .worksona-header-links {
@@ -98,7 +94,7 @@ body {
   display: block;
   width: 24px;
   height: 3px;
-  background: var(--gray-900);
+  background: var(--nav-text);
   transition: all 0.3s;
   border-radius: 0;
 }
@@ -138,7 +134,7 @@ body {
   font-size: 0.75rem;
   text-transform: uppercase;
   letter-spacing: 0.05em;
-  color: var(--gray-700);
+  color: var(--nav-text-secondary);
   font-weight: 700;
   margin-bottom: 0.75rem;
 }
@@ -156,21 +152,22 @@ body {
 .worksona-nav-links a {
   display: block;
   padding: 0.5rem 0.75rem;
-  color: var(--gray-700);
+  color: var(--nav-text);
   text-decoration: none;
   font-size: 0.95rem;
-  border-radius: 0;
+  border-radius: 4px;
   transition: all 0.2s;
+  font-weight: 500;
 }
 
 .worksona-nav-links a:hover {
-  background: var(--gray-100);
-  color: var(--primary);
+  background: var(--nav-highlight-bg);
+  color: var(--nav-highlight);
   padding-left: 1rem;
 }
 
 .worksona-nav-links a.active {
-  background: var(--primary);
+  background: var(--nav-highlight);
   color: white;
   font-weight: 600;
 }

@@ -4,6 +4,8 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Demo Connection Test - Worksona.js</title>
+  <link rel="stylesheet" href="/assets/css/worksona-branding.css">
+  <link rel="stylesheet" href="/assets/css/navigation.css">
   <style>
     body {
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
@@ -111,7 +113,19 @@
   <button onclick="runTests()">🔄 Run Tests Again</button>
 
   <script>
-    const API_BASE = 'http://localhost:3000';
+    // Detect API base URL
+    const API_BASE = (() => {
+      const hostname = window.location.hostname;
+      if (hostname === 'worksonajs.netlify.app' || hostname.includes('worksonajs')) {
+        return 'https://worksonajs.netlify.app';
+      }
+      // Check if we're on Vercel (worksona-js.vercel.app or any vercel.app domain)
+      if (hostname === 'worksona-js.vercel.app' || hostname.includes('vercel.app')) {
+        return window.location.origin;
+      }
+      const isLocalhost = hostname === 'localhost' || hostname === '127.0.0.1';
+      return isLocalhost ? 'http://localhost:3000' : '';
+    })();
 
     async function runTests() {
       // Test 1: Health Check

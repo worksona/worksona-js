@@ -1,11 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <link rel="stylesheet" href="/assets/css/navigation.css">
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Endpoint API Demo - Worksona.js</title>
   <meta name="description" content="Comprehensive testing interface for Worksona.js REST API endpoints">
+
+  <link rel="stylesheet" href="/assets/css/worksona-branding.css">
+  <link rel="stylesheet" href="/assets/css/navigation.css">
 
   <!-- Prism.js for syntax highlighting -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/themes/prism-tomorrow.min.css">
@@ -49,13 +51,13 @@
 
     /* Header */
     .header {
-      background: var(--primary);
+      background: var(--primary-600);
       color: white;
       padding: 2rem;
       box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
       position: relative;
       overflow: hidden;
-    ;}
+    }
 
 .header::before {
       content: '';
@@ -64,7 +66,7 @@
       left: 0;
       right: 0;
       bottom: 0;
-      background: var(--primary);
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
       animation: shimmer 3s infinite;
     }
 
@@ -607,23 +609,6 @@
 </head>
 <body>
 <div class="worksona-content">
-  <!-- Worksona Header -->
-  <header class="worksona-header">
-    <div class="worksona-header-content">
-      <a href="/" class="worksona-logo">
-        <div class="worksona-logo-icon">W</div>
-        <span class="worksona-logo-text">WORKSONA</span>
-      </a>
-      <button class="worksona-hamburger" id="worksonaHamburger" aria-label="Toggle navigation">
-        <span></span>
-        <span></span>
-        <span></span>
-      </button>
-    </div>
-  </header>
-
-  
-
   <!-- Header -->
   <header class="header">
     <h1> Endpoint API Demo</h1>
@@ -636,6 +621,12 @@
     <div class="status-item">
       <div class="status-dot offline" id="serverStatus"></div>
       <span id="serverStatusText">Checking server...</span>
+    </div>
+    <div class="status-item" id="apiUrlConfig" style="display: none;">
+      <label for="apiUrlInput" style="font-size: 0.875rem; color: var(--text-secondary); margin-right: 0.5rem;">API URL:</label>
+      <input type="text" id="apiUrlInput" placeholder="https://your-api-server.com" 
+             style="padding: 0.25rem 0.5rem; border: 1px solid var(--border-color); border-radius: 4px; font-size: 0.875rem; min-width: 200px;">
+      <button onclick="updateApiUrl()" style="margin-left: 0.5rem; padding: 0.25rem 0.75rem; background: var(--accent-blue); color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 0.875rem;">Update</button>
     </div>
     <div class="status-item">
       <strong>Available Agents:</strong>
@@ -1104,7 +1095,102 @@
   <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-bash.min.js"></script>
 
   <script>
-    const API_BASE = 'http://localhost:3000';
+    // Detect API base URL - use environment variable or detect host
+    let API_BASE = (() => {
+      // Check for environment variable (Netlify can set this)
+      if (typeof window !== 'undefined' && window.API_BASE_URL) {
+        return window.API_BASE_URL;
+      }
+      // Check localStorage for user-configured URL
+      const savedUrl = localStorage.getItem('worksona_api_url');
+      if (savedUrl) {
+        return savedUrl;
+      }
+      // Check if we're on worksonajs.netlify.app
+      const hostname = window.location.hostname;
+      if (hostname === 'worksonajs.netlify.app' || hostname.includes('worksonajs')) {
+        // Default API URL for worksonajs.netlify.app
+        return 'https://worksonajs.netlify.app/api';
+      }
+      // Check if we're on Vercel (worksona-js.vercel.app or any vercel.app domain)
+      if (hostname === 'worksona-js.vercel.app' || hostname.includes('vercel.app')) {
+        // Use same origin for Vercel (API and site on same domain)
+        return window.location.origin + '/api';
+      }
+      // Default: localhost for local development, empty for production (needs config)
+      const isLocalhost = hostname === 'localhost' || hostname === '127.0.0.1';
+      return isLocalhost ? 'http://localhost:3000' : '';
+    })();
+
+    // Function to update API URL
+    function updateApiUrl() {
+      const input = document.getElementById('apiUrlInput');
+      const newUrl = input.value.trim();
+      if (newUrl) {
+        // Remove trailing slash
+        API_BASE = newUrl.replace(/\/$/, '');
+        localStorage.setItem('worksona_api_url', API_BASE);
+        // Update status
+        const statusText = document.getElementById('serverStatusText');
+        if (statusText) {
+          statusText.textContent = 'Checking server...';
+        }
+        checkServerStatus();
+      } else {
+        alert('Please enter a valid API URL');
+      }
+    }
+    
+    // Allow Enter key to update API URL
+    document.addEventListener('DOMContentLoaded', () => {
+      const input = document.getElementById('apiUrlInput');
+      if (input) {
+        input.addEventListener('keypress', (e) => {
+          if (e.key === 'Enter') {
+            updateApiUrl();
+          }
+        });
+      }
+    });
+
+    // Show API URL config if on production and no URL set
+    function setupApiUrlConfig() {
+      const hostname = window.location.hostname;
+      const isProduction = hostname.includes('netlify.app') || 
+                          hostname.includes('vercel.app') ||
+                          (hostname !== 'localhost' && hostname !== '127.0.0.1');
+      
+      const apiUrlConfig = document.getElementById('apiUrlConfig');
+      const input = document.getElementById('apiUrlInput');
+      
+      // Always show API URL config on production (worksonajs.netlify.app)
+      if (isProduction && apiUrlConfig) {
+        apiUrlConfig.style.display = 'flex';
+        apiUrlConfig.style.alignItems = 'center';
+        
+        // Set placeholder and default value
+        if (input) {
+          if (hostname === 'worksonajs.netlify.app' || hostname.includes('worksonajs')) {
+            input.placeholder = 'https://worksonajs.netlify.app/api';
+            // Set default value if not already configured
+            if (!API_BASE || API_BASE === 'https://worksonajs.netlify.app/api') {
+              input.value = 'https://worksonajs.netlify.app/api';
+            } else {
+              input.value = API_BASE;
+            }
+          } else if (hostname === 'worksona-js.vercel.app' || hostname.includes('vercel.app')) {
+            input.placeholder = window.location.origin + '/api';
+            input.value = window.location.origin + '/api';
+          } else {
+            input.placeholder = 'https://your-api-server.com';
+            // Show current API URL if set
+            if (API_BASE) {
+              input.value = API_BASE;
+            }
+          }
+        }
+      }
+    }
     let selectedFile = null;
     let selectedDocFile = null;
 
@@ -1125,7 +1211,19 @@
         }
       } catch (error) {
         statusDot.className = 'status-dot offline';
-        statusText.textContent = 'Server offline - Start worksona-server.js';
+        // Check if we're on Netlify or production
+        const hostname = window.location.hostname;
+        const isProduction = hostname.includes('netlify.app') || 
+                            hostname.includes('vercel.app') ||
+                            (hostname !== 'localhost' && hostname !== '127.0.0.1');
+        
+        if (isProduction && !API_BASE) {
+          statusText.textContent = 'API server not configured - Enter API URL below';
+        } else if (isProduction && API_BASE) {
+          statusText.textContent = `Cannot connect to ${API_BASE}`;
+        } else {
+          statusText.textContent = 'Server offline - Start worksona-server.js';
+        }
       }
     }
 
@@ -1763,6 +1861,7 @@ console.log(response.data);`;
       }
 
       // Initialize server status check
+      setupApiUrlConfig();
       checkServerStatus();
       setInterval(checkServerStatus, 30000); // Check every 30 seconds
     });
